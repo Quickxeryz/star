@@ -1,0 +1,17 @@
+.namePoints {
+    font-size: 40px;
+    color: rgba(0, 0, 0, 255);
+    -unity-text-align: upper-center;
+}
+
+.textBox {
+    background-image: url('project://database/Packages/com.unity.2d.spriteshape/Editor/ObjectMenuCreation/DefaultAssets/Textures/Sprite%20Shape%20Fill.png?fileID=2800000&guid=b281b91a70a624a0da1c43adc1c30c7b&type=3#Sprite Shape Fill');
+    position: absolute;
+    display: flex;
+}
+
+.songText {
+    font-size: 80px;
+    color: rgba(0, 0, 0, 255);
+    -unity-text-align: upper-center;
+}
