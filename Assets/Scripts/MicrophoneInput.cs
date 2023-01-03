@@ -4,6 +4,22 @@ using System;
 [RequireComponent(typeof(AudioSource))]
 public class MicrophoneInput : MonoBehaviour
 {
+    public enum Node
+    {
+        C = 11,
+        CH = 10,
+        D = 9,
+        DH = 8,
+        E = 7,
+        F = 6,
+        FH = 5,
+        G = 4,
+        GH = 3,
+        A = 2,
+        AH = 1,
+        B = 0
+    }
+
     AudioSource audioSource;
     const int sampleLength = 8192;
     float[] samples = new float[sampleLength];
@@ -11,7 +27,7 @@ public class MicrophoneInput : MonoBehaviour
     int maxSampleIndex;
     const float firstHarmonic = (1f / 48000f * ((float)sampleLength)) * 2f;
     float hz = 0;
-    string node = "";
+    public Node node;
 
     // Start is called before the first frame update
     void Start()
@@ -57,43 +73,43 @@ public class MicrophoneInput : MonoBehaviour
             switch (nodeNumber)
             {
                 case 0:
-                    node = "G#";
+                    node = Node.GH;
                     break;
                 case 1:
-                    node = "A";
+                    node = Node.A;
                     break;
                 case 2:
-                    node = "A#";
+                    node = Node.AH;
                     break;
                 case 3:
-                    node = "H";
+                    node = Node.B;
                     break;
                 case 4:
-                    node = "C";
+                    node = Node.C;
                     break;
                 case 5:
-                    node = "C#";
+                    node = Node.CH;
                     break;
                 case 6:
-                    node = "D";
+                    node = Node.D;
                     break;
                 case 7:
-                    node = "D#";
+                    node = Node.DH;
                     break;
                 case 8:
-                    node = "E";
+                    node = Node.E;
                     break;
                 case 9:
-                    node = "F";
+                    node = Node.F;
                     break;
                 case 10:
-                    node = "F#";
+                    node = Node.FH;
                     break;
                 case 11:
-                    node = "G";
+                    node = Node.G;
                     break;
                 default:
-                    node = "Error: not able to get node value from hz!";
+                    node = Node.C;
                     break;
             }
         }
