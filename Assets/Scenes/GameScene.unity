@@ -181,7 +181,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 438596770}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63dfd00fe9c3782468b212d44645f35a, type: 3}
+  m_Script: {fileID: 11500000, guid: 34facb3127bb8394f9d77f8887d96dc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   micIn: {fileID: 1521934683}
@@ -483,7 +483,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc6ba9fef489184b85f7f1c7679493c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoClip: {fileID: 32900000, guid: 37254ab47c610b54999a4a6bab6f6c01, type: 3}
 --- !u!1 &1721493379
 GameObject:
   m_ObjectHideFlags: 0
