@@ -3,7 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(UnityEngine.UI.RawImage))]
 public class VideoPlayer : MonoBehaviour
 {
-    UnityEngine.Video.VideoPlayer videoPlayer;
+    [HideInInspector]
+    public UnityEngine.Video.VideoPlayer videoPlayer;
     RenderTexture renderTexture;
     UnityEngine.UI.RawImage image;
 

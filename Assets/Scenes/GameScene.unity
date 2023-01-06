@@ -185,6 +185,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   micIn: {fileID: 1521934683}
+  video: {fileID: 1521934687}
+  bpm: 0
 --- !u!1 &792196575
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,6 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc6ba9fef489184b85f7f1c7679493c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 0}
 --- !u!1 &1721493379
 GameObject:
   m_ObjectHideFlags: 0

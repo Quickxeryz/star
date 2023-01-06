@@ -14,8 +14,6 @@ public class GameLogic : MonoBehaviour
 
     class SyllableData
     {
-
-
         public Kind kind;
         public int appearing;
         public int length;
@@ -32,9 +30,14 @@ public class GameLogic : MonoBehaviour
     }
     // Mic input
     public MicrophoneInput micIn;
+    // Video
+    public VideoPlayer video;
+    // Bpm
+    public float bpm = 0;
     // Songfile data extraction
-    float beatDuration;
-    ArrayList songData = new ArrayList();
+    ArrayList songData = new ArrayList(); // Todo: writing own class with better performance
+    ArrayList syllablesLine1 = new ArrayList();
+    ArrayList syllablesLine2 = new ArrayList();
     int songDataCurrentIndex = 0;
     int songDataNewLineIndex = 0;
     // UI pointer
@@ -45,14 +48,15 @@ public class GameLogic : MonoBehaviour
     // node default value
     const int nodeTopDefault = -25;
     // start time for beat calculation
-    DateTime startTime;
+    double startTime;
+    // help variable for current beat detection
+    bool loadNextSyllable = true;
 
     void Start()
     {
         // Getting data from song file
         string[] songFileData = System.IO.File.ReadAllLines(GameState.choosenSongPath);
         SyllableData syllable;
-        float bpm = 0;
         string temp;
         foreach (string line in songFileData)
         {
@@ -117,9 +121,6 @@ public class GameLogic : MonoBehaviour
         textLine2 = root.Q<Label>("SongLine2");
         // Getting player node arrows
         nodeP1 = root.Q<VisualElement>("NodeP1");
-        // beat duration = 60000 ms / BPM
-        beatDuration = 60000f / bpm;
-        startTime = DateTime.Now;
         //Getting first song lines
         int textCounter = 1;
         string text = "";
@@ -127,7 +128,17 @@ public class GameLogic : MonoBehaviour
         {
             if (songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
             {
+                // Combininig line
                 text += ((SyllableData)songData[songDataNewLineIndex]).syllable;
+                // Setting syllables of first line
+                if (textCounter == 1)
+                {
+                    syllablesLine1.Add((SyllableData)songData[songDataNewLineIndex]);
+                }
+                else if (textCounter == 2)
+                {
+                    syllablesLine2.Add((SyllableData)songData[songDataNewLineIndex]);
+                }
             }
             else
             {
@@ -144,26 +155,71 @@ public class GameLogic : MonoBehaviour
             }
             songDataNewLineIndex++;
         }
+        // setting player names and points
+        root.Q<Label>("NameP1").text = GameState.namePlayer1;
+        root.Q<Label>("PointsP1").text = "0";
+        // setting start time
+        startTime = video.videoPlayer.clockTime;
     }
 
     void Update()
     {
         // updating nodes, songtext and calculating score
-        double time = (DateTime.Now - startTime).TotalMilliseconds;
-        bool search = true;
-        while (search)
+        double goingTime = (video.videoPlayer.clockTime - startTime);
+        if (songDataCurrentIndex < songData.Capacity)
         {
             if (songData[songDataCurrentIndex].GetType() == typeof(SyllableData))
             {
-
+                SyllableData sData = (SyllableData)songData[songDataCurrentIndex];
+                // Time in sec = Beatnumber / BPM / 4 * 60 sec
+                //if (((sData.appearing + sData.length) / bpm / 4 * 60) >= goingTime)
+                if (sData.appearing / bpm / 4 * 60 <= goingTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= goingTime)
+                {
+                    string text = "";
+                    // Making syllable colored
+                    foreach (SyllableData s in syllablesLine1)
+                    {
+                        if (s.appearing <= sData.appearing)
+                        {
+                            text += "<color=#0000ffff>" + s.syllable + "</color>";
+                        }
+                        else
+                        {
+                            text += s.syllable;
+                        }
+                    }
+                    textLine1.text = text;
+                    loadNextSyllable = true;
+                    // Todo: calculating score and updating score UI
+                }
+                else
+                {
+                    if (loadNextSyllable)
+                    {
+                        songDataCurrentIndex++;
+                        loadNextSyllable = false;
+                    }
+                }
             }
             else
             {
                 //Loading new line
-
+                syllablesLine1 = (ArrayList)syllablesLine2;
+                textLine1.text = textLine2.text;
+                String text = "";
+                syllablesLine2 = new ArrayList();
+                while (songData[songDataNewLineIndex].GetType() == typeof(SyllableData)) // Todo: Stop before going out of bounds
+                {
+                    text += ((SyllableData)songData[songDataNewLineIndex]).syllable;
+                    syllablesLine2.Add((SyllableData)songData[songDataNewLineIndex]);
+                    songDataNewLineIndex++;
+                }
+                textLine2.text = text;
+                songDataCurrentIndex++;
+                songDataNewLineIndex++;
             }
         }
-        // Updating player node arrow
+        // Updating player node arrow        
         nodeP1.style.top = nodeTopDefault + 25 * (int)micIn.node;
     }
 }
@@ -194,4 +250,5 @@ Fourth col
 pitch (0 = c1 (negative possible))
 Fifth col
 text 
+Calculatiuon of first beat: starttime = first col / BPM / 4 * 60 Sekunden + GAP.
 */
