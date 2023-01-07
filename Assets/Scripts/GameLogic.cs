@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System;
 using System.Collections;
+using Classes;
 
 public class GameLogic : MonoBehaviour
 {
     enum Kind
     {
         Free,
-        Points,
+        Normal,
         Golden,
     }
 
@@ -17,14 +18,14 @@ public class GameLogic : MonoBehaviour
         public Kind kind;
         public int appearing;
         public int length;
-        public int pitch;
+        public Node node;
         public string syllable;
         public SyllableData()
         {
             kind = Kind.Free;
             appearing = 0;
             length = 0;
-            pitch = 0;
+            node = 0;
             syllable = "";
         }
     }
@@ -33,7 +34,7 @@ public class GameLogic : MonoBehaviour
     // Video
     public VideoPlayer video;
     // Bpm
-    public float bpm = 0;
+    float bpm = 0;
     // Songfile data extraction
     ArrayList songData = new ArrayList(); // Todo: writing own class with better performance
     ArrayList syllablesLine1 = new ArrayList();
@@ -45,12 +46,24 @@ public class GameLogic : MonoBehaviour
     Label textLine1;
     Label textLine2;
     VisualElement nodeP1; // node start at H = -25 and downwards with position.top += 25
+    VisualElement nodeP2;
+    VisualElement nodeP3;
+    VisualElement nodeP4;
+    Label pointsTextP1;
+    Label pointsTextP2;
+    Label pointsTextP3;
+    Label pointsTextP4;
     // node default value
     const int nodeTopDefault = -25;
-    // start time for beat calculation
-    double startTime;
     // help variable for current beat detection
     bool loadNextSyllable = true;
+    // score calculating variables 
+    float pointsPerBeat;
+    int lastBeat;
+    float pointsP1 = 0;
+    float pointsP2 = 0;
+    float pointsP3 = 0;
+    float pointsP4 = 0;
 
     void Start()
     {
@@ -73,13 +86,13 @@ public class GameLogic : MonoBehaviour
                     break;
                 // Normal note
                 case ':':
-                    syllable.kind = Kind.Points;
+                    syllable.kind = Kind.Normal;
                     temp = line.Substring(2);
                     syllable.appearing = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.pitch = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
+                    syllable.node = NodeFunctions.getNode(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -91,7 +104,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.pitch = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
+                    syllable.node = NodeFunctions.getNode(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -103,7 +116,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.pitch = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
+                    syllable.node = NodeFunctions.getNode(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -119,6 +132,9 @@ public class GameLogic : MonoBehaviour
         root = GetComponent<UIDocument>().rootVisualElement;
         textLine1 = root.Q<Label>("SongLine1");
         textLine2 = root.Q<Label>("SongLine2");
+        pointsTextP1 = root.Q<Label>("PointsP1");
+        // setting player names
+        root.Q<Label>("NameP1").text = GameState.namePlayer1;
         // Getting player node arrows
         nodeP1 = root.Q<VisualElement>("NodeP1");
         //Getting first song lines
@@ -155,25 +171,43 @@ public class GameLogic : MonoBehaviour
             }
             songDataNewLineIndex++;
         }
-        // setting player names and points
-        root.Q<Label>("NameP1").text = GameState.namePlayer1;
-        root.Q<Label>("PointsP1").text = "0";
-        // setting start time
-        startTime = video.videoPlayer.clockTime;
+        // calculating points per beat
+        int beatSum = 0;
+        SyllableData currentSyllable;
+        // getting sum of beats (golden notes double)
+        for (int i = 0; i < songData.Count; i++)
+        {
+            if (songData[i].GetType() == typeof(SyllableData))
+            {
+                currentSyllable = (SyllableData)songData[i];
+                // handling different nodes 
+                switch (currentSyllable.kind)
+                {
+                    case Kind.Normal:
+                        beatSum += currentSyllable.length;
+                        break;
+                    case Kind.Golden:
+                        beatSum += currentSyllable.length * 2;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        pointsPerBeat = 10000f / (float)beatSum;
     }
 
     void Update()
     {
+        int currentBeat = 0;
         // updating nodes, songtext and calculating score
-        double goingTime = (video.videoPlayer.clockTime - startTime);
-        if (songDataCurrentIndex < songData.Capacity)
+        if (songDataCurrentIndex < songData.Count)
         {
             if (songData[songDataCurrentIndex].GetType() == typeof(SyllableData))
             {
                 SyllableData sData = (SyllableData)songData[songDataCurrentIndex];
                 // Time in sec = Beatnumber / BPM / 4 * 60 sec
-                //if (((sData.appearing + sData.length) / bpm / 4 * 60) >= goingTime)
-                if (sData.appearing / bpm / 4 * 60 <= goingTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= goingTime)
+                if (sData.appearing / bpm / 4 * 60 <= video.videoPlayer.clockTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= video.videoPlayer.clockTime)
                 {
                     string text = "";
                     // Making syllable colored
@@ -190,7 +224,31 @@ public class GameLogic : MonoBehaviour
                     }
                     textLine1.text = text;
                     loadNextSyllable = true;
-                    // Todo: calculating score and updating score UI
+                    // calculating score and updating score UI: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
+                    currentBeat = (int)System.Math.Ceiling((video.videoPlayer.clockTime / 60f) * 4 * bpm);
+                    if (currentBeat != lastBeat)
+                    {
+                        switch (sData.kind)
+                        {
+                            case Kind.Normal:
+                                if (micIn.node == sData.node)
+                                {
+                                    pointsP1 += pointsPerBeat;
+                                }
+                                lastBeat = currentBeat;
+                                break;
+                            case Kind.Golden:
+                                if (micIn.node == sData.node)
+                                {
+                                    pointsP1 += pointsPerBeat * 2;
+                                }
+                                lastBeat = currentBeat;
+                                break;
+                            default:
+                                break;
+                        }
+                        pointsTextP1.text = ((int)System.Math.Ceiling(pointsP1)).ToString();
+                    }
                 }
                 else
                 {
@@ -204,19 +262,29 @@ public class GameLogic : MonoBehaviour
             else
             {
                 //Loading new line
-                syllablesLine1 = (ArrayList)syllablesLine2;
-                textLine1.text = textLine2.text;
-                String text = "";
-                syllablesLine2 = new ArrayList();
-                while (songData[songDataNewLineIndex].GetType() == typeof(SyllableData)) // Todo: Stop before going out of bounds
+                if (songDataNewLineIndex < songData.Count)
                 {
-                    text += ((SyllableData)songData[songDataNewLineIndex]).syllable;
-                    syllablesLine2.Add((SyllableData)songData[songDataNewLineIndex]);
+                    syllablesLine1 = (ArrayList)syllablesLine2;
+                    textLine1.text = textLine2.text;
+                    String text = "";
+                    syllablesLine2 = new ArrayList();
+                    while (songDataNewLineIndex < songData.Count && songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
+                    {
+                        text += ((SyllableData)songData[songDataNewLineIndex]).syllable;
+                        syllablesLine2.Add((SyllableData)songData[songDataNewLineIndex]);
+                        songDataNewLineIndex++;
+                    }
+                    textLine2.text = text;
                     songDataNewLineIndex++;
                 }
-                textLine2.text = text;
+                else
+                {
+                    syllablesLine1 = (ArrayList)syllablesLine2;
+                    textLine1.text = textLine2.text;
+                    textLine2.text = "";
+                    syllablesLine2 = new ArrayList();
+                }
                 songDataCurrentIndex++;
-                songDataNewLineIndex++;
             }
         }
         // Updating player node arrow        
