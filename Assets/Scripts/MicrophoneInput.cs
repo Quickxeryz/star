@@ -52,7 +52,6 @@ public class MicrophoneInput : MonoBehaviour
             hz = (((float)maxSampleIndex) / ((float)firstHarmonic));
             //hz to node
             int nodeNumber = (int)Math.Round(Math.Log(hz / 440, 2) * 12 + 49);
-            nodeNumber = nodeNumber % 12;
             node = NodeFunctions.getNode(nodeNumber - 4);
         }
     }

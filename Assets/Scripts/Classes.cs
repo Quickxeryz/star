@@ -24,6 +24,7 @@ namespace Classes
             {
                 nodeNumber += 12;
             }
+            nodeNumber = nodeNumber % 12;
             switch (nodeNumber)
             {
                 case 0:

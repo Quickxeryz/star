@@ -25,7 +25,7 @@ public class GameLogic : MonoBehaviour
             kind = Kind.Free;
             appearing = 0;
             length = 0;
-            node = 0;
+            node = Node.C;
             syllable = "";
         }
     }
@@ -39,16 +39,26 @@ public class GameLogic : MonoBehaviour
     ArrayList songData = new ArrayList(); // Todo: writing own class with better performance
     ArrayList syllablesLine1 = new ArrayList();
     ArrayList syllablesLine2 = new ArrayList();
+    int startBeat = 0;
+    ArrayList nodesLine1P1 = new ArrayList();
+    ArrayList nodesLine2P1 = new ArrayList();
+    ArrayList nodesLine1P2 = new ArrayList();
+    ArrayList nodesLine2P2 = new ArrayList();
+    ArrayList nodesLine1P3 = new ArrayList();
+    ArrayList nodesLine2P3 = new ArrayList();
+    ArrayList nodesLine1P4 = new ArrayList();
+    ArrayList nodesLine2P4 = new ArrayList();
     int songDataCurrentIndex = 0;
     int songDataNewLineIndex = 0;
     // UI pointer
     VisualElement root;
-    Label textLine1;
-    Label textLine2;
+    Label textLineP1;
+    Label textLineP2;
     VisualElement nodeP1; // node start at H = -25 and downwards with position.top += 25
     VisualElement nodeP2;
     VisualElement nodeP3;
     VisualElement nodeP4;
+    VisualElement nodeBoxP1;
     Label pointsTextP1;
     Label pointsTextP2;
     Label pointsTextP3;
@@ -130,8 +140,9 @@ public class GameLogic : MonoBehaviour
         }
         // Getting UI pointer
         root = GetComponent<UIDocument>().rootVisualElement;
-        textLine1 = root.Q<Label>("SongLine1");
-        textLine2 = root.Q<Label>("SongLine2");
+        textLineP1 = root.Q<Label>("SongLine1");
+        textLineP2 = root.Q<Label>("SongLine2");
+        nodeBoxP1 = root.Q<VisualElement>("NodeBoxP1");
         pointsTextP1 = root.Q<Label>("PointsP1");
         // setting player names
         root.Q<Label>("NameP1").text = GameState.namePlayer1;
@@ -140,42 +151,85 @@ public class GameLogic : MonoBehaviour
         //Getting first song lines
         int textCounter = 1;
         string text = "";
+        VisualElement nodeBox;
+        SyllableData sData;
+        int beatEnd1 = 0;
+        int beatEnd2 = 0;
         while (textCounter < 3)
         {
             if (songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
             {
+                sData = (SyllableData)songData[songDataNewLineIndex];
                 // Combininig line
-                text += ((SyllableData)songData[songDataNewLineIndex]).syllable;
+                text += sData.syllable;
                 // Setting syllables of first line
                 if (textCounter == 1)
                 {
-                    syllablesLine1.Add((SyllableData)songData[songDataNewLineIndex]);
+                    syllablesLine1.Add(sData);
                 }
+                // Setting syllables of second line
                 else if (textCounter == 2)
                 {
-                    syllablesLine2.Add((SyllableData)songData[songDataNewLineIndex]);
+                    syllablesLine2.Add(sData);
                 }
             }
             else
             {
                 if (textCounter == 1)
                 {
-                    textLine1.text = text;
+                    textLineP1.text = text;
+                    // Setting beatEnd for node shower
+                    beatEnd1 = (int)songData[songDataNewLineIndex];
                 }
                 else
                 {
-                    textLine2.text = text;
+                    textLineP2.text = text;
+                    // Setting beatEnd for node shower
+                    beatEnd2 = (int)songData[songDataNewLineIndex];
                 }
                 text = "";
                 textCounter++;
             }
             songDataNewLineIndex++;
         }
+        // setting nodes of first line
+        int i = 0;
+        while (songData[i].GetType() == typeof(SyllableData))
+        {
+            sData = (SyllableData)songData[i];
+            nodeBox = new VisualElement();
+            nodeBox.AddToClassList("nodeBox");
+            nodeBox.style.top = nodeTopDefault + 25 * (int)sData.node;
+            // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
+            nodeBox.style.left = Length.Percent((sData.appearing * 100) / beatEnd1);
+            nodeBox.style.width = Length.Percent((sData.length * 100) / beatEnd1);
+            nodesLine1P1.Add(nodeBox);
+            i++;
+        }
+        foreach (VisualElement element in nodesLine1P1)
+        {
+            nodeBoxP1.Add(element);
+        }
+        // setting nodes of second line
+        i++;
+        while (songData[i].GetType() == typeof(SyllableData))
+        {
+            sData = (SyllableData)songData[i];
+            nodeBox = new VisualElement();
+            nodeBox.AddToClassList("nodeBox");
+            nodeBox.style.top = nodeTopDefault + 25 * (int)sData.node;
+            // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
+            nodeBox.style.left = Length.Percent(((sData.appearing - beatEnd1) * 100) / (beatEnd2 - beatEnd1));
+            nodeBox.style.width = Length.Percent((sData.length * 100) / (beatEnd2 - beatEnd1));
+            nodesLine2P1.Add(nodeBox);
+            i++;
+        }
+        startBeat = beatEnd2;
         // calculating points per beat
         int beatSum = 0;
         SyllableData currentSyllable;
         // getting sum of beats (golden notes double)
-        for (int i = 0; i < songData.Count; i++)
+        for (i = 0; i < songData.Count; i++)
         {
             if (songData[i].GetType() == typeof(SyllableData))
             {
@@ -200,16 +254,19 @@ public class GameLogic : MonoBehaviour
     void Update()
     {
         int currentBeat = 0;
+        String text = "";
+        SyllableData sData;
+        VisualElement nodeBox;
         // updating nodes, songtext and calculating score
         if (songDataCurrentIndex < songData.Count)
         {
             if (songData[songDataCurrentIndex].GetType() == typeof(SyllableData))
             {
-                SyllableData sData = (SyllableData)songData[songDataCurrentIndex];
+                sData = (SyllableData)songData[songDataCurrentIndex];
                 // Time in sec = Beatnumber / BPM / 4 * 60 sec
                 if (sData.appearing / bpm / 4 * 60 <= video.videoPlayer.clockTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= video.videoPlayer.clockTime)
                 {
-                    string text = "";
+                    text = "";
                     // Making syllable colored
                     foreach (SyllableData s in syllablesLine1)
                     {
@@ -219,10 +276,24 @@ public class GameLogic : MonoBehaviour
                         }
                         else
                         {
-                            text += s.syllable;
+                            switch (sData.kind)
+                            {
+                                case Kind.Normal:
+                                    text += s.syllable;
+                                    break;
+                                case Kind.Free:
+                                    text += "<i>" + s.syllable + "</i>";
+                                    break;
+                                case Kind.Golden:
+                                    text += "<color=#ffff00ff>" + s.syllable + "</color>";
+                                    break;
+                                default:
+                                    text += s.syllable;
+                                    break;
+                            }
                         }
                     }
-                    textLine1.text = text;
+                    textLineP1.text = text;
                     loadNextSyllable = true;
                     // calculating score and updating score UI: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
                     currentBeat = (int)System.Math.Ceiling((video.videoPlayer.clockTime / 60f) * 4 * bpm);
@@ -261,28 +332,58 @@ public class GameLogic : MonoBehaviour
             }
             else
             {
-                //Loading new line
+                // Setting next line data to current line data
+                textLineP1.text = textLineP2.text;
+                syllablesLine1 = (ArrayList)syllablesLine2;
+                nodesLine1P1 = (ArrayList)nodesLine2P1;
+                nodeBoxP1.Clear();
+                foreach (VisualElement element in nodesLine1P1)
+                {
+                    nodeBoxP1.Add(element);
+                }
+                // Calculating next line data
+                syllablesLine2 = new ArrayList();
+                nodesLine2P1 = new ArrayList();
+                int nodesNewLineIndex = songDataNewLineIndex;
+                int beatEnd = 0;
                 if (songDataNewLineIndex < songData.Count)
                 {
-                    syllablesLine1 = (ArrayList)syllablesLine2;
-                    textLine1.text = textLine2.text;
-                    String text = "";
-                    syllablesLine2 = new ArrayList();
+                    text = "";
                     while (songDataNewLineIndex < songData.Count && songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
                     {
-                        text += ((SyllableData)songData[songDataNewLineIndex]).syllable;
-                        syllablesLine2.Add((SyllableData)songData[songDataNewLineIndex]);
+                        sData = (SyllableData)songData[songDataNewLineIndex];
+                        text += sData.syllable;
+                        syllablesLine2.Add(sData);
                         songDataNewLineIndex++;
                     }
-                    textLine2.text = text;
+                    textLineP2.text = text;
+                    // calculating node line data
+                    if (songDataNewLineIndex < songData.Count)
+                    {
+                        beatEnd = (int)songData[songDataNewLineIndex];
+                    }
+                    else
+                    {
+                        sData = (SyllableData)songData[songDataNewLineIndex - 1];
+                        beatEnd = sData.appearing + sData.length;
+                    }
+                    while (nodesNewLineIndex < songData.Count && songData[nodesNewLineIndex].GetType() == typeof(SyllableData))
+                    {
+                        sData = (SyllableData)songData[nodesNewLineIndex];
+                        nodeBox = new VisualElement();
+                        nodeBox.AddToClassList("nodeBox");
+                        nodeBox.style.top = nodeTopDefault + 25 * (int)sData.node;
+                        nodeBox.style.left = Length.Percent(((sData.appearing - startBeat) * 100) / (beatEnd - startBeat));
+                        nodeBox.style.width = Length.Percent((sData.length * 100) / (beatEnd - startBeat));
+                        nodesLine2P1.Add(nodeBox);
+                        nodesNewLineIndex++;
+                    }
+                    startBeat = beatEnd;
                     songDataNewLineIndex++;
                 }
                 else
                 {
-                    syllablesLine1 = (ArrayList)syllablesLine2;
-                    textLine1.text = textLine2.text;
-                    textLine2.text = "";
-                    syllablesLine2 = new ArrayList();
+                    textLineP2.text = "";
                 }
                 songDataCurrentIndex++;
             }
