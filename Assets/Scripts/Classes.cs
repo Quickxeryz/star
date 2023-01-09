@@ -13,7 +13,8 @@ namespace Classes
         GH = 3,
         A = 2,
         AH = 1,
-        B = 0
+        B = 0,
+        None = -1
     }
     public static class NodeFunctions
     {
@@ -64,7 +65,7 @@ namespace Classes
                     node = Node.B;
                     break;
                 default:
-                    node = Node.C;
+                    node = Node.None;
                     break;
             }
             return node;

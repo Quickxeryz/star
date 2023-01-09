@@ -11,7 +11,7 @@
         <ui:Label text="Song Line 2" display-tooltip-when-elided="true" name="SongLine2" picking-mode="Ignore" class="songText" />
     </ui:VisualElement>
     <ui:VisualElement name="Nodes" style="background-image: url(&apos;project://database/Assets/UI/UITextures/Nodes.png?fileID=2800000&amp;guid=8d563e7c1760ed244b32f7f3520621e2&amp;type=3#Nodes&apos;); width: 98%; height: 321px; position: absolute; top: 35%; left: 1%; right: auto; -unity-background-scale-mode: stretch-to-fill;">
-        <ui:VisualElement name="NodeP1" style="background-image: url(&apos;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=-4521532143779581420&amp;guid=2ba82f3d69554094fa61b780f12e3990&amp;type=3#arrow-right&apos;); width: 74px; height: 55px; position: relative; top: auto;" />
+        <ui:VisualElement name="NodeP1" style="background-image: url(&apos;project://database/Packages/com.unity.2d.spriteshape/Editor/ObjectMenuCreation/DefaultAssets/Textures/Sprite%20Shape%20Fill.png?fileID=2800000&amp;guid=b281b91a70a624a0da1c43adc1c30c7b&amp;type=3#Sprite Shape Fill&apos;); width: 2%; height: 55px; position: relative; top: auto;" />
         <ui:VisualElement name="NodeBoxP1" style="position: absolute; left: auto; top: auto; height: 321px; width: 100%;" />
     </ui:VisualElement>
 </ui:UXML>
