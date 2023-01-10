@@ -6,7 +6,7 @@
     <ui:VisualElement name="PointsP1Box" class="textBox" style="width: 128px; top: 25%; left: auto; right: 1%;">
         <ui:Label text="10000" display-tooltip-when-elided="false" name="PointsP1" enable-rich-text="true" picking-mode="Ignore" class="namePoints" />
     </ui:VisualElement>
-    <ui:VisualElement name="SongLinesBox" class="textBox" style="top: auto; left: 1%; height: 18%; width: 98%; bottom: 1%; -unity-background-image-tint-color: rgb(255, 255, 255);">
+    <ui:VisualElement name="SongLinesBox" class="textBox" style="top: auto; left: 1%; height: 18%; width: 98%; bottom: 1px; -unity-background-image-tint-color: rgb(0, 0, 0); color: rgba(56, 56, 56, 255); background-color: rgba(112, 112, 112, 255);">
         <ui:Label text="Song Line 1" display-tooltip-when-elided="true" name="SongLine1" picking-mode="Ignore" class="songText" style="height: 48%; position: absolute; width: 100%; left: 0; top: 0; font-size: 70%;" />
         <ui:Label text="Song Line 2" display-tooltip-when-elided="true" name="SongLine2" picking-mode="Ignore" class="songText" style="height: 48%; position: absolute; left: 0; top: 51%; width: 100%; font-size: 70%;" />
     </ui:VisualElement>

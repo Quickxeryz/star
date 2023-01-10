@@ -270,8 +270,8 @@ public class GameLogic : MonoBehaviour
 
     void Update()
     {
-        // calculating current beat
-        int currentBeat = currentBeat = (int)System.Math.Ceiling((video.videoPlayer.clockTime / 60f) * 4 * bpm);
+        // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
+        int currentBeat = (int)System.Math.Ceiling((video.videoPlayer.clockTime / 60f) * 4 * bpm);
         // updating nodes, songtext and calculating score
         String text = "";
         SyllableData sData;
@@ -290,7 +290,18 @@ public class GameLogic : MonoBehaviour
                     {
                         if (s.appearing <= sData.appearing)
                         {
-                            text += "<color=#0000ffff>" + s.syllable + "</color>";
+                            switch (sData.kind)
+                            {
+                                case Kind.Normal:
+                                    text += "<color=#0000ffff>" + s.syllable + "</color>";
+                                    break;
+                                case Kind.Free:
+                                    text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
+                                    break;
+                                case Kind.Golden:
+                                    text += "<color=#ff00ffff>" + s.syllable + "</color>";
+                                    break;
+                            }
                         }
                         else
                         {
@@ -305,15 +316,12 @@ public class GameLogic : MonoBehaviour
                                 case Kind.Golden:
                                     text += "<color=#ffff00ff>" + s.syllable + "</color>";
                                     break;
-                                default:
-                                    text += s.syllable;
-                                    break;
                             }
                         }
                     }
                     textLineP1.text = text;
                     loadNextSyllable = true;
-                    // calculating score and updating score UI: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
+                    // calculating score and updating score UI
                     if (currentBeat != lastBeat)
                     {
                         if (micIn.node != Node.None)
@@ -324,6 +332,14 @@ public class GameLogic : MonoBehaviour
                                     if (micIn.node == sData.node)
                                     {
                                         pointsP1 += pointsPerBeat;
+                                        // setting hittet nodes
+                                        nodeBox = new VisualElement();
+                                        nodeBox.AddToClassList("nodeBox");
+                                        nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0, 0, 1, 1));
+                                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                        nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
+                                        nodeBox.style.width = Length.Percent(100 / beatSumLine1);
+                                        nodeBoxP1.Add(nodeBox);
                                     }
                                     lastBeat = currentBeat;
                                     break;
@@ -331,10 +347,29 @@ public class GameLogic : MonoBehaviour
                                     if (micIn.node == sData.node)
                                     {
                                         pointsP1 += pointsPerBeat * 2;
+                                        // setting hittet nodes
+                                        nodeBox = new VisualElement();
+                                        nodeBox.AddToClassList("nodeBox");
+                                        nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(1, 0, 1, 1));
+                                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                        nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
+                                        nodeBox.style.width = Length.Percent(100 / beatSumLine1);
+                                        nodeBoxP1.Add(nodeBox);
                                     }
                                     lastBeat = currentBeat;
                                     break;
-                                default:
+                                case Kind.Free:
+                                    if (micIn.node == sData.node)
+                                    {
+                                        // setting hittet nodes
+                                        nodeBox = new VisualElement();
+                                        nodeBox.AddToClassList("nodeBox");
+                                        nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 1));
+                                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                        nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
+                                        nodeBox.style.width = Length.Percent(100 / beatSumLine1);
+                                        nodeBoxP1.Add(nodeBox);
+                                    }
                                     break;
                             }
                         }
