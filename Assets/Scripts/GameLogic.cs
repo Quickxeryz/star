@@ -69,8 +69,14 @@ public class GameLogic : MonoBehaviour
     Label pointsTextP2;
     Label pointsTextP3;
     Label pointsTextP4;
-    // node default value
-    const int nodeTopDefault = -25;
+    // half size of node arrow and blocks texture in %
+    const int nodeHeightOffset = 5;
+    // difference to next node in node texture in pixel
+    const int nodeTextureDistance = 5;
+    // length of node texture in pixel
+    const int nodeTextureHeight = 64;
+    // width of node arrow in percent
+    const int nodeArrowWidth = 2;
     // current line beat sum
     int beatSumLine1 = 0;
     int beatSumLine2 = 0;
@@ -208,7 +214,7 @@ public class GameLogic : MonoBehaviour
             sData = (SyllableData)songData[i];
             nodeBox = new VisualElement();
             nodeBox.AddToClassList("nodeBox");
-            nodeBox.style.top = nodeTopDefault + 25 * (int)sData.node;
+            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
             // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
             nodeBox.style.left = Length.Percent((sData.appearing * 100) / beatSumLine1);
             nodeBox.style.width = Length.Percent((sData.length * 100) / beatSumLine1);
@@ -227,7 +233,8 @@ public class GameLogic : MonoBehaviour
             sData = (SyllableData)songData[i];
             nodeBox = new VisualElement();
             nodeBox.AddToClassList("nodeBox");
-            nodeBox.style.top = nodeTopDefault + 25 * (int)sData.node;
+            // node image location = (pitch in image * 100)/image height - node block offset
+            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
             // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
             nodeBox.style.left = Length.Percent(((sData.appearing - startBeatLine2) * 100) / beatSumLine2);
             nodeBox.style.width = Length.Percent((sData.length * 100) / beatSumLine2);
@@ -388,7 +395,7 @@ public class GameLogic : MonoBehaviour
                         sData = (SyllableData)songData[nodesNewLineIndex];
                         nodeBox = new VisualElement();
                         nodeBox.AddToClassList("nodeBox");
-                        nodeBox.style.top = nodeTopDefault + 25 * (int)sData.node;
+                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
                         nodeBox.style.left = Length.Percent(((sData.appearing - endBeatLine2) * 100) / beatSumLine2);
                         nodeBox.style.width = Length.Percent((sData.length * 100) / beatSumLine2);
                         nodesLine2P1.Add(nodeBox);
@@ -405,15 +412,22 @@ public class GameLogic : MonoBehaviour
                 songDataCurrentIndex++;
             }
             // Updating player node arro:
-            nodeP1.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1 - 2);
+            nodeP1.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1 - nodeArrowWidth);
         }
         else
         {
             // Updating player node arrow
             nodeP1.style.left = 0;
         }
-        // Updating node arrow and show if sung
-        nodeP1.style.top = nodeTopDefault + 25 * (int)micIn.node;
+        // Updating player node arrow
+        if (micIn.node != Node.None)
+        {
+            nodeP1.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+        }
+        else
+        {
+            nodeP1.style.top = Length.Percent(((nodeTextureDistance * 13) * 100) / nodeTextureHeight - nodeHeightOffset);
+        }
     }
 }
 /*
