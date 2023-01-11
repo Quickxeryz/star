@@ -209,15 +209,17 @@ public class GameLogic : MonoBehaviour
         // setting nodes of first line
         int i = 0;
         beatSumLine1 = startBeatLine2;
+        float currentPercent = 0f;
         while (songData[i].GetType() == typeof(SyllableData))
         {
             sData = (SyllableData)songData[i];
+            currentPercent = (sData.appearing * 100) / beatSumLine1;
             nodeBox = new VisualElement();
             nodeBox.AddToClassList("nodeBox");
             nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
             // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
-            nodeBox.style.left = Length.Percent((sData.appearing * 100) / beatSumLine1);
-            nodeBox.style.width = Length.Percent((sData.length * 100) / beatSumLine1);
+            nodeBox.style.left = Length.Percent(currentPercent);
+            nodeBox.style.width = Length.Percent(((sData.appearing + sData.length) * 100) / beatSumLine1 - currentPercent);
             nodesLine1P1.Add(nodeBox);
             i++;
         }
@@ -231,13 +233,14 @@ public class GameLogic : MonoBehaviour
         while (songData[i].GetType() == typeof(SyllableData))
         {
             sData = (SyllableData)songData[i];
+            currentPercent = ((sData.appearing - startBeatLine2) * 100) / beatSumLine2;
             nodeBox = new VisualElement();
             nodeBox.AddToClassList("nodeBox");
             // node image location = (pitch in image * 100)/image height - node block offset
             nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
             // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
-            nodeBox.style.left = Length.Percent(((sData.appearing - startBeatLine2) * 100) / beatSumLine2);
-            nodeBox.style.width = Length.Percent((sData.length * 100) / beatSumLine2);
+            nodeBox.style.left = Length.Percent(currentPercent);
+            nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - startBeatLine2) * 100) / beatSumLine2 - currentPercent);
             nodesLine2P1.Add(nodeBox);
             i++;
         }
@@ -276,6 +279,7 @@ public class GameLogic : MonoBehaviour
         String text = "";
         SyllableData sData;
         VisualElement nodeBox;
+        float currentPercent;
         if (songDataCurrentIndex < songData.Count)
         {
             if (songData[songDataCurrentIndex].GetType() == typeof(SyllableData))
@@ -324,14 +328,15 @@ public class GameLogic : MonoBehaviour
                     // calculating score and updating UI
                     if (currentBeat != lastBeat)
                     {
-                        if (micIn.node != Node.None && hitNode(micIn.node, sData.node))
+                        if (true)//micIn.node != Node.None && hitNode(micIn.node, sData.node))
                         {
                             // creating new node box
+                            currentPercent = ((currentBeat - 1 - startBeatLine1) * 100) / beatSumLine1;
                             nodeBox = new VisualElement();
                             nodeBox.AddToClassList("nodeBox");
                             nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-                            nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
-                            nodeBox.style.width = Length.Percent(100 / beatSumLine1);
+                            nodeBox.style.left = Length.Percent(currentPercent);
+                            nodeBox.style.width = Length.Percent((((currentBeat - startBeatLine1) * 100) / beatSumLine1) - currentPercent);
                             // updating score and setting node box color
                             switch (sData.kind)
                             {
@@ -357,7 +362,7 @@ public class GameLogic : MonoBehaviour
                 }
                 else
                 {
-                    if (loadNextSyllable)
+                    if (loadNextSyllable && (sData.appearing + sData.length) / bpm / 4 * 60 < video.videoPlayer.clockTime)
                     {
                         songDataCurrentIndex++;
                         loadNextSyllable = false;
@@ -407,11 +412,12 @@ public class GameLogic : MonoBehaviour
                     while (nodesNewLineIndex < songData.Count && songData[nodesNewLineIndex].GetType() == typeof(SyllableData))
                     {
                         sData = (SyllableData)songData[nodesNewLineIndex];
+                        currentPercent = ((sData.appearing - endBeatLine2) * 100) / beatSumLine2;
                         nodeBox = new VisualElement();
                         nodeBox.AddToClassList("nodeBox");
                         nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-                        nodeBox.style.left = Length.Percent(((sData.appearing - endBeatLine2) * 100) / beatSumLine2);
-                        nodeBox.style.width = Length.Percent((sData.length * 100) / beatSumLine2);
+                        nodeBox.style.left = Length.Percent(currentPercent);
+                        nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - endBeatLine2) * 100) / beatSumLine2 - currentPercent);
                         nodesLine2P1.Add(nodeBox);
                         nodesNewLineIndex++;
                     }

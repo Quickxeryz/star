@@ -10,7 +10,7 @@
         <ui:Label text="Song Line 1" display-tooltip-when-elided="true" name="SongLine1" picking-mode="Ignore" class="songText" />
         <ui:Label text="Song Line 2" display-tooltip-when-elided="true" name="SongLine2" picking-mode="Ignore" class="songText" />
     </ui:VisualElement>
-    <ui:VisualElement name="NodesP1" style="background-image: url(&apos;project://database/Assets/UI/UITextures/Nodes.png?fileID=2800000&amp;guid=8d563e7c1760ed244b32f7f3520621e2&amp;type=3#Nodes&apos;); width: 98%; height: 321px; position: absolute; top: 35%; left: 1%; right: auto; -unity-background-scale-mode: stretch-to-fill;">
+    <ui:VisualElement name="NodesP1" style="background-image: url(&apos;project://database/Assets/UI/UITextures/Nodes.png?fileID=2800000&amp;guid=8d563e7c1760ed244b32f7f3520621e2&amp;type=3#Nodes&apos;); width: 98%; height: 321px; position: absolute; top: 35%; left: 1%; right: auto; -unity-background-scale-mode: stretch-to-fill; display: flex; opacity: 1;">
         <ui:VisualElement name="NodeP1" style="background-image: url(&apos;project://database/Assets/UI/UITextures/NodeArrow.png?fileID=2800000&amp;guid=77090ad7e6b5ccd45b1d194e27b6e07e&amp;type=3#NodeArrow&apos;); width: 2%; height: 10%; position: absolute; top: -5%; align-items: stretch; justify-content: flex-start; transform-origin: center; left: -2%;" />
         <ui:VisualElement name="NodeBoxP1" style="position: absolute; left: auto; top: auto; height: 100%; width: 100%;" />
     </ui:VisualElement>
