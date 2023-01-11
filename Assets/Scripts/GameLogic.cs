@@ -321,59 +321,39 @@ public class GameLogic : MonoBehaviour
                     }
                     textLineP1.text = text;
                     loadNextSyllable = true;
-                    // calculating score and updating score UI
+                    // calculating score and updating UI
                     if (currentBeat != lastBeat)
                     {
-                        if (micIn.node != Node.None)
+                        if (micIn.node != Node.None && hitNode(micIn.node, sData.node))
                         {
+                            // creating new node box
+                            nodeBox = new VisualElement();
+                            nodeBox.AddToClassList("nodeBox");
+                            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                            nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
+                            nodeBox.style.width = Length.Percent(100 / beatSumLine1);
+                            // updating score and setting node box color
                             switch (sData.kind)
                             {
                                 case Kind.Normal:
-                                    if (micIn.node == sData.node)
-                                    {
-                                        pointsP1 += pointsPerBeat;
-                                        // setting hittet nodes
-                                        nodeBox = new VisualElement();
-                                        nodeBox.AddToClassList("nodeBox");
-                                        nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0, 0, 1, 1));
-                                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-                                        nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
-                                        nodeBox.style.width = Length.Percent(100 / beatSumLine1);
-                                        nodeBoxP1.Add(nodeBox);
-                                    }
-                                    lastBeat = currentBeat;
+                                    pointsP1 += pointsPerBeat;
+                                    nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0, 0, 1, 1));
                                     break;
                                 case Kind.Golden:
-                                    if (micIn.node == sData.node)
-                                    {
-                                        pointsP1 += pointsPerBeat * 2;
-                                        // setting hittet nodes
-                                        nodeBox = new VisualElement();
-                                        nodeBox.AddToClassList("nodeBox");
-                                        nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(1, 0, 1, 1));
-                                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-                                        nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
-                                        nodeBox.style.width = Length.Percent(100 / beatSumLine1);
-                                        nodeBoxP1.Add(nodeBox);
-                                    }
-                                    lastBeat = currentBeat;
+                                    pointsP1 += pointsPerBeat * 2;
+                                    nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(1, 0, 1, 1));
                                     break;
                                 case Kind.Free:
-                                    if (micIn.node == sData.node)
-                                    {
-                                        // setting hittet nodes
-                                        nodeBox = new VisualElement();
-                                        nodeBox.AddToClassList("nodeBox");
-                                        nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 1));
-                                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-                                        nodeBox.style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1);
-                                        nodeBox.style.width = Length.Percent(100 / beatSumLine1);
-                                        nodeBoxP1.Add(nodeBox);
-                                    }
+                                    nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 1));
                                     break;
                             }
+                            // updating ui elements
+                            pointsTextP1.text = ((int)System.Math.Ceiling(pointsP1)).ToString();
+                            nodeBoxP1.Add(nodeBox);
+                            // set actual beat as handled
+                            lastBeat = currentBeat;
                         }
-                        pointsTextP1.text = ((int)System.Math.Ceiling(pointsP1)).ToString();
+
                     }
                 }
                 else
@@ -464,7 +444,29 @@ public class GameLogic : MonoBehaviour
             nodeP1.style.top = Length.Percent(((nodeTextureDistance * 13) * 100) / nodeTextureHeight - nodeHeightOffset);
         }
     }
+
+    // checks if sung node hits reference node
+    private bool hitNode(Node sung, Node toHit)
+    {
+        // get distance between node enums
+        int distance = 0;
+        if (sung > toHit)
+        {
+            distance = (int)sung - (int)toHit;
+        }
+        else
+        {
+            distance = (int)toHit - (int)sung;
+        }
+        // check if hit
+        if (distance <= (int)GameState.difficulty || distance >= 12 - (int)GameState.difficulty)
+        {
+            return true;
+        }
+        return false;
+    }
 }
+
 /*
 FORMAT:
 #TITLE: Title of the song

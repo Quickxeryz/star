@@ -11,9 +11,13 @@
 }
 
 .songText {
-    font-size: 500%;
+    font-size: 400%;
     color: rgb(255, 255, 255);
-    -unity-text-align: upper-center;
+    -unity-text-align: middle-center;
+    width: 100%;
+    height: 48%;
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-font-style: normal;
 }
 
 .nodeBox {

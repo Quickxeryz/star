@@ -71,4 +71,10 @@ namespace Classes
             return node;
         }
     }
+    public enum Difficulty
+    {
+        Easy = 2,
+        Normal = 1,
+        Hard = 0
+    }
 }
