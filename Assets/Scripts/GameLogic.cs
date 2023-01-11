@@ -281,45 +281,45 @@ public class GameLogic : MonoBehaviour
             if (songData[songDataCurrentIndex].GetType() == typeof(SyllableData))
             {
                 sData = (SyllableData)songData[songDataCurrentIndex];
+                text = "";
+                // Making syllable colored
+                foreach (SyllableData s in syllablesLine1)
+                {
+                    if (s.appearing <= sData.appearing)
+                    {
+                        switch (sData.kind)
+                        {
+                            case Kind.Normal:
+                                text += "<color=#0000ffff>" + s.syllable + "</color>";
+                                break;
+                            case Kind.Free:
+                                text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
+                                break;
+                            case Kind.Golden:
+                                text += "<color=#ff00ffff>" + s.syllable + "</color>";
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (sData.kind)
+                        {
+                            case Kind.Normal:
+                                text += s.syllable;
+                                break;
+                            case Kind.Free:
+                                text += "<i>" + s.syllable + "</i>";
+                                break;
+                            case Kind.Golden:
+                                text += "<color=#ffff00ff>" + s.syllable + "</color>";
+                                break;
+                        }
+                    }
+                }
+                textLineP1.text = text;
                 // Time in sec = Beatnumber / BPM / 4 * 60 sec
                 if (sData.appearing / bpm / 4 * 60 <= video.videoPlayer.clockTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= video.videoPlayer.clockTime)
                 {
-                    text = "";
-                    // Making syllable colored
-                    foreach (SyllableData s in syllablesLine1)
-                    {
-                        if (s.appearing <= sData.appearing)
-                        {
-                            switch (sData.kind)
-                            {
-                                case Kind.Normal:
-                                    text += "<color=#0000ffff>" + s.syllable + "</color>";
-                                    break;
-                                case Kind.Free:
-                                    text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
-                                    break;
-                                case Kind.Golden:
-                                    text += "<color=#ff00ffff>" + s.syllable + "</color>";
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            switch (sData.kind)
-                            {
-                                case Kind.Normal:
-                                    text += s.syllable;
-                                    break;
-                                case Kind.Free:
-                                    text += "<i>" + s.syllable + "</i>";
-                                    break;
-                                case Kind.Golden:
-                                    text += "<color=#ffff00ff>" + s.syllable + "</color>";
-                                    break;
-                            }
-                        }
-                    }
-                    textLineP1.text = text;
                     loadNextSyllable = true;
                     // calculating score and updating UI
                     if (currentBeat != lastBeat)
@@ -353,7 +353,6 @@ public class GameLogic : MonoBehaviour
                             // set actual beat as handled
                             lastBeat = currentBeat;
                         }
-
                     }
                 }
                 else
