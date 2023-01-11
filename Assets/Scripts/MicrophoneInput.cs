@@ -22,10 +22,9 @@ public class MicrophoneInput : MonoBehaviour
         if (Microphone.devices.Length > 0)
         {
             audioSource = GetComponent<AudioSource>();
-            audioSource.loop = true;
-            audioSource.playOnAwake = true;
             string selectedDevice = Microphone.devices[0];
             audioSource.clip = Microphone.Start(selectedDevice, true, 10, AudioSettings.outputSampleRate);
+            audioSource.loop = true;
             audioSource.Play();
         }
 
