@@ -274,7 +274,7 @@ public class GameLogic : MonoBehaviour
     void Update()
     {
         // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
-        int currentBeat = (int)System.Math.Ceiling((video.videoPlayer.clockTime / 60f) * 4 * bpm);
+        int currentBeat = (int)System.Math.Ceiling(((video.videoPlayer.clockTime - GameState.micDelay) / 60.0) * 4.0 * bpm);
         // updating nodes, songtext and calculating score
         text = "";
         SyllableData sData;
@@ -322,7 +322,7 @@ public class GameLogic : MonoBehaviour
                 }
                 textLineP1.text = text;
                 // Time in sec = Beatnumber / BPM / 4 * 60 sec
-                if (sData.appearing / bpm / 4 * 60 <= video.videoPlayer.clockTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= video.videoPlayer.clockTime)
+                if (sData.appearing / bpm / 4 * 60 <= (video.videoPlayer.clockTime - GameState.micDelay) && (sData.appearing + sData.length) / bpm / 4 * 60 >= (video.videoPlayer.clockTime - GameState.micDelay))
                 {
                     loadNextSyllable = true;
                     // calculating score and updating UI
@@ -362,7 +362,7 @@ public class GameLogic : MonoBehaviour
                 }
                 else
                 {
-                    if (loadNextSyllable && (sData.appearing + sData.length) / bpm / 4 * 60 < video.videoPlayer.clockTime)
+                    if (loadNextSyllable && (sData.appearing + sData.length) / bpm / 4 * 60 < (video.videoPlayer.clockTime - GameState.micDelay))
                     {
                         songDataCurrentIndex++;
                         loadNextSyllable = false;
