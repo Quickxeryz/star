@@ -89,7 +89,7 @@ public class GameLogic : MonoBehaviour
     float pointsP2 = 0;
     float pointsP3 = 0;
     float pointsP4 = 0;
-
+    public string text;
     void Start()
     {
         // Getting data from song file
@@ -276,7 +276,7 @@ public class GameLogic : MonoBehaviour
         // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
         int currentBeat = (int)System.Math.Ceiling((video.videoPlayer.clockTime / 60f) * 4 * bpm);
         // updating nodes, songtext and calculating score
-        String text = "";
+        text = "";
         SyllableData sData;
         VisualElement nodeBox;
         float currentPercent;
@@ -289,9 +289,9 @@ public class GameLogic : MonoBehaviour
                 // Making syllable colored
                 foreach (SyllableData s in syllablesLine1)
                 {
-                    if (s.appearing <= sData.appearing)
+                    if (s.appearing < sData.appearing)
                     {
-                        switch (sData.kind)
+                        switch (s.kind)
                         {
                             case Kind.Normal:
                                 text += "<color=#0000ffff>" + s.syllable + "</color>";
@@ -306,7 +306,7 @@ public class GameLogic : MonoBehaviour
                     }
                     else
                     {
-                        switch (sData.kind)
+                        switch (s.kind)
                         {
                             case Kind.Normal:
                                 text += s.syllable;
@@ -328,7 +328,7 @@ public class GameLogic : MonoBehaviour
                     // calculating score and updating UI
                     if (currentBeat != lastBeat)
                     {
-                        if (true)//micIn.node != Node.None && hitNode(micIn.node, sData.node))
+                        if (micIn.node != Node.None && hitNode(micIn.node, sData.node))
                         {
                             // creating new node box
                             currentPercent = ((currentBeat - 1 - startBeatLine1) * 100) / beatSumLine1;
