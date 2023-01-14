@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using System;
 using System.Collections;
 using Classes;
 
@@ -57,10 +56,9 @@ public class GameLogic : MonoBehaviour
     int startBeatLine2 = 0;
     int endBeatLine2 = 0;
     // UI pointer
-    VisualElement root;
-    Label textLineP1;
-    Label textLineP2;
-    VisualElement nodeP1; // node start at H = -25 and downwards with position.top += 25
+    Label textLine1;
+    Label textLine2;
+    VisualElement nodeP1;
     VisualElement nodeP2;
     VisualElement nodeP3;
     VisualElement nodeP4;
@@ -154,15 +152,16 @@ public class GameLogic : MonoBehaviour
             }
         }
         // Getting UI pointer
-        root = GetComponent<UIDocument>().rootVisualElement;
-        textLineP1 = root.Q<Label>("SongLine1");
-        textLineP2 = root.Q<Label>("SongLine2");
-        nodeBoxP1 = root.Q<VisualElement>("NodeBoxP1");
-        pointsTextP1 = root.Q<Label>("PointsP1");
-        // setting player names
-        root.Q<Label>("NameP1").text = GameState.namePlayer1;
-        // Getting player node arrows
-        nodeP1 = root.Q<VisualElement>("NodeP1");
+        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+        textLine1 = root.Q<Label>("SongLine1");
+        textLine2 = root.Q<Label>("SongLine2");
+        VisualElement currentRoot = root.Q<VisualElement>("PlayerNodeBoxP1");
+        nodeBoxP1 = currentRoot.Q<VisualElement>("NodeBox");
+        pointsTextP1 = currentRoot.Q<Label>("Points");
+        // setting player name
+        currentRoot.Q<Label>("Name").text = GameState.namePlayer1;
+        // Getting player node arrow
+        nodeP1 = currentRoot.Q<VisualElement>("Node");
         //Getting first song lines
         int textCounter = 1;
         string text = "";
@@ -191,13 +190,13 @@ public class GameLogic : MonoBehaviour
             {
                 if (textCounter == 1)
                 {
-                    textLineP1.text = text;
+                    textLine1.text = text;
                     // Setting beatEnd for node shower
                     startBeatLine2 = (int)songData[songDataNewLineIndex];
                 }
                 else
                 {
-                    textLineP2.text = text;
+                    textLine2.text = text;
                     // Setting beatEnd for node shower
                     beatEnd2 = (int)songData[songDataNewLineIndex];
                 }
@@ -321,7 +320,7 @@ public class GameLogic : MonoBehaviour
                         }
                     }
                 }
-                textLineP1.text = text;
+                textLine1.text = text;
                 // Time in sec = Beatnumber / BPM / 4 * 60 sec
                 if (sData.appearing / bpm / 4 * 60 <= currentTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= currentTime)
                 {
@@ -373,7 +372,7 @@ public class GameLogic : MonoBehaviour
             else
             {
                 // Setting next line data to current line data
-                textLineP1.text = textLineP2.text;
+                textLine1.text = textLine2.text;
                 syllablesLine1 = (ArrayList)syllablesLine2;
                 nodesLine1P1 = (ArrayList)nodesLine2P1;
                 beatSumLine1 = beatSumLine2;
@@ -398,7 +397,7 @@ public class GameLogic : MonoBehaviour
                         syllablesLine2.Add(sData);
                         songDataNewLineIndex++;
                     }
-                    textLineP2.text = text;
+                    textLine2.text = text;
                     // calculating node line data
                     if (songDataNewLineIndex < songData.Count)
                     {
@@ -427,7 +426,7 @@ public class GameLogic : MonoBehaviour
                 }
                 else
                 {
-                    textLineP2.text = "";
+                    textLine2.text = "";
                 }
                 startBeatLine1 = (int)songData[songDataCurrentIndex];
                 songDataCurrentIndex++;

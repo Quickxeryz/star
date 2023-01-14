@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/GameOverlays/GameStyle.uss?fileID=7433441132597879392&amp;guid=8de20c247a68afe47b75704253b9ba12&amp;type=3#GameStyle" />
+    <ui:VisualElement name="NameBox" class="textBox">
+        <ui:Label text="AAAAABBBBBCCCCCDDDDD" display-tooltip-when-elided="false" name="Name" enable-rich-text="true" picking-mode="Ignore" class="namePoints" />
+    </ui:VisualElement>
+    <ui:VisualElement name="PointsBox" class="textBox" style="top: 0; left: auto; right: 0;">
+        <ui:Label text="10000" display-tooltip-when-elided="false" name="Points" enable-rich-text="true" picking-mode="Ignore" class="namePoints" />
+    </ui:VisualElement>
+    <ui:VisualElement name="Nodes" style="background-image: url(&apos;project://database/Assets/UI/UITextures/Nodes.png?fileID=2800000&amp;guid=8d563e7c1760ed244b32f7f3520621e2&amp;type=3#Nodes&apos;); width: 100%; height: 75%; position: absolute; top: 100px; left: 0; right: auto; -unity-background-scale-mode: stretch-to-fill; display: flex; opacity: 1;">
+        <ui:VisualElement name="Node" picking-mode="Ignore" style="background-image: url(&apos;project://database/Assets/UI/UITextures/NodeArrow.png?fileID=2800000&amp;guid=77090ad7e6b5ccd45b1d194e27b6e07e&amp;type=3#NodeArrow&apos;); width: 2%; height: 10%; position: absolute; top: -5%; align-items: stretch; justify-content: flex-start; transform-origin: center; left: -2%;" />
+        <ui:VisualElement name="NodeBox" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; height: 100%; width: 100%;" />
+    </ui:VisualElement>
+</ui:UXML>
