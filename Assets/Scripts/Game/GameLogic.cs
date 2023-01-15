@@ -29,7 +29,10 @@ public class GameLogic : MonoBehaviour
         }
     }
     // Mic input
-    public MicrophoneInput micIn;
+    public MicrophoneInput micInP1;
+    public MicrophoneInput micInP2;
+    public MicrophoneInput micInP3;
+    public MicrophoneInput micInP4;
     // Video
     public VideoPlayer video;
     // Bpm
@@ -151,21 +154,18 @@ public class GameLogic : MonoBehaviour
                     break;
             }
         }
-        // Getting UI pointer
+        // get UI pointer
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         textLine1 = root.Q<Label>("SongLine1");
         textLine2 = root.Q<Label>("SongLine2");
-        //P1 UI pointer
-        VisualElement currentRoot = root.Q<VisualElement>("PlayerNodeBoxP1");
-        nodeBoxP1 = currentRoot.Q<VisualElement>("NodeBox");
-        pointsTextP1 = currentRoot.Q<Label>("Points");
+        // get ui player data pointer 
+        VisualElement rootP1 = root.Q<VisualElement>("PlayerNodeBoxP1");
+        nodeBoxP1 = rootP1.Q<VisualElement>("NodeBox");
+        pointsTextP1 = rootP1.Q<Label>("Points");
         // setting player name
-        currentRoot.Q<Label>("Name").text = GameState.namePlayer1;
+        rootP1.Q<Label>("Name").text = GameState.namePlayer1;
         // Getting player node arrow
-        nodeP1 = currentRoot.Q<VisualElement>("Node");
-        //P2 UI pointer
-        //P3 UI pointer
-        //P4 UI pointer
+        nodeP1 = rootP1.Q<VisualElement>("Node");
         //Getting first song lines
         int textCounter = 1;
         string text = "";
@@ -343,13 +343,13 @@ public class GameLogic : MonoBehaviour
                     // calculating score and updating UI
                     if (currentBeat != lastBeat)
                     {
-                        if (micIn.node != Node.None && hitNode(micIn.node, sData.node))
+                        if (micInP1.node != Node.None && hitNode(micInP1.node, sData.node))
                         {
                             // creating new node box
                             currentPercent = ((currentBeat - 1 - startBeatLine1) * 100) / beatSumLine1;
                             nodeBox = new VisualElement();
                             nodeBox.AddToClassList("nodeBox");
-                            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micInP1.node) * 100) / nodeTextureHeight - nodeHeightOffset);
                             nodeBox.style.left = Length.Percent(currentPercent);
                             nodeBox.style.width = Length.Percent((((currentBeat - startBeatLine1) * 100) / beatSumLine1) - currentPercent);
                             // updating score and setting node box color
@@ -467,9 +467,9 @@ public class GameLogic : MonoBehaviour
             nodeP1.style.left = 0;
         }
         // Updating player node arrow
-        if (micIn.node != Node.None)
+        if (micInP1.node != Node.None)
         {
-            nodeP1.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+            nodeP1.style.top = Length.Percent(((nodeTextureDistance * (int)micInP1.node) * 100) / nodeTextureHeight - nodeHeightOffset);
         }
         else
         {
