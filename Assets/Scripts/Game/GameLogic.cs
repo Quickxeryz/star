@@ -155,6 +155,7 @@ public class GameLogic : MonoBehaviour
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         textLine1 = root.Q<Label>("SongLine1");
         textLine2 = root.Q<Label>("SongLine2");
+        //P1 UI pointer
         VisualElement currentRoot = root.Q<VisualElement>("PlayerNodeBoxP1");
         nodeBoxP1 = currentRoot.Q<VisualElement>("NodeBox");
         pointsTextP1 = currentRoot.Q<Label>("Points");
@@ -162,6 +163,9 @@ public class GameLogic : MonoBehaviour
         currentRoot.Q<Label>("Name").text = GameState.namePlayer1;
         // Getting player node arrow
         nodeP1 = currentRoot.Q<VisualElement>("Node");
+        //P2 UI pointer
+        //P3 UI pointer
+        //P4 UI pointer
         //Getting first song lines
         int textCounter = 1;
         string text = "";
@@ -173,8 +177,19 @@ public class GameLogic : MonoBehaviour
             if (songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
             {
                 sData = (SyllableData)songData[songDataNewLineIndex];
-                // Combininig line
-                text += sData.syllable;
+                // Combininig text based on kind of syllable
+                switch (sData.kind)
+                {
+                    case Kind.Normal:
+                        text += sData.syllable;
+                        break;
+                    case Kind.Free:
+                        text += "<i>" + sData.syllable + "</i>";
+                        break;
+                    case Kind.Golden:
+                        text += "<color=#ffff00ff>" + sData.syllable + "</color>";
+                        break;
+                }
                 // Setting syllables of first line
                 if (textCounter == 1)
                 {
@@ -393,7 +408,19 @@ public class GameLogic : MonoBehaviour
                     while (songDataNewLineIndex < songData.Count && songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
                     {
                         sData = (SyllableData)songData[songDataNewLineIndex];
-                        text += sData.syllable;
+                        // adding text based on kind of syllable
+                        switch (sData.kind)
+                        {
+                            case Kind.Normal:
+                                text += sData.syllable;
+                                break;
+                            case Kind.Free:
+                                text += "<i>" + sData.syllable + "</i>";
+                                break;
+                            case Kind.Golden:
+                                text += "<color=#ffff00ff>" + sData.syllable + "</color>";
+                                break;
+                        }
                         syllablesLine2.Add(sData);
                         songDataNewLineIndex++;
                     }
