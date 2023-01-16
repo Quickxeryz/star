@@ -5,8 +5,6 @@ using Classes;
 [RequireComponent(typeof(AudioSource))]
 public class MicrophoneInput : MonoBehaviour
 {
-
-
     AudioSource audioSource;
     const int sampleLength = 8192;
     float[] samples = new float[sampleLength];

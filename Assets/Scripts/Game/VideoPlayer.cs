@@ -23,10 +23,4 @@ public class VideoPlayer : MonoBehaviour
         image = GetComponent<UnityEngine.UI.RawImage>();
         image.texture = renderTexture;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }

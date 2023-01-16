@@ -30,7 +30,7 @@ public class GameLogic : MonoBehaviour
         }
     }
     // Mic input
-    public MicrophoneInput micIn;
+    public MicrophoneInput micInP1;
     public MicrophoneInput micInP2;
     public MicrophoneInput micInP3;
     public MicrophoneInput micInP4;
@@ -91,7 +91,7 @@ public class GameLogic : MonoBehaviour
     float pointsP2 = 0;
     float pointsP3 = 0;
     float pointsP4 = 0;
-    public string text;
+
     void Start()
     {
         // Getting data from song file
@@ -164,7 +164,7 @@ public class GameLogic : MonoBehaviour
         nodeBoxP1 = rootP1.Q<VisualElement>("NodeBox");
         pointsTextP1 = rootP1.Q<Label>("Points");
         // setting player name
-        rootP1.Q<Label>("Name").text = GameState.namePlayer1;
+        rootP1.Q<Label>("Name").text = GameState.player1.name;
         // Getting player node arrow
         nodeP1 = rootP1.Q<VisualElement>("Node");
         //Getting first song lines
@@ -294,7 +294,7 @@ public class GameLogic : MonoBehaviour
             // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
             int currentBeat = (int)System.Math.Ceiling((currentTime / 60.0) * 4.0 * bpm);
             // updating nodes, songtext and calculating score
-            text = "";
+            string text = "";
             SyllableData sData;
             VisualElement nodeBox;
             float currentPercent;
@@ -346,13 +346,13 @@ public class GameLogic : MonoBehaviour
                         // calculating score and updating UI
                         if (currentBeat != lastBeat)
                         {
-                            if (micIn.node != Node.None && hitNode(micIn.node, sData.node))
+                            if (micInP1.node != Node.None && hitNode(micInP1.node, sData.node))
                             {
                                 // creating new node box
                                 currentPercent = ((currentBeat - 1 - startBeatLine1) * 100) / beatSumLine1;
                                 nodeBox = new VisualElement();
                                 nodeBox.AddToClassList("nodeBox");
-                                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)micInP1.node) * 100) / nodeTextureHeight - nodeHeightOffset);
                                 nodeBox.style.left = Length.Percent(currentPercent);
                                 nodeBox.style.width = Length.Percent((((currentBeat - startBeatLine1) * 100) / beatSumLine1) - currentPercent);
                                 // updating score and setting node box color
@@ -470,9 +470,9 @@ public class GameLogic : MonoBehaviour
                 nodeP1.style.left = 0;
             }
             // Updating player node arrow
-            if (micIn.node != Node.None)
+            if (micInP1.node != Node.None)
             {
-                nodeP1.style.top = Length.Percent(((nodeTextureDistance * (int)micIn.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                nodeP1.style.top = Length.Percent(((nodeTextureDistance * (int)micInP1.node) * 100) / nodeTextureHeight - nodeHeightOffset);
             }
             else
             {
@@ -481,10 +481,10 @@ public class GameLogic : MonoBehaviour
         }
         else
         {
-            GameState.pointsPlayer1 = (int)System.Math.Ceiling(pointsP1);
-            GameState.pointsPlayer2 = (int)System.Math.Ceiling(pointsP2);
-            GameState.pointsPlayer3 = (int)System.Math.Ceiling(pointsP3);
-            GameState.pointsPlayer4 = (int)System.Math.Ceiling(pointsP4);
+            GameState.player1.points = (int)System.Math.Ceiling(pointsP1);
+            GameState.player2.points = (int)System.Math.Ceiling(pointsP2);
+            GameState.player3.points = (int)System.Math.Ceiling(pointsP3);
+            GameState.player4.points = (int)System.Math.Ceiling(pointsP4);
             SceneManager.LoadScene("SongEnd");
         }
     }

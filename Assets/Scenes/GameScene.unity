@@ -184,9 +184,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34facb3127bb8394f9d77f8887d96dc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  micIn: {fileID: 1521934683}
+  micInP1: {fileID: 1521934683}
+  micInP2: {fileID: 1521934683}
+  micInP3: {fileID: 1521934683}
+  micInP4: {fileID: 1521934683}
   video: {fileID: 1521934687}
-  bpm: 0
 --- !u!1 &792196575
 GameObject:
   m_ObjectHideFlags: 0

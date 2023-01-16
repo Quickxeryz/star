@@ -1,3 +1,6 @@
+using System.Collections;
+using System;
+
 namespace Classes
 {
     public enum Node
@@ -71,10 +74,33 @@ namespace Classes
             return node;
         }
     }
+
     public enum Difficulty
     {
         Easy = 2,
         Normal = 1,
         Hard = 0
+    }
+
+    public class Player : IComparable
+    {
+        public string name;
+        public int points;
+
+        public Player(string name)
+        {
+            this.name = name;
+        }
+
+        public int CompareTo(object obj)
+        {
+            Player Temp = (Player)obj;
+            if (this.points < Temp.points)
+                return 1;
+            if (this.points > Temp.points)
+                return -1;
+            else
+                return 0;
+        }
     }
 }

@@ -9,12 +9,8 @@ public class GameState : MonoBehaviour
     // mic input delay in sec
     public static float micDelay = 0.3f;
     public static int amountPlayer = 1;
-    public static string namePlayer1 = "P1";
-    public static string namePlayer2 = "P2";
-    public static string namePlayer3 = "P3";
-    public static string namePlayer4 = "P4";
-    public static int pointsPlayer1 = 0;
-    public static int pointsPlayer2 = 0;
-    public static int pointsPlayer3 = 0;
-    public static int pointsPlayer4 = 0;
+    public static Player player1 = new Player("P1");
+    public static Player player2 = new Player("P2");
+    public static Player player3 = new Player("P3");
+    public static Player player4 = new Player("P4");
 }
