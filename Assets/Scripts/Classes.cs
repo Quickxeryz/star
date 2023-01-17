@@ -103,4 +103,20 @@ namespace Classes
                 return 0;
         }
     }
+
+    public class SongData
+    {
+        public string title;
+        public string author;
+        public string pathToSong;
+        public string pathToVideo;
+
+        public SongData(string title, string author, string pathToSong, string pathToVideo)
+        {
+            this.title = title;
+            this.author = author;
+            this.pathToSong = pathToSong;
+            this.pathToVideo = pathToVideo;
+        }
+    }
 }

@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using System.IO;
 using System.Collections;
+using Classes;
 
 public class MainMenu : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class MainMenu : MonoBehaviour
     public int currentLabel = 0;
     TemplateContainer chooseSong;
     bool inChooseSong;
-    ArrayList songNames;
+    ArrayList songs;
 
     void OnEnable()
     {
@@ -32,6 +33,7 @@ public class MainMenu : MonoBehaviour
         mainMenuPlay.clicked += () =>
         {
             mainMenu.visible = false;
+            updateSongList();
             chooseSong.visible = true;
             inChooseSong = true;
         };
@@ -58,19 +60,10 @@ public class MainMenu : MonoBehaviour
             options.visible = false;
         };
         // Loading song list
-        songNames = new ArrayList();
-        // path with \\ or /
-        string path = "C:/ Users / Maurice / Documents / GitHub / star / Assets / TestAssets";
-        if (Directory.Exists(path))
+        songs = new ArrayList();
+        if (Directory.Exists(GameState.songFolderPath))
         {
-            searchDirectory(path);
-        }
-        // set song data to items
-        int itemCounter = 1;
-        for (int i = 0; itemCounter <= 10 && i < songNames.Count; i++)
-        {
-            chooseSong.Q<Label>(itemCounter.ToString()).text = (string)songNames[i];
-            itemCounter++;
+            searchDirectory(GameState.songFolderPath);
         }
     }
 
@@ -81,7 +74,7 @@ public class MainMenu : MonoBehaviour
             // check for mouse wheel
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
-                if (currentLabel < songNames.Count - 10)
+                if (currentLabel < songs.Count - 10)
                 {
                     currentLabel++;
                     updateSongList();
@@ -105,6 +98,9 @@ public class MainMenu : MonoBehaviour
         string[] files = Directory.GetFiles(path);
         string[] text;
         bool isSong;
+        string songTitle = "";
+        string songAuthor = "";
+        string songVideoPath = "";
         foreach (string file in files)
             // check for song file
             if (file.Contains(".txt"))
@@ -124,11 +120,20 @@ public class MainMenu : MonoBehaviour
                     // when file is song file extract data
                     foreach (string line in text)
                     {
-                        if (line.StartsWith("#TITLE"))
+                        if (line.StartsWith("#TITLE:"))
                         {
-                            songNames.Add(line.Substring(7));
+                            songTitle = line.Substring(7);
+                        }
+                        else if (line.StartsWith("#ARTIST:"))
+                        {
+                            songAuthor = line.Substring(8);
+                        }
+                        else if (line.StartsWith("#VIDEO:"))
+                        {
+                            songVideoPath = path + "\\" + line.Substring(7);
                         }
                     }
+                    songs.Add(new SongData(songTitle, songAuthor, file, songVideoPath));
                 }
             }
         // Get all directorys
@@ -143,13 +148,24 @@ public class MainMenu : MonoBehaviour
         // clear song data elements
         for (int i = 1; i <= 10; i++)
         {
-            chooseSong.Q<Label>(i.ToString()).text = "";
+            chooseSong.Q<Button>(i.ToString()).visible = false;
         }
         // set song data to items
-        for (int i = currentLabel; itemCounter <= 10 && i < songNames.Count; i++)
+        Button songButton;
+        for (int i = currentLabel; itemCounter <= 10 && i < songs.Count; i++)
         {
-            chooseSong.Q<Label>(itemCounter.ToString()).text = (string)songNames[i];
+            int iCopy = i;
+            songButton = chooseSong.Q<Button>(itemCounter.ToString());
+            songButton.text = ((SongData)songs[i]).title;
+            songButton.visible = true;
             itemCounter++;
+            // set Button function
+            songButton.clicked += () =>
+            {
+                GameState.choosenSongPath = ((SongData)songs[iCopy]).pathToSong;
+                GameState.choosenVideoPath = ((SongData)songs[iCopy]).pathToVideo;
+                SceneManager.LoadScene("GameScene");
+            };
         }
     }
 }

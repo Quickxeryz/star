@@ -37,7 +37,7 @@ public class GameLogic : MonoBehaviour
     // Video
     public VideoPlayer video;
     // Bpm
-    float bpm = 0;
+    public float bpm = 0;
     // Songfile data extraction
     ArrayList songData = new ArrayList(); // Todo: writing own class with better performance
     // syllables data
@@ -108,7 +108,7 @@ public class GameLogic : MonoBehaviour
                     // Reading BPM
                     if (line.Contains("BPM"))
                     {
-                        bpm = float.Parse(line.Substring(line.IndexOf(':') + 1).Trim());
+                        bpm = float.Parse(line.Replace(".", ",").Substring(line.IndexOf(':') + 1).Trim());
                     }
                     break;
                 // Normal note
@@ -539,4 +539,67 @@ pitch (0 = c1 (negative possible))
 Fifth col
 text 
 Calculatiuon of first beat: starttime = first col / BPM / 4 * 60 Sekunden + GAP.
+-------------------------------------------------------------------------------------------------------------
+Der Header (der Anfang) einer TXT-Datei MUSS die folgenden Felder enthalten:
+
+#TITLE:
+#ARTIST:
+#MP3:
+#BPM:
+#GAP:
+Beispielhafter minimaler Header:
+
+#TITLE:Superstar (demo)
+#ARTIST:Jamelia
+#MP3:Jamelia - Superstar (Demo).mp3
+#BPM:110
+#GAP:50
+Darüber hinaus KANN er noch folgende Felder enthalten:
+#RELATIVE:yes
+#VIDEO:
+#VIDEOGAP:
+#RESOLUTION:
+#START:
+Beispielhafter erweiterter Header:
+
+#TITLE:Superstar (demo)
+#ARTIST:Jamelia
+#MP3:Jamelia - Superstar (Demo).mp3
+#BPM:110
+#GAP:50
+#RELATIVE:yes
+#VIDEO:Jamelia - Superstar (Demo).mpg
+#VIDEOGAP:10
+#RESOLUTION:80
+Bedeutung der Felder
+#TITLE:
+Der Titel des Liedes. Dieser wird auch bei der Liedauswahl angezeigt, also könnte man in dem Beispiel nicht sehen, daß das Lied von Jamelia ist.
+#ARTIST:
+Der Interpret des Liedes.
+
+#MP3:
+Der Name der Mp3-Datei.
+#BPM:
+Geschwindigkeit des Liedes in Beats Per Minute. Damit meint man normalerweise die Anzahl der Viertel-Noten oder betonten Beats pro Minute.
+
+#GAP:
+Der Abstand des Textes vom Anfang des Liedes in Millisekunden.
+Wann der Text tatsächlich beginnt, kann man folgendermaßen berechnen:
+Startzeit = erster Zeitstempel / BPM / 4 * 60 Sekunden + GAP.
+Im Beispiel also 129 / 110 / 4 * 60 Sekunden + 50 Millisekunden = 17,59 Sekunden + 0,005 Sekunden = 17,595 Sekunden.
+Falls die Zeitstempel relativ sind, vereinfacht sich die Rechnungen zu:
+Startzeit = GAP
+#RELATIVE:
+Gibt an, ob die Zeitstempel nach jeder Zeile wieder von 0 anfangen oder nicht ("yes" bedeutet sie beginnen wieder bei 0). Wenn diese Zeile fehlt, dann sind die Zeitstempel absolut. Relative Zeitstempel erleichtern die Arbeit an einer TXT-Datei erheblich, da man, wenn man eine Pause einfügen möchte, nicht alle nachfolgenden Zeitstempel anpassen muss, sondern nur die bis zum Ende der Zeile. Wenn man nun selbst von absoluten auf relative Zeitstempel umstellen möchte, bedeutet das eine Menge Handarbeit. Wer weiß, vielleicht gibt es dazu ja bald ein Tool...
+
+#VIDEO:
+Dateiname der Video-Datei. Im Moment sind hier nur MPEG-1 Dateien möglich. Der Sound des Videos wird übrigens nicht abgespielt.
+#VIDEOGAP:
+Wie GAP für die MP3-Datei nur diesmal eben für das Video.
+
+#RESOLUTION:
+Das weiß ich noch nicht. Ich würde mich aber freuen, wenn es mir jemand mitteilen würde :-).
+#START:
+Gibt an, ab welcher Sekunde das Lied gespielt wird. Das ist praktisch, wenn man an einem Lied arbeitet und sich Änderungen anhören/anschauen möchte und keine Lust hat das ganze Lied von Anfang an zu hören.
+Außerdem kann man so z.B. ein langes Intro überspringen.
 */

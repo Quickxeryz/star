@@ -3,8 +3,10 @@ using Classes;
 
 public class GameState : MonoBehaviour
 {
-    public static string choosenVideoPath = "C:\\Users\\Maurice\\Documents\\GitHub\\star\\Assets\\TestAssets\\Disney's Eiskönigin 2 - Wo noch niemand war\\Disney's Eiskönigin 2 - Wo noch niemand war.mp4";
-    public static string choosenSongPath = "C:\\Users\\Maurice\\Documents\\GitHub\\star\\Assets\\TestAssets\\Disney's Eiskönigin 2 - Wo noch niemand war\\Disney's Eiskönigin 2 - Wo noch niemand war.txt";
+    // path with / or \\
+    public static string songFolderPath = "C:\\Users\\Maurice\\Documents\\GitHub\\star\\Assets\\TestAssets";
+    public static string choosenVideoPath = "";
+    public static string choosenSongPath = "";
     public static Difficulty difficulty = Difficulty.Easy;
     // mic input delay in sec
     public static float micDelay = 0.3f;
