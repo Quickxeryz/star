@@ -1,8 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="MainMenu" src="project://database/Assets/UI/MenuOverlays/MainMenu.uxml?fileID=9197481963319205126&amp;guid=273463092d33ed54392bbb45d5f0c16e&amp;type=3#MainMenu" />
-    <ui:Template name="ChooseSong" src="project://database/Assets/UI/MenuOverlays/ChooseSong.uxml?fileID=9197481963319205126&amp;guid=8df875957d7893e41b943bb2427efa19&amp;type=3#ChooseSong" />
-    <ui:Template name="Options" src="project://database/Assets/UI/MenuOverlays/Options.uxml?fileID=9197481963319205126&amp;guid=38b290a3680f5ac41af4a42dd525ca2e&amp;type=3#Options" />
+    <ui:Template name="MainMenu" src="project://database/Assets/UI/MenuOverlays/MainMenu/MainMenu.uxml?fileID=9197481963319205126&amp;guid=273463092d33ed54392bbb45d5f0c16e&amp;type=3#MainMenu" />
+    <ui:Template name="ChooseSong" src="project://database/Assets/UI/MenuOverlays/MainMenu/ChooseSong.uxml?fileID=9197481963319205126&amp;guid=8df875957d7893e41b943bb2427efa19&amp;type=3#ChooseSong" />
+    <ui:Template name="Options" src="project://database/Assets/UI/MenuOverlays/MainMenu/Options.uxml?fileID=9197481963319205126&amp;guid=38b290a3680f5ac41af4a42dd525ca2e&amp;type=3#Options" />
     <ui:Instance template="MainMenu" name="MainMenu" style="position: absolute; width: 100%; height: 100%;" />
-    <ui:Instance template="ChooseSong" name="ChooseSong" style="position: absolute; width: 100%; height: 100%; visibility: hidden;" />
+    <ui:Instance template="ChooseSong" name="ChooseSong" style="position: absolute; width: 100%; height: 100%; visibility: hidden;">
+        <AttributeOverrides element-name="1" display-tooltip-when-elided="false" />
+    </ui:Instance>
     <ui:Instance template="Options" name="Options" style="position: absolute; width: 100%; height: 100%; visibility: hidden;" />
 </ui:UXML>

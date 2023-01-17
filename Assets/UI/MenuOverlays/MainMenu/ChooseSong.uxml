@@ -1,4 +1,17 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MenuOverlays/SongEnd/SongEnd.uss?fileID=7433441132597879392&amp;guid=3da9426879143294186a209d1204b462&amp;type=3#SongEnd" />
     <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" style="position: absolute; left: 1%; right: auto; bottom: 1%; width: 10%; height: 10%;" />
     <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" style="position: absolute; left: auto; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
+    <ui:VisualElement name="SongListContainer" style="position: absolute; left: 1%; top: 10%; width: 98%; height: 75%;">
+        <ui:Label display-tooltip-when-elided="true" name="1" />
+        <ui:Label display-tooltip-when-elided="true" name="2" />
+        <ui:Label display-tooltip-when-elided="true" name="3" />
+        <ui:Label display-tooltip-when-elided="true" name="4" />
+        <ui:Label display-tooltip-when-elided="true" name="5" />
+        <ui:Label display-tooltip-when-elided="true" name="6" />
+        <ui:Label display-tooltip-when-elided="true" name="7" />
+        <ui:Label display-tooltip-when-elided="true" name="8" />
+        <ui:Label display-tooltip-when-elided="true" name="9" />
+        <ui:Label display-tooltip-when-elided="true" name="10" />
+    </ui:VisualElement>
 </ui:UXML>
