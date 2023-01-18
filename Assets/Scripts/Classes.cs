@@ -106,17 +106,22 @@ namespace Classes
 
     public class SongData
     {
+        public string path;
         public string title;
-        public string author;
-        public string pathToSong;
-        public string pathToVideo;
+        public string artist;
+        public string pathToMusic;
+        public float bpm = 0f;
+        public float gap = 0f;
+        public string pathToVideo = "";
 
-        public SongData(string title, string author, string pathToSong, string pathToVideo)
+        public SongData(string path, string title, string artist, string pathToMusic, float bpm, float gap)
         {
+            this.path = path;
             this.title = title;
-            this.author = author;
-            this.pathToSong = pathToSong;
-            this.pathToVideo = pathToVideo;
+            this.artist = artist;
+            this.pathToMusic = pathToMusic;
+            this.bpm = bpm;
+            this.gap = gap;
         }
     }
 }

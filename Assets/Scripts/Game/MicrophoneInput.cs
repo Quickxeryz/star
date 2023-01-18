@@ -46,9 +46,9 @@ public class MicrophoneInput : MonoBehaviour
                 }
             }
             //max value to hz
-            hz = (AudioSettings.outputSampleRate / samples.Length) * maxSampleIndex + (AudioSettings.outputSampleRate / samples.Length) / 2;//TEST (((float)maxSampleIndex) / ((float)firstHarmonic));
+            hz = (AudioSettings.outputSampleRate / sampleLength) * maxSampleIndex + (AudioSettings.outputSampleRate / sampleLength) / 2;//TEST (((float)maxSampleIndex) / ((float)firstHarmonic));
             //hz to node
-            if (maxSample == 0) //TEST if (hz == 0)
+            if (maxSample < 0.001) //TEST if (hz == 0)
             {
                 node = Node.None;
             }

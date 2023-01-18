@@ -36,8 +36,6 @@ public class GameLogic : MonoBehaviour
     public MicrophoneInput micInP4;
     // Video
     public VideoPlayer video;
-    // Bpm
-    public float bpm = 0;
     // Songfile data extraction
     ArrayList songData = new ArrayList(); // Todo: writing own class with better performance
     // syllables data
@@ -82,8 +80,6 @@ public class GameLogic : MonoBehaviour
     // current line beat sum
     int beatSumLine1 = 0;
     int beatSumLine2 = 0;
-    // help variable for current beat detection
-    bool loadNextSyllable = true;
     // score calculating variables 
     float pointsPerBeat;
     int lastBeat;
@@ -95,7 +91,7 @@ public class GameLogic : MonoBehaviour
     void Start()
     {
         // Getting data from song file
-        string[] songFileData = System.IO.File.ReadAllLines(GameState.choosenSongPath);
+        string[] songFileData = System.IO.File.ReadAllLines(GameState.currentSong.path);
         SyllableData syllable;
         string temp;
         foreach (string line in songFileData)
@@ -103,14 +99,6 @@ public class GameLogic : MonoBehaviour
             syllable = new SyllableData();
             switch (line[0])
             {
-                // Description
-                case '#':
-                    // Reading BPM
-                    if (line.Contains("BPM"))
-                    {
-                        bpm = float.Parse(line.Replace(".", ",").Substring(line.IndexOf(':') + 1).Trim());
-                    }
-                    break;
                 // Normal note
                 case ':':
                     syllable.kind = Kind.Normal;
@@ -288,11 +276,11 @@ public class GameLogic : MonoBehaviour
 
     void Update()
     {
-        if (video.videoPlayer.isPlaying || video.videoPlayer.clockTime == 0)
+        if (video.videoPlayer.isPlaying || video.videoPlayer.time == 0)
         {
-            double currentTime = video.videoPlayer.clockTime - GameState.micDelay;
-            // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
-            int currentBeat = (int)System.Math.Ceiling((currentTime / 60.0) * 4.0 * bpm);
+            double currentTime = video.videoPlayer.time - GameState.micDelay - GameState.currentSong.gap;
+            // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
+            int currentBeat = (int)System.Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm - GameState.currentSong.gap);
             // updating nodes, songtext and calculating score
             string text = "";
             SyllableData sData;
@@ -340,9 +328,8 @@ public class GameLogic : MonoBehaviour
                     }
                     textLine1.text = text;
                     // Time in sec = Beatnumber / BPM / 4 * 60 sec
-                    if (sData.appearing / bpm / 4 * 60 <= currentTime && (sData.appearing + sData.length) / bpm / 4 * 60 >= currentTime)
+                    if (sData.appearing / GameState.currentSong.bpm / 4 * 60 <= currentTime && (sData.appearing + sData.length) / GameState.currentSong.bpm / 4 * 60 >= currentTime)
                     {
-                        loadNextSyllable = true;
                         // calculating score and updating UI
                         if (currentBeat != lastBeat)
                         {
@@ -380,10 +367,9 @@ public class GameLogic : MonoBehaviour
                     }
                     else
                     {
-                        if (loadNextSyllable && (sData.appearing + sData.length) / bpm / 4 * 60 < currentTime)
+                        if (currentTime > (sData.appearing + sData.length) / GameState.currentSong.bpm / 4 * 60)
                         {
                             songDataCurrentIndex++;
-                            loadNextSyllable = false;
                         }
                     }
                 }
@@ -510,96 +496,3 @@ public class GameLogic : MonoBehaviour
         return false;
     }
 }
-
-/*
-FORMAT:
-#TITLE: Title of the song
-#ARTIST: Artist behind the song
-#MP3: The name of the MP3 being used for this song. Must have a .mp3 extension included here
-#GAP: The amount of time, in milliseconds, before the lyrics start. This allows for any instrumental (or other type of) introduction to the song. It is important to note the number of the first note below. If it is not 0 (which is rare) then the #GAP will be less straightforward. If the lyrics aren’t set to start until 8 beats into the song, but the singing starts straight away, then the #GAP may need to be set to a negative number, to force the lyrics to start early.
-#BPM: Beats per minute. This signifies the rate at which the text should display. Put simply, fast songs have a higher BPM, slow songs have a lower BPM. To complicate it slightly, the BPM can be upped for slower songs as long as more beats are added in the main body of the song below. If the BPM of a song is high then it generally means a good, smooth .txt file with more attention to subtle changes in tone. But if that means nothing to you, then you don’t need to worry about this tag. If it is a good .txt file, then it won’t need changing.
-#GENRE: The genre of the song. As UltraStar has a ‘sort by genre’ option, it’s a useful tag to use. That, and the search option uses the word(s) in the #GENRE tag when you’re on the song selection screen, so you can automatically find all ‘rock’ songs, for example, if you use this tag.
-#EDITION: Typically refers to the SingStar edition, if applicable, that the .txt file is taken from. For organisational purposes, it’s good to leave this tag in.
-#COVER: Typically the single/album art appropriate for the song, to be displayed on the song selection screen. This is not necessary but it does brighten up the look of the game (and makes certain songs identifiable when not selected). This must be in .jpg format and the .jpg extension must be displayed here.
-#VIDEO: The name of the video file used for this song. Must have the file extension included out of the many types of video file that UltraStar accepts.
-#BACKGROUND: If you don’t have a video file, then you may prefer to have a background image displayed instead of a plain background or visualization. This must be in .jpg format and should have the .jpg extension attached. If the song is set to have a #VIDEO file and is linked in properly, then this tag is disregarded. If the .txt is set to have a #VIDEO but the video is not linked in properly for whatever reason, then the game will automatically display the background image.
-#RELATIVE: This is an unusual tag that I will talk about later. It is simply set to YES or NO. If it is set to YES, then it specifies a particular format of .txt file that functions in a different way to a typical .txt file. If the tag is absent, or is set to NO, then the .txt file functions as the others do. It is essential for this tag to be applied on a relative .txt file (these are rare. If you find one on USDB then the tag will be readily applied anyway).
-First col
-: Regular note
-* Golden note
-F Freestyle syllable
-– Line break (separates lyrics into suitable lines).
-Line breaks are different to other types of row, in that they consist of a hyphen ( – ) and either one or two numbers. If it contains one number, it determines the beat at which the previous line will disappear. For example, in the first line of the song above, the ‘Teenage dreams’ line disappears as soon as it’s been sung, on beat 12. If the line break contains 2 numbers, the first number determines when the first line disappears, and the second determines when the next line will appear. There is no example of this type of line above, as it’s a fast moving song with no proper breaks from singing – line breaks containing two numbers are generally for songs with a large instrumental break in them. Two numbers aren’t at all necessary, however, as the game automatically puts the next line up when it is approaching – it’s only if you want to control when it happens that you need to worry about the ‘second’ number.
-Second col
-appearing of syllable
-Third col
-length of syllable
-Fourth col
-pitch (0 = c1 (negative possible))
-Fifth col
-text 
-Calculatiuon of first beat: starttime = first col / BPM / 4 * 60 Sekunden + GAP.
--------------------------------------------------------------------------------------------------------------
-Der Header (der Anfang) einer TXT-Datei MUSS die folgenden Felder enthalten:
-
-#TITLE:
-#ARTIST:
-#MP3:
-#BPM:
-#GAP:
-Beispielhafter minimaler Header:
-
-#TITLE:Superstar (demo)
-#ARTIST:Jamelia
-#MP3:Jamelia - Superstar (Demo).mp3
-#BPM:110
-#GAP:50
-Darüber hinaus KANN er noch folgende Felder enthalten:
-#RELATIVE:yes
-#VIDEO:
-#VIDEOGAP:
-#RESOLUTION:
-#START:
-Beispielhafter erweiterter Header:
-
-#TITLE:Superstar (demo)
-#ARTIST:Jamelia
-#MP3:Jamelia - Superstar (Demo).mp3
-#BPM:110
-#GAP:50
-#RELATIVE:yes
-#VIDEO:Jamelia - Superstar (Demo).mpg
-#VIDEOGAP:10
-#RESOLUTION:80
-Bedeutung der Felder
-#TITLE:
-Der Titel des Liedes. Dieser wird auch bei der Liedauswahl angezeigt, also könnte man in dem Beispiel nicht sehen, daß das Lied von Jamelia ist.
-#ARTIST:
-Der Interpret des Liedes.
-
-#MP3:
-Der Name der Mp3-Datei.
-#BPM:
-Geschwindigkeit des Liedes in Beats Per Minute. Damit meint man normalerweise die Anzahl der Viertel-Noten oder betonten Beats pro Minute.
-
-#GAP:
-Der Abstand des Textes vom Anfang des Liedes in Millisekunden.
-Wann der Text tatsächlich beginnt, kann man folgendermaßen berechnen:
-Startzeit = erster Zeitstempel / BPM / 4 * 60 Sekunden + GAP.
-Im Beispiel also 129 / 110 / 4 * 60 Sekunden + 50 Millisekunden = 17,59 Sekunden + 0,005 Sekunden = 17,595 Sekunden.
-Falls die Zeitstempel relativ sind, vereinfacht sich die Rechnungen zu:
-Startzeit = GAP
-#RELATIVE:
-Gibt an, ob die Zeitstempel nach jeder Zeile wieder von 0 anfangen oder nicht ("yes" bedeutet sie beginnen wieder bei 0). Wenn diese Zeile fehlt, dann sind die Zeitstempel absolut. Relative Zeitstempel erleichtern die Arbeit an einer TXT-Datei erheblich, da man, wenn man eine Pause einfügen möchte, nicht alle nachfolgenden Zeitstempel anpassen muss, sondern nur die bis zum Ende der Zeile. Wenn man nun selbst von absoluten auf relative Zeitstempel umstellen möchte, bedeutet das eine Menge Handarbeit. Wer weiß, vielleicht gibt es dazu ja bald ein Tool...
-
-#VIDEO:
-Dateiname der Video-Datei. Im Moment sind hier nur MPEG-1 Dateien möglich. Der Sound des Videos wird übrigens nicht abgespielt.
-#VIDEOGAP:
-Wie GAP für die MP3-Datei nur diesmal eben für das Video.
-
-#RESOLUTION:
-Das weiß ich noch nicht. Ich würde mich aber freuen, wenn es mir jemand mitteilen würde :-).
-#START:
-Gibt an, ab welcher Sekunde das Lied gespielt wird. Das ist praktisch, wenn man an einem Lied arbeitet und sich Änderungen anhören/anschauen möchte und keine Lust hat das ganze Lied von Anfang an zu hören.
-Außerdem kann man so z.B. ein langes Intro überspringen.
-*/

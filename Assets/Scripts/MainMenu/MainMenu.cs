@@ -98,8 +98,12 @@ public class MainMenu : MonoBehaviour
         string[] files = Directory.GetFiles(path);
         string[] text;
         bool isSong;
+        SongData currentSong;
         string songTitle = "";
-        string songAuthor = "";
+        string songArtist = "";
+        string songMusicPath = "";
+        float bpm = 0;
+        float gap = 0;
         string songVideoPath = "";
         foreach (string file in files)
             // check for song file
@@ -117,6 +121,7 @@ public class MainMenu : MonoBehaviour
                 }
                 if (isSong)
                 {
+                    songVideoPath = "";
                     // when file is song file extract data
                     foreach (string line in text)
                     {
@@ -126,14 +131,28 @@ public class MainMenu : MonoBehaviour
                         }
                         else if (line.StartsWith("#ARTIST:"))
                         {
-                            songAuthor = line.Substring(8);
+                            songArtist = line.Substring(8);
+                        }
+                        else if (line.StartsWith("#MP3:"))
+                        {
+                            songMusicPath = path + "\\" + line.Substring(5);
+                        }
+                        else if (line.StartsWith("#BPM:"))
+                        {
+                            bpm = float.Parse(line.Substring(5).Replace(".", ","));
+                        }
+                        else if (line.StartsWith("#GAP:"))
+                        {
+                            gap = int.Parse(line.Substring(5)) * 0.001f;
                         }
                         else if (line.StartsWith("#VIDEO:"))
                         {
                             songVideoPath = path + "\\" + line.Substring(7);
                         }
                     }
-                    songs.Add(new SongData(songTitle, songAuthor, file, songVideoPath));
+                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap);
+                    currentSong.pathToVideo = songVideoPath;
+                    songs.Add(currentSong);
                 }
             }
         // Get all directorys
@@ -162,8 +181,7 @@ public class MainMenu : MonoBehaviour
             // set Button function
             songButton.clicked += () =>
             {
-                GameState.choosenSongPath = ((SongData)songs[iCopy]).pathToSong;
-                GameState.choosenVideoPath = ((SongData)songs[iCopy]).pathToVideo;
+                GameState.currentSong = (SongData)songs[iCopy];
                 SceneManager.LoadScene("GameScene");
             };
         }

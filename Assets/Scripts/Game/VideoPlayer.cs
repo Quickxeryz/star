@@ -14,7 +14,7 @@ public class VideoPlayer : MonoBehaviour
         // Create VideoPlayer with clip and attach it to camera
         GameObject camera = GameObject.Find("MainCamera");
         videoPlayer = camera.AddComponent<UnityEngine.Video.VideoPlayer>();
-        videoPlayer.url = GameState.choosenVideoPath;
+        videoPlayer.url = GameState.currentSong.pathToVideo;
         videoPlayer.targetTexture = renderTexture;
         videoPlayer.Play();
         // Create new texture with video size
