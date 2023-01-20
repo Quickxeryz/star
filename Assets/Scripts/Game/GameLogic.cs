@@ -87,6 +87,8 @@ public class GameLogic : MonoBehaviour
     float pointsP2 = 0;
     float pointsP3 = 0;
     float pointsP4 = 0;
+    // check for first frame
+    bool firstFrame = true;
 
     void Start()
     {
@@ -473,6 +475,7 @@ public class GameLogic : MonoBehaviour
             GameState.player4.points = (int)System.Math.Ceiling(pointsP4);
             SceneManager.LoadScene("SongEnd");
         }
+
     }
 
     // checks if sung node hits reference node

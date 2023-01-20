@@ -6,12 +6,12 @@ using Classes;
 public class MicrophoneInput : MonoBehaviour
 {
     AudioSource audioSource;
-    const int sampleLength = 8192;
-    float[] samples = new float[sampleLength];
+    const int spectrumLength = 8192;
+    float[] spectrum = new float[spectrumLength];
     float maxSample;
     int maxSampleIndex;
-    const float firstHarmonic = (1f / 48000f * ((float)sampleLength)) * 2f;
-    float hz = 0;
+    const float firstHarmonic = (1f / 48000f * ((float)spectrumLength)) * 2f;
+    public float hz = 0;
     public Node node;
 
     // Start is called before the first frame update
@@ -25,30 +25,37 @@ public class MicrophoneInput : MonoBehaviour
             audioSource.loop = true;
             audioSource.Play();
         }
-
     }
 
     void Update()
     {
         if (Microphone.devices.Length > 0)
         {
-            //get audio spectrum
-            audioSource.GetSpectrumData(samples, 0, FFTWindow.Blackman);
-            //get max sampe value
-            maxSample = 0;
-            maxSampleIndex = 0;
-            for (int i = 0; i < sampleLength; i++)
+            audioSource.GetSpectrumData(spectrum, 0, FFTWindow.BlackmanHarris);
+            // get maximum index
+            float maxValue = 0;
+            int maxValueIndex = 0;
+            for (int i = 0; i < spectrumLength; i++)
             {
-                if (maxSample < samples[i])
+                if (maxValue < spectrum[i])
                 {
-                    maxSample = samples[i];
-                    maxSampleIndex = i;
+                    maxValue = spectrum[i];
+                    maxValueIndex = i;
                 }
             }
-            //max value to hz
-            hz = (AudioSettings.outputSampleRate / sampleLength) * maxSampleIndex + (AudioSettings.outputSampleRate / sampleLength) / 2;//TEST (((float)maxSampleIndex) / ((float)firstHarmonic));
+            float frequenzNumber = maxValueIndex;
+            float leftNeighbor;
+            float rightNeighbor;
+            // interpolate frequenz number
+            if (maxValueIndex > 0 && maxValueIndex < spectrumLength - 1)
+            {
+                leftNeighbor = spectrum[maxValueIndex - 1] / spectrum[maxValueIndex];
+                rightNeighbor = spectrum[maxValueIndex + 1] / spectrum[maxValueIndex];
+                frequenzNumber += 0.5f * (rightNeighbor * rightNeighbor - leftNeighbor * leftNeighbor);
+            }
+            hz = frequenzNumber * (AudioSettings.outputSampleRate / 2) / spectrumLength;
             //hz to node
-            if (maxSample < 0.001) //TEST if (hz == 0)
+            if (hz == 0)
             {
                 node = Node.None;
             }
