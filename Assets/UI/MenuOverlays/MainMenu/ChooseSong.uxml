@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" style="position: absolute; left: 1%; right: auto; bottom: 1%; width: 10%; height: 10%;" />
     <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" style="position: absolute; left: auto; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
     <ui:VisualElement name="SongListContainer" style="position: absolute; left: 1%; top: 10%; width: 98%; height: 75%;">
         <ui:Button text="Button" display-tooltip-when-elided="true" name="1" />

@@ -1,4 +1,3 @@
-using System.Collections;
 using System;
 
 namespace Classes
@@ -122,6 +121,49 @@ namespace Classes
             this.pathToMusic = pathToMusic;
             this.bpm = bpm;
             this.gap = gap;
+        }
+    }
+
+    public class SongPlayer
+    {
+        public UnityEngine.AudioSource audioSource;
+        public UnityEngine.Video.VideoPlayer videoPlayer;
+        public bool currentPlayerIsAudioSource;
+
+        public SongPlayer(UnityEngine.AudioSource audioSource)
+        {
+            this.audioSource = audioSource;
+            currentPlayerIsAudioSource = true;
+        }
+
+        public SongPlayer(UnityEngine.Video.VideoPlayer videoPlayer)
+        {
+            this.videoPlayer = videoPlayer;
+            currentPlayerIsAudioSource = false;
+        }
+
+        public bool isPlaying()
+        {
+            if (currentPlayerIsAudioSource)
+            {
+                return audioSource.isPlaying;
+            }
+            else
+            {
+                return videoPlayer.isPlaying;
+            }
+        }
+
+        public double getTime()
+        {
+            if (currentPlayerIsAudioSource)
+            {
+                return audioSource.time;
+            }
+            else
+            {
+                return videoPlayer.time;
+            }
         }
     }
 }

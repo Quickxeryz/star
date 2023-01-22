@@ -3,7 +3,7 @@
 ### Must have arguments
 - #TITLE: string
 - #ARTIST: string
-- #MP3: relativePath -> no functionality
+- #MP3: relativePath
 - #BPM: miliseconds
 - #GAP: miliseconds
 
@@ -43,7 +43,7 @@
 ### Argument definition
 - #TITLE: name of the song
 - #ARTIST: artist of the song
-- #MP3: relative path to the audio file of the song or to the same mp4 as video (#VIDEOGAP also skips audio in this case)
+- #MP3: relative path to the mp3-file of the song or to the same mp4 as video (#VIDEOGAP also skips audio and text in this case)
 - #BPM: amount of quarter notes in a minute
 - #GAP: amount of milliseconds the first beat has delay 
 - #START: delay of lyrics, sound and video in seconds (for song testing)

@@ -23,7 +23,6 @@ public class MainMenu : MonoBehaviour
         Button mainMenuOptions = mainMenu.Q<Button>("Options");
         // choose song
         chooseSong = root.Q<TemplateContainer>("ChooseSong");
-        Button chooseSongPlay = chooseSong.Q<Button>("Play");
         Button chooseSongBack = chooseSong.Q<Button>("Back");
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
@@ -43,10 +42,6 @@ public class MainMenu : MonoBehaviour
             options.visible = true;
         };
         // choose song
-        chooseSongPlay.clicked += () =>
-        {
-            SceneManager.LoadScene("GameScene");
-        };
         chooseSongBack.clicked += () =>
         {
             mainMenu.visible = true;
