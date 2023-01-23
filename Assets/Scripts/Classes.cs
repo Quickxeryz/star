@@ -166,4 +166,16 @@ namespace Classes
             }
         }
     }
+
+    public class Settings
+    {
+        public string absolutePathToSongs;
+        public float microphoneDelayInSeconds;
+
+        public Settings(string path, float delayInSeconds)
+        {
+            absolutePathToSongs = path;
+            microphoneDelayInSeconds = delayInSeconds;
+        }
+    }
 }

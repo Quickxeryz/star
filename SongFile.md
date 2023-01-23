@@ -59,24 +59,42 @@
 - #RESOLUTION:
 - #AUTHOR: name from the writer of this file
 
+## Song Lines
+Table like structure of the song all times are given in beats per minute
+- First column
+- - :: Regular syllable which gives normal points
+- - \*: Golden syllable wich gives doublem points
+- - F: Freestyle syllable which gives 0 points
+- - \-: Line break which tells when the old line should disappear and the new line appear
+- Second column 
+- - syllable: appearing time of syllable
+- - line break: beat in which the line disappears
+- Third column
+- - syllable: length of the syllable
+- - line break: optional, the beat the next line appears
+- Fourth col
+- - syllable: pitch (0 = c1 (negative possible))
+- - line break: nothing
+- Fifth col
+- - syllable: the syllable
+- - line break: nothing
+
+### Example song lines
+F 13 6 0 This\
+F 19 13 1  is\
+F 32 8 5  Free\
+F 40 26 3 style\
+\- 68\
+: 70 5 3 No\
+: 77 3 8 ~\
+: 82 5 12 rmal\
+: 90 8 3  Node\
+\- 100\
+\* 102 2 4 Doub\
+\* 106 6 6 le\
+\* 115 7 12 Points\
+
 # Formulas
 ## startTime of first beat in file
 absolute: startTime = firstBeat / BPM / 4 * 60 sec + GAP\
 relative: startTime = GAP
-
------------------------------------------------------------
-First col
-: Regular note
-* Golden note
-F Freestyle syllable
-– Line break (separates lyrics into suitable lines).
-Line breaks are different to other types of row, in that they consist of a hyphen ( – ) and either one or two numbers. If it contains one number, it determines the beat at which the previous line will disappear. For example, in the first line of the song above, the ‘Teenage dreams’ line disappears as soon as it’s been sung, on beat 12. If the line break contains 2 numbers, the first number determines when the first line disappears, and the second determines when the next line will appear. There is no example of this type of line above, as it’s a fast moving song with no proper breaks from singing – line breaks containing two numbers are generally for songs with a large instrumental break in them. Two numbers aren’t at all necessary, however, as the game automatically puts the next line up when it is approaching – it’s only if you want to control when it happens that you need to worry about the ‘second’ number.
-Second col
-appearing of syllable
-Third col
-length of syllable
-Fourth col
-pitch (0 = c1 (negative possible))
-Fifth col
-text 
-Calculatiuon of first beat: starttime = first col / BPM / 4 * 60 Sekunden + GAP.

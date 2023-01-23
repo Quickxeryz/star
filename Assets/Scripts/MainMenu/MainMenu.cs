@@ -15,12 +15,17 @@ public class MainMenu : MonoBehaviour
 
     void OnEnable()
     {
+        // load settings
+        string json = System.IO.File.ReadAllText("config.json");
+        GameState.settings = JsonUtility.FromJson<Settings>(json);
+        // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all Buttons
         // main menu 
         TemplateContainer mainMenu = root.Q<TemplateContainer>("MainMenu");
         Button mainMenuPlay = mainMenu.Q<Button>("Play");
         Button mainMenuOptions = mainMenu.Q<Button>("Options");
+        Button mainMenuExit = mainMenu.Q<Button>("Exit");
         // choose song
         chooseSong = root.Q<TemplateContainer>("ChooseSong");
         Button chooseSongBack = chooseSong.Q<Button>("Back");
@@ -41,11 +46,20 @@ public class MainMenu : MonoBehaviour
             mainMenu.visible = false;
             options.visible = true;
         };
+        mainMenuExit.clicked += () =>
+        {
+            Application.Quit();
+        };
         // choose song
         chooseSongBack.clicked += () =>
         {
             mainMenu.visible = true;
             chooseSong.visible = false;
+            // clear song data elements
+            for (int i = 1; i <= 10; i++)
+            {
+                chooseSong.Q<Button>(i.ToString()).visible = false;
+            }
             inChooseSong = false;
         };
         // options
@@ -56,9 +70,9 @@ public class MainMenu : MonoBehaviour
         };
         // Loading song list
         songs = new ArrayList();
-        if (Directory.Exists(GameState.songFolderPath))
+        if (Directory.Exists(GameState.settings.absolutePathToSongs))
         {
-            searchDirectory(GameState.songFolderPath);
+            searchDirectory(GameState.settings.absolutePathToSongs);
         }
     }
 
@@ -153,7 +167,9 @@ public class MainMenu : MonoBehaviour
         // Get all directorys
         files = Directory.GetDirectories(path);
         foreach (string dir in files)
+        {
             searchDirectory(dir);
+        }
     }
 
     void updateSongList()

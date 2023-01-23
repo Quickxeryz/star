@@ -310,7 +310,7 @@ public class GameLogic : MonoBehaviour
         {
             if (songPlayer.isPlaying() || songPlayer.getTime() == 0)
             {
-                double currentTime = songPlayer.getTime() - GameState.micDelay - GameState.currentSong.gap;
+                double currentTime = songPlayer.getTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
                 int currentBeat = (int)System.Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm - GameState.currentSong.gap);
                 // updating nodes, songtext and calculating score

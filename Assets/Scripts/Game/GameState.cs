@@ -3,12 +3,9 @@ using Classes;
 
 public class GameState : MonoBehaviour
 {
-    // path with / or \\
-    public static string songFolderPath = "C:\\Users\\Maurice\\Documents\\GitHub\\star\\Assets\\TestAssets";
+    public static Settings settings;
     public static SongData currentSong;
     public static Difficulty difficulty = Difficulty.Easy;
-    // mic input delay in sec
-    public static float micDelay = 0.3f;
     public static int amountPlayer = 1;
     public static Player player1 = new Player("P1");
     public static Player player2 = new Player("P2");
