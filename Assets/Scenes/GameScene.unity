@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 438596772}
   - component: {fileID: 438596771}
+  - component: {fileID: 438596773}
   m_Layer: 5
   m_Name: UIOnePlayer
   m_TagString: Untagged
@@ -171,6 +172,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &438596773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438596770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34facb3127bb8394f9d77f8887d96dc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  micInP1: {fileID: 1521934683}
+  micInP2: {fileID: 1521934683}
+  micInP3: {fileID: 1521934683}
+  micInP4: {fileID: 1521934683}
+  video: {fileID: 1521934687}
 --- !u!1 &792196575
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,6 +343,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 355f9540291892b4898d5fd7733f67a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hz: 0
+  node: 0
 --- !u!82 &1521934684
 AudioSource:
   m_ObjectHideFlags: 0
@@ -468,7 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc6ba9fef489184b85f7f1c7679493c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoClip: {fileID: 32900000, guid: 37254ab47c610b54999a4a6bab6f6c01, type: 3}
+  videoPlayer: {fileID: 0}
 --- !u!1 &1721493379
 GameObject:
   m_ObjectHideFlags: 0
