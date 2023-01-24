@@ -32,6 +32,8 @@ public class MainMenu : MonoBehaviour
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
         Button optionsBack = options.Q<Button>("Back");
+        TextField optionsPath = options.Q<TextField>("Path");
+        TextField optionsDelay = options.Q<TextField>("Delay");
         // set functionality of all buttons
         // main menu
         mainMenuPlay.clicked += () =>
@@ -45,6 +47,9 @@ public class MainMenu : MonoBehaviour
         {
             mainMenu.visible = false;
             options.visible = true;
+            // load config
+            optionsPath.value = GameState.settings.absolutePathToSongs;
+            optionsDelay.value = GameState.settings.microphoneDelayInSeconds.ToString();
         };
         mainMenuExit.clicked += () =>
         {
@@ -67,6 +72,12 @@ public class MainMenu : MonoBehaviour
         {
             mainMenu.visible = true;
             options.visible = false;
+            // save config
+            Settings settings = new Settings(optionsPath.value, float.Parse(optionsDelay.value.Replace(".", ",")));
+            json = JsonUtility.ToJson(settings);
+            File.WriteAllText("config.json", json);
+            // update setting
+            GameState.settings = settings;
         };
         // Loading song list
         songs = new ArrayList();
