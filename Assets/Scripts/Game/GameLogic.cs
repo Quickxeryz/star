@@ -43,18 +43,12 @@ public class GameLogic : MonoBehaviour
     bool notLoadedMP3 = true;
     // Songfile data extraction
     ArrayList songData = new ArrayList(); // Todo: writing own class with better performance
-    // syllables data
+                                          // syllables data
     ArrayList syllablesLine1 = new ArrayList();
     ArrayList syllablesLine2 = new ArrayList();
     // node line data
-    ArrayList nodesLine1P1 = new ArrayList();
-    ArrayList nodesLine2P1 = new ArrayList();
-    ArrayList nodesLine1P2 = new ArrayList();
-    ArrayList nodesLine2P2 = new ArrayList();
-    ArrayList nodesLine1P3 = new ArrayList();
-    ArrayList nodesLine2P3 = new ArrayList();
-    ArrayList nodesLine1P4 = new ArrayList();
-    ArrayList nodesLine2P4 = new ArrayList();
+    ArrayList[] nodesLines1 = new ArrayList[GameState.amountPlayer];
+    ArrayList[] nodesLines2 = new ArrayList[GameState.amountPlayer];
     // songData index pointer
     int songDataCurrentIndex = 0;
     int songDataNewLineIndex = 0;
@@ -63,17 +57,14 @@ public class GameLogic : MonoBehaviour
     int startBeatLine2 = 0;
     int endBeatLine2 = 0;
     // UI pointer
-    Label textLine1;
-    Label textLine2;
-    VisualElement nodeP1;
-    VisualElement nodeP2;
-    VisualElement nodeP3;
-    VisualElement nodeP4;
-    VisualElement nodeBoxP1;
-    Label pointsTextP1;
-    Label pointsTextP2;
-    Label pointsTextP3;
-    Label pointsTextP4;
+    Label textLine1Bottom;
+    Label textLine2Bottom;
+    Label textLine1Top;
+    Label textLine2Top;
+
+    VisualElement[] nodeArrows = new VisualElement[GameState.amountPlayer];
+    VisualElement[] nodeBoxes = new VisualElement[GameState.amountPlayer];
+    Label[] pointsTexts = new Label[GameState.amountPlayer];
     // half size of node arrow and blocks texture in %
     const int nodeHeightOffset = 5;
     // difference to next node in node texture in pixel
@@ -88,12 +79,7 @@ public class GameLogic : MonoBehaviour
     // score calculating variables 
     float pointsPerBeat;
     int lastBeat;
-    float pointsP1 = 0;
-    float pointsP2 = 0;
-    float pointsP3 = 0;
-    float pointsP4 = 0;
-    // check for first frame
-    bool firstFrame = true;
+    float[] points = new float[GameState.amountPlayer];
 
     void Start()
     {
@@ -150,18 +136,64 @@ public class GameLogic : MonoBehaviour
                     break;
             }
         }
+        // set ui screen
+        VisualElement r = GetComponent<UIDocument>().rootVisualElement;
+        TemplateContainer root = new TemplateContainer();
+        switch (GameState.amountPlayer)
+        {
+            case 1:
+                root = r.Q<TemplateContainer>("GameViewP1");
+                root.visible = true;
+                break;
+            case 2:
+                root = r.Q<TemplateContainer>("GameViewP2");
+                root.visible = true;
+                break;
+            case 3:
+                root = r.Q<TemplateContainer>("GameViewP3");
+                root.visible = true;
+                break;
+            case 4:
+                root = r.Q<TemplateContainer>("GameViewP4");
+                root.visible = true;
+                break;
+            case 5:
+                root = r.Q<TemplateContainer>("GameViewP5");
+                root.visible = true;
+                break;
+            case 6:
+                root = r.Q<TemplateContainer>("GameViewP6");
+                root.visible = true;
+                break;
+        }
         // get UI pointer
-        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
-        textLine1 = root.Q<Label>("SongLine1");
-        textLine2 = root.Q<Label>("SongLine2");
+        TemplateContainer currentContainer = root.Q<TemplateContainer>("SongLinesBottom");
+        textLine1Bottom = currentContainer.Q<Label>("SongLine1");
+        textLine2Bottom = currentContainer.Q<Label>("SongLine2");
+        if (GameState.amountPlayer > 1)
+        {
+            currentContainer = root.Q<TemplateContainer>("SongLinesTop");
+            textLine1Top = currentContainer.Q<Label>("SongLine1");
+            textLine2Top = currentContainer.Q<Label>("SongLine2");
+        }
         // get ui player data pointer 
-        VisualElement rootP1 = root.Q<VisualElement>("PlayerNodeBoxP1");
-        nodeBoxP1 = rootP1.Q<VisualElement>("NodeBox");
-        pointsTextP1 = rootP1.Q<Label>("Points");
+        VisualElement[] roots = new VisualElement[GameState.amountPlayer];
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            roots[i] = root.Q<VisualElement>("PlayerNodeBoxP" + (i + 1).ToString());
+            nodeBoxes[i] = roots[i].Q<VisualElement>("NodeBox");
+            pointsTexts[i] = roots[i].Q<Label>("Points");
+        }
         // setting player name
-        rootP1.Q<Label>("Name").text = GameState.player1.name;
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            roots[i].Q<Label>("Name").text = GameState.player[i].name;
+        }
         // Getting player node arrow
-        nodeP1 = rootP1.Q<VisualElement>("Node");
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            nodeArrows[i] = roots[i].Q<VisualElement>("Node");
+        }
         //Getting first song lines
         int textCounter = 1;
         string text = "";
@@ -201,13 +233,13 @@ public class GameLogic : MonoBehaviour
             {
                 if (textCounter == 1)
                 {
-                    textLine1.text = text;
+                    textLine1Bottom.text = text;
                     // Setting beatEnd for node shower
                     startBeatLine2 = (int)songData[songDataNewLineIndex];
                 }
                 else
                 {
-                    textLine2.text = text;
+                    textLine2Bottom.text = text;
                     // Setting beatEnd for node shower
                     beatEnd2 = (int)songData[songDataNewLineIndex];
                 }
@@ -216,54 +248,76 @@ public class GameLogic : MonoBehaviour
             }
             songDataNewLineIndex++;
         }
+        if (GameState.amountPlayer > 1)
+        {
+            textLine1Top.text = textLine1Bottom.text;
+            textLine2Top.text = textLine2Bottom.text;
+        }
         // setting nodes of first line
-        int i = 0;
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            nodesLines1[i] = new ArrayList();
+        }
+        int index = 0;
         beatSumLine1 = startBeatLine2;
         float currentPercent = 0f;
-        while (songData[i].GetType() == typeof(SyllableData))
+        while (songData[index].GetType() == typeof(SyllableData))
         {
-            sData = (SyllableData)songData[i];
+            sData = (SyllableData)songData[index];
             currentPercent = (sData.appearing * 100) / beatSumLine1;
-            nodeBox = new VisualElement();
-            nodeBox.AddToClassList("nodeBox");
-            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-            // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
-            nodeBox.style.left = Length.Percent(currentPercent);
-            nodeBox.style.width = Length.Percent(((sData.appearing + sData.length) * 100) / beatSumLine1 - currentPercent);
-            nodesLine1P1.Add(nodeBox);
-            i++;
+            for (int i = 0; i < GameState.amountPlayer; i++)
+            {
+                nodeBox = new VisualElement();
+                nodeBox.AddToClassList("nodeBox");
+                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
+                nodeBox.style.left = Length.Percent(currentPercent);
+                nodeBox.style.width = Length.Percent(((sData.appearing + sData.length) * 100) / beatSumLine1 - currentPercent);
+                nodesLines1[i].Add(nodeBox);
+            }
+            index++;
         }
-        foreach (VisualElement element in nodesLine1P1)
+        for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            nodeBoxP1.Add(element);
+            foreach (VisualElement element in nodesLines1[i])
+            {
+                nodeBoxes[i].Add(element);
+            }
         }
         // setting nodes of second line
-        beatSumLine2 = beatEnd2 - beatSumLine1;
-        i++;
-        while (songData[i].GetType() == typeof(SyllableData))
+        for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            sData = (SyllableData)songData[i];
+            nodesLines2[i] = new ArrayList();
+        }
+        beatSumLine2 = beatEnd2 - beatSumLine1;
+        index++;
+        while (songData[index].GetType() == typeof(SyllableData))
+        {
+            sData = (SyllableData)songData[index];
             currentPercent = ((sData.appearing - startBeatLine2) * 100) / beatSumLine2;
-            nodeBox = new VisualElement();
-            nodeBox.AddToClassList("nodeBox");
-            // node image location = (pitch in image * 100)/image height - node block offset
-            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-            // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
-            nodeBox.style.left = Length.Percent(currentPercent);
-            nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - startBeatLine2) * 100) / beatSumLine2 - currentPercent);
-            nodesLine2P1.Add(nodeBox);
-            i++;
+            for (int i = 0; i < GameState.amountPlayer; i++)
+            {
+                nodeBox = new VisualElement();
+                nodeBox.AddToClassList("nodeBox");
+                // node image location = (pitch in image * 100)/image height - node block offset
+                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
+                nodeBox.style.left = Length.Percent(currentPercent);
+                nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - startBeatLine2) * 100) / beatSumLine2 - currentPercent);
+                nodesLines2[i].Add(nodeBox);
+            }
+            index++;
         }
         endBeatLine2 = beatEnd2;
         // calculating points per beat
         int beatSum = 0;
         SyllableData currentSyllable;
         // getting sum of beats (golden notes double)
-        for (i = 0; i < songData.Count; i++)
+        for (index = 0; index < songData.Count; index++)
         {
-            if (songData[i].GetType() == typeof(SyllableData))
+            if (songData[index].GetType() == typeof(SyllableData))
             {
-                currentSyllable = (SyllableData)songData[i];
+                currentSyllable = (SyllableData)songData[index];
                 // handling different nodes 
                 switch (currentSyllable.kind)
                 {
@@ -308,7 +362,7 @@ public class GameLogic : MonoBehaviour
         }
         else
         {
-            if (songPlayer.isPlaying() || songPlayer.getTime() == 0)
+            if (songPlayer.isPlaying())
             {
                 double currentTime = songPlayer.getTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
@@ -358,7 +412,11 @@ public class GameLogic : MonoBehaviour
                                 }
                             }
                         }
-                        textLine1.text = text;
+                        textLine1Bottom.text = text;
+                        if (GameState.amountPlayer > 1)
+                        {
+                            textLine1Top.text = text;
+                        }
                         // Time in sec = Beatnumber / BPM / 4 * 60 sec
                         if (sData.appearing / GameState.currentSong.bpm / 4 * 60 <= currentTime && (sData.appearing + sData.length) / GameState.currentSong.bpm / 4 * 60 >= currentTime)
                         {
@@ -378,11 +436,11 @@ public class GameLogic : MonoBehaviour
                                     switch (sData.kind)
                                     {
                                         case Kind.Normal:
-                                            pointsP1 += pointsPerBeat;
+                                            points[0] += pointsPerBeat;
                                             nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0, 0, 1, 1));
                                             break;
                                         case Kind.Golden:
-                                            pointsP1 += pointsPerBeat * 2;
+                                            points[0] += pointsPerBeat * 2;
                                             nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(1, 0, 1, 1));
                                             break;
                                         case Kind.Free:
@@ -390,8 +448,8 @@ public class GameLogic : MonoBehaviour
                                             break;
                                     }
                                     // updating ui elements
-                                    pointsTextP1.text = ((int)System.Math.Ceiling(pointsP1)).ToString();
-                                    nodeBoxP1.Add(nodeBox);
+                                    pointsTexts[0].text = ((int)System.Math.Ceiling(points[0])).ToString();
+                                    nodeBoxes[0].Add(nodeBox);
                                     // set actual beat as handled
                                     lastBeat = currentBeat;
                                 }
@@ -408,19 +466,35 @@ public class GameLogic : MonoBehaviour
                     else
                     {
                         // Setting next line data to current line data
-                        textLine1.text = textLine2.text;
+                        textLine1Bottom.text = textLine2Bottom.text;
+                        if (GameState.amountPlayer > 1)
+                        {
+                            textLine1Top.text = textLine2Top.text;
+                        }
                         syllablesLine1 = (ArrayList)syllablesLine2;
-                        nodesLine1P1 = (ArrayList)nodesLine2P1;
+                        for (int i = 0; i < GameState.amountPlayer; i++)
+                        {
+                            nodesLines1[i] = (ArrayList)nodesLines2[i];
+                        }
                         beatSumLine1 = beatSumLine2;
                         startBeatLine1 = startBeatLine2;
-                        nodeBoxP1.Clear();
-                        foreach (VisualElement element in nodesLine1P1)
+                        for (int i = 0; i < GameState.amountPlayer; i++)
                         {
-                            nodeBoxP1.Add(element);
+                            nodeBoxes[i].Clear();
+                        }
+                        for (int i = 0; i < GameState.amountPlayer; i++)
+                        {
+                            foreach (VisualElement element in nodesLines1[i])
+                            {
+                                nodeBoxes[i].Add(element);
+                            }
                         }
                         // Calculating next line data
                         syllablesLine2 = new ArrayList();
-                        nodesLine2P1 = new ArrayList();
+                        for (int i = 0; i < GameState.amountPlayer; i++)
+                        {
+                            nodesLines2[i] = new ArrayList();
+                        }
                         int nodesNewLineIndex = songDataNewLineIndex;
                         int beatEnd = 0;
                         if (songDataNewLineIndex < songData.Count)
@@ -445,7 +519,11 @@ public class GameLogic : MonoBehaviour
                                 syllablesLine2.Add(sData);
                                 songDataNewLineIndex++;
                             }
-                            textLine2.text = text;
+                            textLine2Bottom.text = text;
+                            if (GameState.amountPlayer > 1)
+                            {
+                                textLine2Top.text = text;
+                            }
                             // calculating node line data
                             if (songDataNewLineIndex < songData.Count)
                             {
@@ -461,12 +539,15 @@ public class GameLogic : MonoBehaviour
                             {
                                 sData = (SyllableData)songData[nodesNewLineIndex];
                                 currentPercent = ((sData.appearing - endBeatLine2) * 100) / beatSumLine2;
-                                nodeBox = new VisualElement();
-                                nodeBox.AddToClassList("nodeBox");
-                                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
-                                nodeBox.style.left = Length.Percent(currentPercent);
-                                nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - endBeatLine2) * 100) / beatSumLine2 - currentPercent);
-                                nodesLine2P1.Add(nodeBox);
+                                for (int i = 0; i < GameState.amountPlayer; i++)
+                                {
+                                    nodeBox = new VisualElement();
+                                    nodeBox.AddToClassList("nodeBox");
+                                    nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                    nodeBox.style.left = Length.Percent(currentPercent);
+                                    nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - endBeatLine2) * 100) / beatSumLine2 - currentPercent);
+                                    nodesLines2[i].Add(nodeBox);
+                                }
                                 nodesNewLineIndex++;
                             }
                             endBeatLine2 = beatEnd;
@@ -474,35 +555,45 @@ public class GameLogic : MonoBehaviour
                         }
                         else
                         {
-                            textLine2.text = "";
+                            textLine2Bottom.text = "";
+                            if (GameState.amountPlayer > 1)
+                            {
+                                textLine2Top.text = "";
+                            }
                         }
                         startBeatLine1 = (int)songData[songDataCurrentIndex];
                         songDataCurrentIndex++;
                     }
-                    // Updating player node arro:
-                    nodeP1.style.left = Length.Percent(((currentBeat + GameState.currentSong.gap - startBeatLine1) * 100) / beatSumLine1 - nodeArrowWidth);
+                    // Updating player node arrow:
+                    for (int i = 0; i < GameState.amountPlayer; i++)
+                    {
+                        nodeArrows[i].style.left = Length.Percent(((currentBeat + GameState.currentSong.gap - startBeatLine1) * 100) / beatSumLine1 - nodeArrowWidth);
+                    }
                 }
                 else
                 {
                     // Updating player node arrow
-                    nodeP1.style.left = 0;
+                    for (int i = 0; i < GameState.amountPlayer; i++)
+                    {
+                        nodeArrows[i].style.left = 0;
+                    }
                 }
                 // Updating player node arrow
                 if (micInP1.node != Node.None)
                 {
-                    nodeP1.style.top = Length.Percent(((nodeTextureDistance * (int)micInP1.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                    nodeArrows[0].style.top = Length.Percent(((nodeTextureDistance * (int)micInP1.node) * 100) / nodeTextureHeight - nodeHeightOffset);
                 }
                 else
                 {
-                    nodeP1.style.top = Length.Percent(((nodeTextureDistance * 13) * 100) / nodeTextureHeight - nodeHeightOffset);
+                    nodeArrows[0].style.top = Length.Percent(((nodeTextureDistance * 13) * 100) / nodeTextureHeight - nodeHeightOffset);
                 }
             }
             else
             {
-                GameState.player1.points = (int)System.Math.Ceiling(pointsP1);
-                GameState.player2.points = (int)System.Math.Ceiling(pointsP2);
-                GameState.player3.points = (int)System.Math.Ceiling(pointsP3);
-                GameState.player4.points = (int)System.Math.Ceiling(pointsP4);
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    GameState.player[i].points = (int)System.Math.Ceiling(points[i]);
+                }
                 SceneManager.LoadScene("SongEnd");
             }
         }

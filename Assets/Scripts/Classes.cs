@@ -84,7 +84,7 @@ namespace Classes
     public class Player : IComparable
     {
         public string name;
-        public int points;
+        public int points = 0;
 
         public Player(string name)
         {

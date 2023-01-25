@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="GameViewP1" src="project://database/Assets/UI/GameOverlays/GameViewP1.uxml?fileID=9197481963319205126&amp;guid=ceb1521686128954e9dfd1f3c09651d2&amp;type=3#GameViewP1" />
+    <ui:Template name="GameViewP2" src="project://database/Assets/UI/GameOverlays/GameViewP2.uxml?fileID=9197481963319205126&amp;guid=d9c108e5332dc294ebd8e25e14cbd5d6&amp;type=3#GameViewP2" />
+    <ui:Template name="GameViewP3" src="project://database/Assets/UI/GameOverlays/GameViewP3.uxml?fileID=9197481963319205126&amp;guid=aba9e65de89e46d48b6111d3b5d0d675&amp;type=3#GameViewP3" />
+    <ui:Template name="GameViewP4" src="project://database/Assets/UI/GameOverlays/GameViewP4.uxml?fileID=9197481963319205126&amp;guid=0af50b589ca66a649a1e141ffa23e215&amp;type=3#GameViewP4" />
+    <ui:Template name="GameViewP5" src="project://database/Assets/UI/GameOverlays/GameViewP5.uxml?fileID=9197481963319205126&amp;guid=95e124f4e80348a4da6c77909010380b&amp;type=3#GameViewP5" />
+    <ui:Template name="GameViewP6" src="project://database/Assets/UI/GameOverlays/GameViewP6.uxml?fileID=9197481963319205126&amp;guid=c8cc2be8f7ed29b40863d0be70327875&amp;type=3#GameViewP6" />
+    <ui:Instance template="GameViewP1" name="GameViewP1" style="width: 100%; height: 100%; visibility: hidden; position: absolute;" />
+    <ui:Instance template="GameViewP2" name="GameViewP2" style="width: 100%; height: 100%; position: absolute; visibility: hidden;" />
+    <ui:Instance template="GameViewP3" name="GameViewP3" style="width: 100%; height: 100%; visibility: hidden;" />
+    <ui:Instance template="GameViewP4" name="GameViewP4" style="width: 100%; height: 100%; position: absolute; visibility: hidden;" />
+    <ui:Instance template="GameViewP5" name="GameViewP5" style="width: 100%; height: 100%; position: absolute; visibility: hidden;" />
+    <ui:Instance template="GameViewP6" name="GameViewP6" style="width: 100%; height: 100%; position: absolute; visibility: hidden;" />
+</ui:UXML>
