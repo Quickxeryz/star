@@ -5,8 +5,8 @@
     <ui:Instance template="SongLines" name="SongLinesBottom" style="height: 20%; position: absolute; width: 98%; left: 1%; bottom: 1%;" />
     <ui:Instance template="SongLines" name="SongLinesTop" style="height: 20%; position: absolute; width: 98%; left: 1%; bottom: auto; top: 1%;" />
     <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP1" style="height: 10%; position: absolute; left: 1%; top: 22%; width: 48%;" />
-    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP2" style="height: 10%; position: absolute; left: 1%; top: 40%; width: 48%;" />
-    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP3" style="height: 10%; position: absolute; left: 1%; top: 59%; width: 98%;" />
-    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP4" style="height: 10%; position: absolute; left: 51%; top: 22%; width: 48%;" />
-    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP5" style="height: 10%; position: absolute; left: 51%; top: 40%; width: 48%;" />
+    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP3" style="height: 10%; position: absolute; left: 1%; top: 40%; width: 98%;" />
+    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP4" style="height: 10%; position: absolute; left: 1%; top: 59%; width: 48%;" />
+    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP5" style="height: 10%; position: absolute; left: 51%; top: 59%; width: 48%;" />
+    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP2" style="height: 10%; position: absolute; left: 51%; top: 22%; width: 48%;" />
 </ui:UXML>

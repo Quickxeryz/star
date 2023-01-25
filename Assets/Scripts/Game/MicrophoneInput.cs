@@ -2,28 +2,41 @@ using UnityEngine;
 using System;
 using Classes;
 
-[RequireComponent(typeof(AudioSource))]
 public class MicrophoneInput : MonoBehaviour
 {
-    AudioSource audioSource;
+    AudioSource[] audioSources = new AudioSource[GameState.amountPlayer];
     const int spectrumLength = 8192;
     float[] spectrum = new float[spectrumLength];
     float maxSample;
     int maxSampleIndex;
-    const float firstHarmonic = (1f / 48000f * ((float)spectrumLength)) * 2f;
-    public float hz = 0;
-    public Node node;
+    float hz = 0;
+    public Node[] nodes;
 
-    // Start is called before the first frame update
     void Start()
     {
+        // init nodes
+        nodes = new Node[GameState.amountPlayer];
+        // set microphones
         if (Microphone.devices.Length > 0)
         {
-            audioSource = GetComponent<AudioSource>();
-            string selectedDevice = Microphone.devices[0];
-            audioSource.clip = Microphone.Start(selectedDevice, true, 1, AudioSettings.outputSampleRate);
-            audioSource.loop = true;
-            audioSource.Play();
+            GameObject audioSorceObject;
+            string selectedDevice;
+            for (int i = 0; i < GameState.amountPlayer; i++)
+            {
+                if (i < Microphone.devices.Length)
+                {
+                    selectedDevice = Microphone.devices[i];
+                    audioSorceObject = new GameObject("AudioSource" + (i + 1).ToString());
+                    audioSources[i] = audioSorceObject.AddComponent<AudioSource>();
+                    audioSources[i].clip = Microphone.Start(selectedDevice, true, 1, AudioSettings.outputSampleRate);
+                    audioSources[i].loop = true;
+                    audioSources[i].Play();
+                }
+                else
+                {
+                    audioSources[i] = audioSources[0];
+                }
+            }
         }
     }
 
@@ -31,38 +44,45 @@ public class MicrophoneInput : MonoBehaviour
     {
         if (Microphone.devices.Length > 0)
         {
-            audioSource.GetSpectrumData(spectrum, 0, FFTWindow.BlackmanHarris);
-            // get maximum index
-            float maxValue = 0;
-            int maxValueIndex = 0;
-            for (int i = 0; i < spectrumLength; i++)
-            {
-                if (maxValue < spectrum[i])
-                {
-                    maxValue = spectrum[i];
-                    maxValueIndex = i;
-                }
-            }
-            float frequenzNumber = maxValueIndex;
+            float maxValue;
+            int maxValueIndex;
+            float frequenzNumber;
             float leftNeighbor;
             float rightNeighbor;
-            // interpolate frequenz number
-            if (maxValueIndex > 0 && maxValueIndex < spectrumLength - 1)
+            int nodeNumber;
+            for (int i = 0; i < GameState.amountPlayer; i++)
             {
-                leftNeighbor = spectrum[maxValueIndex - 1] / spectrum[maxValueIndex];
-                rightNeighbor = spectrum[maxValueIndex + 1] / spectrum[maxValueIndex];
-                frequenzNumber += 0.5f * (rightNeighbor * rightNeighbor - leftNeighbor * leftNeighbor);
-            }
-            hz = frequenzNumber * (AudioSettings.outputSampleRate / 2) / spectrumLength;
-            //hz to node
-            if (hz == 0)
-            {
-                node = Node.None;
-            }
-            else
-            {
-                int nodeNumber = (int)Math.Round(Math.Log(hz / 440, 2) * 12 + 49);
-                node = NodeFunctions.getNode(nodeNumber - 4);
+                audioSources[i].GetSpectrumData(spectrum, 0, FFTWindow.BlackmanHarris);
+                // get maximum index
+                maxValue = 0;
+                maxValueIndex = 0;
+                for (int j = 0; j < spectrumLength; j++)
+                {
+                    if (maxValue < spectrum[j])
+                    {
+                        maxValue = spectrum[j];
+                        maxValueIndex = j;
+                    }
+                }
+                frequenzNumber = maxValueIndex;
+                // interpolate frequenz number
+                if (maxValueIndex > 0 && maxValueIndex < spectrumLength - 1)
+                {
+                    leftNeighbor = spectrum[maxValueIndex - 1] / spectrum[maxValueIndex];
+                    rightNeighbor = spectrum[maxValueIndex + 1] / spectrum[maxValueIndex];
+                    frequenzNumber += 0.5f * (rightNeighbor * rightNeighbor - leftNeighbor * leftNeighbor);
+                }
+                hz = frequenzNumber * (AudioSettings.outputSampleRate / 2) / spectrumLength;
+                //hz to node
+                if (hz == 0)
+                {
+                    nodes[i] = Node.None;
+                }
+                else
+                {
+                    nodeNumber = (int)Math.Round(Math.Log(hz / 440, 2) * 12 + 49);
+                    nodes[i] = NodeFunctions.getNode(nodeNumber - 4);
+                }
             }
         }
     }
