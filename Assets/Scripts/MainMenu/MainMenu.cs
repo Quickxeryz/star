@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
     TemplateContainer chooseSong;
     bool inChooseSong;
     ArrayList songs;
+    const int maxPlayer = 6;
 
     void OnEnable()
     {
@@ -34,6 +35,7 @@ public class MainMenu : MonoBehaviour
         Button optionsBack = options.Q<Button>("Back");
         TextField optionsPath = options.Q<TextField>("Path");
         TextField optionsDelay = options.Q<TextField>("Delay");
+        MicrophoneData[] microphones = new MicrophoneData[maxPlayer];
         // set functionality of all buttons
         // main menu
         mainMenuPlay.clicked += () =>
@@ -50,6 +52,67 @@ public class MainMenu : MonoBehaviour
             // load config
             optionsPath.value = GameState.settings.absolutePathToSongs;
             optionsDelay.value = GameState.settings.microphoneDelayInSeconds.ToString();
+            microphones = new MicrophoneData[maxPlayer];
+            // load microphones
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                int j = 0;
+                microphones[i] = new MicrophoneData();
+                while (j < Microphone.devices.Length)
+                {
+                    if (Microphone.devices[j] == GameState.settings.microphoneInput[i].name)
+                    {
+                        microphones[i].name = Microphone.devices[j];
+                        microphones[i].index = j;
+                        microphones[i].channel = GameState.settings.microphoneInput[i].channel;
+                        j = Microphone.devices.Length;
+                    }
+                    j++;
+                }
+                if (microphones[i].equalsWithoutChannel(new MicrophoneData()))
+                {
+                    microphones[i].name = Microphone.devices[0];
+                    microphones[i].index = 0;
+                    microphones[i].channel = 0;
+                }
+                int iCopy = i;
+                // set text of microphone
+                options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Left").clicked += () =>
+                {
+                    if (microphones[iCopy].channel == 1)
+                    {
+                        microphones[iCopy].channel -= 1;
+                        options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                    }
+                    else
+                    {
+                        if (microphones[iCopy].index > 0)
+                        {
+                            microphones[iCopy].index -= 1;
+                            microphones[iCopy].name = Microphone.devices[microphones[iCopy].index];
+                            microphones[iCopy].channel = 1;
+                        }
+                    }
+                };
+                options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Right").clicked += () =>
+                {
+                    if (microphones[iCopy].channel == 0)
+                    {
+                        microphones[iCopy].channel += 1;
+                        options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                    }
+                    else
+                    {
+                        if (microphones[iCopy].index < Microphone.devices.Length - 1)
+                        {
+                            microphones[iCopy].index += 1;
+                            microphones[iCopy].name = Microphone.devices[microphones[iCopy].index];
+                            microphones[iCopy].channel = 0;
+                        }
+                    }
+                };
+            }
         };
         mainMenuExit.clicked += () =>
         {
@@ -73,7 +136,7 @@ public class MainMenu : MonoBehaviour
             mainMenu.visible = true;
             options.visible = false;
             // save config
-            Settings settings = new Settings(optionsPath.value, float.Parse(optionsDelay.value.Replace(".", ",")));
+            Settings settings = new Settings(optionsPath.value, float.Parse(optionsDelay.value.Replace(".", ",")), microphones);
             json = JsonUtility.ToJson(settings);
             File.WriteAllText("config.json", json);
             // update setting

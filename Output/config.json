@@ -1,4 +1,36 @@
 {
     "absolutePathToSongs": "",
-    "microphoneDelayInSeconds": "0.3"
+    "microphoneDelayInSeconds": 0.3,
+    "microphoneInput": [
+        {
+            "name": "",
+            "index": 0,
+            "channel": 0
+        },
+        {
+            "name": "",
+            "index": 0,
+            "channel": 0
+        },
+        {
+            "name": "",
+            "index": 0,
+            "channel": 0
+        },
+        {
+            "name": "",
+            "index": 0,
+            "channel": 0
+        },
+        {
+            "name": "",
+            "index": 0,
+            "channel": 0
+        },
+        {
+            "name": "",
+            "index": 0,
+            "channel": 0
+        }
+    ]
 }
