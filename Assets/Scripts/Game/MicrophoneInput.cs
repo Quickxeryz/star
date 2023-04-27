@@ -9,12 +9,8 @@ public class MicrophoneInput : MonoBehaviour
     const int bufferMilliseconds = 20;
     const int hzThreshold = 25;
     const int bitDepth = 16;
-    double[][] samples = new double[GameState.amountPlayer][];
-    float maxSample;
-    int maxSampleIndex;
-    public double hz = 0;
-    float[] hzTest;
     public Node[] nodes;
+    double[][][] samples = new double[GameState.amountPlayer][][];
 
     void Start()
     {
@@ -25,6 +21,7 @@ public class MicrophoneInput : MonoBehaviour
         bool alredyHasListener;
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
+            samples[i] = new double[2][];
             int iCopy = i;
             // check if microphone exists
             inMicrophones = false;
@@ -42,12 +39,14 @@ public class MicrophoneInput : MonoBehaviour
             {
                 // check if microphone alredy has listener
                 alredyHasListener = false;
+                int otherListenerNumber = 0;
                 j = 0;
                 while (j < i)
                 {
                     if (GameState.settings.microphoneInput[i].name == GameState.settings.microphoneInput[j].name)
                     {
                         alredyHasListener = true;
+                        otherListenerNumber = j;
                         samples[i] = samples[j];
                         j = i;
                     }
@@ -59,23 +58,32 @@ public class MicrophoneInput : MonoBehaviour
                     microphoneInputs[i] = new NAudio.Wave.WaveInEvent
                     {
                         DeviceNumber = GameState.settings.microphoneInput[i].index,
-                        WaveFormat = new NAudio.Wave.WaveFormat(sampleRate, bitDepth, 1),
+                        WaveFormat = new NAudio.Wave.WaveFormat(sampleRate, bitDepth, 2),
                         BufferMilliseconds = bufferMilliseconds
                     };
                     microphoneInputs[i].DataAvailable += (object sender, NAudio.Wave.WaveInEventArgs e) =>
                     {
-                        samples[iCopy] = new double[sampleRate * bufferMilliseconds / 1000];
+                        samples[iCopy][0] = new double[e.Buffer.Length / 4];
+                        samples[iCopy][1] = new double[e.Buffer.Length / 4];
                         for (int x = 0; x < e.Buffer.Length / 2; x++)
                         {
-                            samples[iCopy][x] = BitConverter.ToInt16(e.Buffer, x * 2);
+                            if (x % 2 == 0)
+                            {
+                                samples[iCopy][0][x / 2] = BitConverter.ToInt16(e.Buffer, x * 2);
+                            }
+                            else
+                            {
+                                samples[iCopy][1][x / 2] = BitConverter.ToInt16(e.Buffer, x * 2);
+                            }
                         }
                     };
                     microphoneInputs[i].StartRecording();
                 }
-            }
-            else
-            {
-                samples[i] = null;
+                else
+                {
+                    samples[i][0] = samples[otherListenerNumber][0];
+                    samples[i][1] = samples[otherListenerNumber][1];
+                }
             }
         }
     }
@@ -84,9 +92,9 @@ public class MicrophoneInput : MonoBehaviour
     {
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            if (samples[i] != null)
+            if (samples[i][GameState.settings.microphoneInput[i].channel] != null)
             {
-                double[] paddedAudio = FftSharp.Pad.ZeroPad(samples[i]);
+                double[] paddedAudio = FftSharp.Pad.ZeroPad(samples[i][GameState.settings.microphoneInput[i].channel]);
                 double[] fftMag = FftSharp.Transform.FFTpower(paddedAudio);
                 // find the frequency peak
                 int peakIndex = 0;
@@ -96,6 +104,7 @@ public class MicrophoneInput : MonoBehaviour
                         peakIndex = j;
                 }
                 double frequenzNumber;
+                double hz;
                 if (fftMag[peakIndex] > 30)
                 {
                     frequenzNumber = peakIndex;

@@ -58,20 +58,20 @@ public class MainMenu : MonoBehaviour
             {
                 int j = 0;
                 microphones[i] = new MicrophoneData();
-                while (j < Microphone.devices.Length)
+                while (j < NAudio.Wave.WaveInEvent.DeviceCount)
                 {
-                    if (Microphone.devices[j] == GameState.settings.microphoneInput[i].name)
+                    if (NAudio.Wave.WaveInEvent.GetCapabilities(j).ProductName == GameState.settings.microphoneInput[i].name)
                     {
-                        microphones[i].name = Microphone.devices[j];
+                        microphones[i].name = NAudio.Wave.WaveInEvent.GetCapabilities(j).ProductName;
                         microphones[i].index = j;
                         microphones[i].channel = GameState.settings.microphoneInput[i].channel;
-                        j = Microphone.devices.Length;
+                        j = NAudio.Wave.WaveInEvent.DeviceCount;
                     }
                     j++;
                 }
                 if (microphones[i].equalsWithoutChannel(new MicrophoneData()))
                 {
-                    microphones[i].name = Microphone.devices[0];
+                    microphones[i].name = NAudio.Wave.WaveInEvent.GetCapabilities(0).ProductName;
                     microphones[i].index = 0;
                     microphones[i].channel = 0;
                 }
@@ -90,8 +90,9 @@ public class MainMenu : MonoBehaviour
                         if (microphones[iCopy].index > 0)
                         {
                             microphones[iCopy].index -= 1;
-                            microphones[iCopy].name = Microphone.devices[microphones[iCopy].index];
+                            microphones[iCopy].name = NAudio.Wave.WaveInEvent.GetCapabilities(microphones[iCopy].index).ProductName;
                             microphones[iCopy].channel = 1;
+                            options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
                         }
                     }
                 };
@@ -104,11 +105,12 @@ public class MainMenu : MonoBehaviour
                     }
                     else
                     {
-                        if (microphones[iCopy].index < Microphone.devices.Length - 1)
+                        if (microphones[iCopy].index < NAudio.Wave.WaveInEvent.DeviceCount - 1)
                         {
                             microphones[iCopy].index += 1;
-                            microphones[iCopy].name = Microphone.devices[microphones[iCopy].index];
+                            microphones[iCopy].name = NAudio.Wave.WaveInEvent.GetCapabilities(microphones[iCopy].index).ProductName;
                             microphones[iCopy].channel = 0;
+                            options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
                         }
                     }
                 };
