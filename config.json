@@ -1,4 +1,1 @@
-{
-    "absolutePathToSongs": "C:\\Users\\Maurice\\Documents\\GitHub\\star\\Assets\\TestAssets",
-    "microphoneDelayInSeconds": "0.3"
-}
+{"absolutePathToSongs":"C:\\Users\\Maurice\\Documents\\GitHub\\star\\Assets\\TestAssets","microphoneDelayInSeconds":0.30000001192092898,"microphoneInput":[{"name":"Mikrofon (Realtek Audio)","index":0,"channel":0},{"name":"Mikrofon (Realtek Audio)","index":0,"channel":0},{"name":"Mikrofon (Realtek Audio)","index":0,"channel":0},{"name":"Mikrofon (Realtek Audio)","index":0,"channel":1},{"name":"Mikrofon (Realtek Audio)","index":0,"channel":0},{"name":"Mikrofon (Realtek Audio)","index":0,"channel":0}]}

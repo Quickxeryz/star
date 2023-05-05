@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="PlayerNodeBox" src="project://database/Assets/UI/Templates/PlayerNodeBox.uxml?fileID=9197481963319205126&amp;guid=cec2a67bf0f70424fb0ee1d96c5ff219&amp;type=3#PlayerNodeBox" />
+    <ui:Template name="SongLines" src="project://database/Assets/UI/Templates/SongLines.uxml?fileID=9197481963319205126&amp;guid=4f4c8753bbf18134682ad125d8cde127&amp;type=3#SongLines" />
+    <Style src="project://database/Assets/UI/GameOverlays/GameStyle.uss?fileID=7433441132597879392&amp;guid=8de20c247a68afe47b75704253b9ba12&amp;type=3#GameStyle" />
+    <ui:Instance template="SongLines" name="SongLinesBottom" style="height: 20%; position: absolute; width: 98%; left: 1%; bottom: 1%;" />
+    <ui:Instance template="SongLines" name="SongLinesTop" style="height: 20%; position: absolute; width: 98%; left: 1%; bottom: auto; top: 1%;" />
+    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP1" style="height: 10%; position: absolute; left: 1%; top: 22%; width: 98%;" />
+    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP2" style="height: 10%; position: absolute; left: 1%; top: 40%; width: 98%;" />
+    <ui:Instance template="PlayerNodeBox" name="PlayerNodeBoxP3" style="height: 10%; position: absolute; left: 1%; top: 59%; width: 98%;" />
+</ui:UXML>

@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Button text="-" display-tooltip-when-elided="true" name="Left" style="position: absolute; width: 50px; left: 0; top: 0; height: 20px;" />
+    <ui:GroupBox name="TextBox" style="height: 20px; background-image: url(&apos;project://database/Packages/com.unity.2d.spriteshape/Editor/ObjectMenuCreation/DefaultAssets/Textures/Sprite%20Shape%20Fill.png?fileID=2800000&amp;guid=b281b91a70a624a0da1c43adc1c30c7b&amp;type=3#Sprite Shape Fill&apos;); position: absolute; top: -2.5px; left: 50px; width: auto; right: 50px; -unity-text-align: upper-left; -unity-background-scale-mode: stretch-to-fill;">
+        <ui:Label display-tooltip-when-elided="true" name="Text" style="position: absolute; width: 101%; -unity-text-align: upper-center; background-color: rgba(56, 56, 56, 0); color: rgb(0, 0, 0); top: -5px;" />
+    </ui:GroupBox>
+    <ui:Button text="+" display-tooltip-when-elided="true" name="Right" style="position: absolute; width: 50px; left: auto; right: 0; height: 20px; top: 0;" />
+</ui:UXML>

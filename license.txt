@@ -1,0 +1,6 @@
+Third Party Licenses:
+all licenses from packages used in this program are in there respective folder under Assets/Scripts/Packages/[PackageName]
+
+Third Party Software:
+NAudio: 
+FftSharp: https://www.nuget.org/packages/FftSharp/

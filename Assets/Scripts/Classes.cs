@@ -84,7 +84,7 @@ namespace Classes
     public class Player : IComparable
     {
         public string name;
-        public int points;
+        public int points = 0;
 
         public Player(string name)
         {
@@ -167,15 +167,45 @@ namespace Classes
         }
     }
 
+    [System.Serializable]
+    public class MicrophoneData
+    {
+        public string name;
+        public int index;
+        public int channel;
+
+        public MicrophoneData()
+        {
+            name = "";
+            index = 0;
+            channel = 0;
+        }
+
+        public MicrophoneData(string name, int index, int channel)
+        {
+            this.name = name;
+            this.index = index;
+            this.channel = channel;
+        }
+
+        public bool equalsWithoutChannel(MicrophoneData mD)
+        {
+            return (name == mD.name && index == mD.index);
+        }
+    }
+
+    [System.Serializable]
     public class Settings
     {
         public string absolutePathToSongs;
         public float microphoneDelayInSeconds;
+        public MicrophoneData[] microphoneInput;
 
-        public Settings(string path, float delayInSeconds)
+        public Settings(string path, float delayInSeconds, MicrophoneData[] microphoneInput)
         {
             absolutePathToSongs = path;
             microphoneDelayInSeconds = delayInSeconds;
+            this.microphoneInput = microphoneInput;
         }
     }
 }

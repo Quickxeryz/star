@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
     TemplateContainer chooseSong;
     bool inChooseSong;
     ArrayList songs;
+    const int maxPlayer = 6;
 
     void OnEnable()
     {
@@ -23,35 +24,110 @@ public class MainMenu : MonoBehaviour
         // finding all Buttons
         // main menu 
         TemplateContainer mainMenu = root.Q<TemplateContainer>("MainMenu");
-        Button mainMenuPlay = mainMenu.Q<Button>("Play");
-        Button mainMenuOptions = mainMenu.Q<Button>("Options");
-        Button mainMenuExit = mainMenu.Q<Button>("Exit");
+        Button mainMenu_Play = mainMenu.Q<Button>("Play");
+        Button mainMenu_Options = mainMenu.Q<Button>("Options");
+        Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
         // choose song
         chooseSong = root.Q<TemplateContainer>("ChooseSong");
-        Button chooseSongBack = chooseSong.Q<Button>("Back");
+        Button chooseSong_Back = chooseSong.Q<Button>("Back");
+        TemplateContainer chooseSong_PlayerAmount = chooseSong.Q<TemplateContainer>("PlayerAmount");
+        GroupBox chooseSong_PlayerAmount_TextBox = chooseSong_PlayerAmount.Q<GroupBox>("TextBox");
+        Button chooseSong_PlayerAmount_Left = chooseSong_PlayerAmount.Q<Button>("Left");
+        Button chooseSong_PlayerAmount_Right = chooseSong_PlayerAmount.Q<Button>("Right");
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
-        Button optionsBack = options.Q<Button>("Back");
+        Button options_Back = options.Q<Button>("Back");
+        TextField options_Path = options.Q<TextField>("Path");
+        TextField options_Delay = options.Q<TextField>("Delay");
+        MicrophoneData[] microphones = new MicrophoneData[maxPlayer];
         // set functionality of all buttons
         // main menu
-        mainMenuPlay.clicked += () =>
+        mainMenu_Play.clicked += () =>
         {
             mainMenu.visible = false;
             updateSongList();
             chooseSong.visible = true;
             inChooseSong = true;
+            // Load Amount Player 
+            chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
         };
-        mainMenuOptions.clicked += () =>
+        mainMenu_Options.clicked += () =>
         {
             mainMenu.visible = false;
             options.visible = true;
+            // load config
+            options_Path.value = GameState.settings.absolutePathToSongs;
+            options_Delay.value = GameState.settings.microphoneDelayInSeconds.ToString();
+            microphones = new MicrophoneData[maxPlayer];
+            // load microphones
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                int j = 0;
+                microphones[i] = new MicrophoneData();
+                while (j < NAudio.Wave.WaveInEvent.DeviceCount)
+                {
+                    if (NAudio.Wave.WaveInEvent.GetCapabilities(j).ProductName == GameState.settings.microphoneInput[i].name)
+                    {
+                        microphones[i].name = NAudio.Wave.WaveInEvent.GetCapabilities(j).ProductName;
+                        microphones[i].index = j;
+                        microphones[i].channel = GameState.settings.microphoneInput[i].channel;
+                        j = NAudio.Wave.WaveInEvent.DeviceCount;
+                    }
+                    j++;
+                }
+                if (microphones[i].equalsWithoutChannel(new MicrophoneData()))
+                {
+                    microphones[i].name = NAudio.Wave.WaveInEvent.GetCapabilities(0).ProductName;
+                    microphones[i].index = 0;
+                    microphones[i].channel = 0;
+                }
+                int iCopy = i;
+                // set text of microphone
+                options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Left").clicked += () =>
+                {
+                    if (microphones[iCopy].channel == 1)
+                    {
+                        microphones[iCopy].channel -= 1;
+                        options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                    }
+                    else
+                    {
+                        if (microphones[iCopy].index > 0)
+                        {
+                            microphones[iCopy].index -= 1;
+                            microphones[iCopy].name = NAudio.Wave.WaveInEvent.GetCapabilities(microphones[iCopy].index).ProductName;
+                            microphones[iCopy].channel = 1;
+                            options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                        }
+                    }
+                };
+                options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Right").clicked += () =>
+                {
+                    if (microphones[iCopy].channel == 0)
+                    {
+                        microphones[iCopy].channel += 1;
+                        options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                    }
+                    else
+                    {
+                        if (microphones[iCopy].index < NAudio.Wave.WaveInEvent.DeviceCount - 1)
+                        {
+                            microphones[iCopy].index += 1;
+                            microphones[iCopy].name = NAudio.Wave.WaveInEvent.GetCapabilities(microphones[iCopy].index).ProductName;
+                            microphones[iCopy].channel = 0;
+                            options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = microphones[iCopy].name.ToString() + " Channel " + microphones[iCopy].channel.ToString();
+                        }
+                    }
+                };
+            }
         };
-        mainMenuExit.clicked += () =>
+        mainMenu_Exit.clicked += () =>
         {
             Application.Quit();
         };
         // choose song
-        chooseSongBack.clicked += () =>
+        chooseSong_Back.clicked += () =>
         {
             mainMenu.visible = true;
             chooseSong.visible = false;
@@ -62,11 +138,33 @@ public class MainMenu : MonoBehaviour
             }
             inChooseSong = false;
         };
+        chooseSong_PlayerAmount_Left.clicked += () =>
+        {
+            if (GameState.amountPlayer > 1)
+            {
+                GameState.amountPlayer--;
+                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            }
+        };
+        chooseSong_PlayerAmount_Right.clicked += () =>
+        {
+            if (GameState.amountPlayer < 6)
+            {
+                GameState.amountPlayer++;
+                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            }
+        };
         // options
-        optionsBack.clicked += () =>
+        options_Back.clicked += () =>
         {
             mainMenu.visible = true;
             options.visible = false;
+            // save config
+            Settings settings = new Settings(options_Path.value, float.Parse(options_Delay.value.Replace(".", ",")), microphones);
+            json = JsonUtility.ToJson(settings);
+            File.WriteAllText("config.json", json);
+            // update setting
+            GameState.settings = settings;
         };
         // Loading song list
         songs = new ArrayList();

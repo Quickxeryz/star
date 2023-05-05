@@ -13,15 +13,21 @@ public class SongEnd : MonoBehaviour
         Button continue_ = root.Q<Button>("Continue");
         continue_.clicked += () =>
         {
-            GameState.player1.points = 0;
-            GameState.player2.points = 0;
-            GameState.player3.points = 0;
-            GameState.player4.points = 0;
+            GameState.player[0].points = 0;
+            GameState.player[1].points = 0;
+            GameState.player[2].points = 0;
+            GameState.player[3].points = 0;
+            GameState.player[4].points = 0;
+            GameState.player[5].points = 0;
             SceneManager.LoadScene("MainMenu");
         };
         // show placements
         // sort after points
-        Player[] player = { GameState.player1, GameState.player2, GameState.player3, GameState.player4 };
+        Player[] player = new Player[GameState.amountPlayer];
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            player[i] = GameState.player[i];
+        }
         Array.Sort(player);
         // print amount playing people with highest number
         Label currentPlace;
