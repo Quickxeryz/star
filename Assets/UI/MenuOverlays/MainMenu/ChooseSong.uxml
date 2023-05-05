@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Switcher" src="project://database/Assets/UI/Templates/Switcher.uxml?fileID=9197481963319205126&amp;guid=363b3cbb44fb0e940b0606d794ac16cc&amp;type=3#Switcher" />
     <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" style="position: absolute; left: auto; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
     <ui:VisualElement name="SongListContainer" style="position: absolute; left: 1%; top: 10%; width: 98%; height: 75%;">
         <ui:Button text="Button" display-tooltip-when-elided="true" name="1" />
@@ -12,4 +13,8 @@
         <ui:Button text="Button" display-tooltip-when-elided="true" name="9" />
         <ui:Button text="Button" display-tooltip-when-elided="true" name="10" />
     </ui:VisualElement>
+    <ui:Label text="Amount Player" display-tooltip-when-elided="true" name="AmountPlayerText" style="height: auto; bottom: 6%; left: 1%; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
+    <ui:Instance template="Switcher" name="PlayerAmount" style="position: absolute; left: 1%; bottom: 1%; width: 10%; height: 5%;">
+        <AttributeOverrides element-name="TextBox" />
+    </ui:Instance>
 </ui:UXML>

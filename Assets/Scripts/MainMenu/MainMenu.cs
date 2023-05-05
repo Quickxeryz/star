@@ -24,34 +24,40 @@ public class MainMenu : MonoBehaviour
         // finding all Buttons
         // main menu 
         TemplateContainer mainMenu = root.Q<TemplateContainer>("MainMenu");
-        Button mainMenuPlay = mainMenu.Q<Button>("Play");
-        Button mainMenuOptions = mainMenu.Q<Button>("Options");
-        Button mainMenuExit = mainMenu.Q<Button>("Exit");
+        Button mainMenu_Play = mainMenu.Q<Button>("Play");
+        Button mainMenu_Options = mainMenu.Q<Button>("Options");
+        Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
         // choose song
         chooseSong = root.Q<TemplateContainer>("ChooseSong");
-        Button chooseSongBack = chooseSong.Q<Button>("Back");
+        Button chooseSong_Back = chooseSong.Q<Button>("Back");
+        TemplateContainer chooseSong_PlayerAmount = chooseSong.Q<TemplateContainer>("PlayerAmount");
+        GroupBox chooseSong_PlayerAmount_TextBox = chooseSong_PlayerAmount.Q<GroupBox>("TextBox");
+        Button chooseSong_PlayerAmount_Left = chooseSong_PlayerAmount.Q<Button>("Left");
+        Button chooseSong_PlayerAmount_Right = chooseSong_PlayerAmount.Q<Button>("Right");
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
-        Button optionsBack = options.Q<Button>("Back");
-        TextField optionsPath = options.Q<TextField>("Path");
-        TextField optionsDelay = options.Q<TextField>("Delay");
+        Button options_Back = options.Q<Button>("Back");
+        TextField options_Path = options.Q<TextField>("Path");
+        TextField options_Delay = options.Q<TextField>("Delay");
         MicrophoneData[] microphones = new MicrophoneData[maxPlayer];
         // set functionality of all buttons
         // main menu
-        mainMenuPlay.clicked += () =>
+        mainMenu_Play.clicked += () =>
         {
             mainMenu.visible = false;
             updateSongList();
             chooseSong.visible = true;
             inChooseSong = true;
+            // Load Amount Player 
+            chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
         };
-        mainMenuOptions.clicked += () =>
+        mainMenu_Options.clicked += () =>
         {
             mainMenu.visible = false;
             options.visible = true;
             // load config
-            optionsPath.value = GameState.settings.absolutePathToSongs;
-            optionsDelay.value = GameState.settings.microphoneDelayInSeconds.ToString();
+            options_Path.value = GameState.settings.absolutePathToSongs;
+            options_Delay.value = GameState.settings.microphoneDelayInSeconds.ToString();
             microphones = new MicrophoneData[maxPlayer];
             // load microphones
             for (int i = 0; i < maxPlayer; i++)
@@ -116,12 +122,12 @@ public class MainMenu : MonoBehaviour
                 };
             }
         };
-        mainMenuExit.clicked += () =>
+        mainMenu_Exit.clicked += () =>
         {
             Application.Quit();
         };
         // choose song
-        chooseSongBack.clicked += () =>
+        chooseSong_Back.clicked += () =>
         {
             mainMenu.visible = true;
             chooseSong.visible = false;
@@ -132,13 +138,29 @@ public class MainMenu : MonoBehaviour
             }
             inChooseSong = false;
         };
+        chooseSong_PlayerAmount_Left.clicked += () =>
+        {
+            if (GameState.amountPlayer > 1)
+            {
+                GameState.amountPlayer--;
+                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            }
+        };
+        chooseSong_PlayerAmount_Right.clicked += () =>
+        {
+            if (GameState.amountPlayer < 6)
+            {
+                GameState.amountPlayer++;
+                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            }
+        };
         // options
-        optionsBack.clicked += () =>
+        options_Back.clicked += () =>
         {
             mainMenu.visible = true;
             options.visible = false;
             // save config
-            Settings settings = new Settings(optionsPath.value, float.Parse(optionsDelay.value.Replace(".", ",")), microphones);
+            Settings settings = new Settings(options_Path.value, float.Parse(options_Delay.value.Replace(".", ",")), microphones);
             json = JsonUtility.ToJson(settings);
             File.WriteAllText("config.json", json);
             // update setting
