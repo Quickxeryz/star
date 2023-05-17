@@ -97,7 +97,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.node = NodeFunctions.getNode(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
+                    syllable.node = NodeFunctions.getNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -109,7 +109,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.node = NodeFunctions.getNode(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
+                    syllable.node = NodeFunctions.getNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -121,7 +121,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.node = NodeFunctions.getNode(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
+                    syllable.node = NodeFunctions.getNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
