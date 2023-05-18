@@ -104,6 +104,7 @@ public class MainMenu : MonoBehaviour
                     microphones[i].name = NAudio.Wave.WaveInEvent.GetCapabilities(0).ProductName;
                     microphones[i].index = 0;
                     microphones[i].channel = 0;
+                    microphones[i].isOnline = false;
                 }
                 int iCopy = i;
                 // set text of microphone
@@ -369,6 +370,7 @@ public class MainMenu : MonoBehaviour
         if (microphones[playerId].channel == 1)
         {
             microphones[playerId].channel -= 1;
+            microphones[playerId].isOnline = false;
             options.Q<TemplateContainer>("Microphone" + (playerId + 1).ToString()).Q<Label>("Text").text = "Microphone: " + microphones[playerId].name.ToString() + ", Channel: " + microphones[playerId].channel.ToString();
         }
         else
@@ -380,6 +382,7 @@ public class MainMenu : MonoBehaviour
                 {
                     microphones[playerId].name = NAudio.Wave.WaveInEvent.GetCapabilities(microphones[playerId].index).ProductName;
                     microphones[playerId].channel = 1;
+                    microphones[playerId].isOnline = false;
                     options.Q<TemplateContainer>("Microphone" + (playerId + 1).ToString()).Q<Label>("Text").text = "Microphone: " + microphones[playerId].name.ToString() + ", Channel: " + microphones[playerId].channel.ToString();
                 }
                 else
@@ -399,6 +402,7 @@ public class MainMenu : MonoBehaviour
             if (microphones[playerId].index < NAudio.Wave.WaveInEvent.DeviceCount)
             {
                 microphones[playerId].channel += 1;
+                microphones[playerId].isOnline = false;
                 options.Q<TemplateContainer>("Microphone" + (playerId + 1).ToString()).Q<Label>("Text").text = "Microphone: " + microphones[playerId].name.ToString() + ", Channel: " + microphones[playerId].channel.ToString();
             }
             else if (microphones[playerId].index < NAudio.Wave.WaveInEvent.DeviceCount + GameState.onlineMicrophones.Count - 1)
@@ -418,6 +422,7 @@ public class MainMenu : MonoBehaviour
                 if (microphones[playerId].index < NAudio.Wave.WaveInEvent.DeviceCount)
                 {
                     microphones[playerId].name = NAudio.Wave.WaveInEvent.GetCapabilities(microphones[playerId].index).ProductName;
+                    microphones[playerId].isOnline = false;
                     options.Q<TemplateContainer>("Microphone" + (playerId + 1).ToString()).Q<Label>("Text").text = "Microphone: " + microphones[playerId].name.ToString() + ", Channel: " + microphones[playerId].channel.ToString();
                 }
                 else
