@@ -322,18 +322,24 @@ public class MainMenu : MonoBehaviour
     // output Handler for server
     void outputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
     {
-        // Adding if new microphone
-        if (outLine.Data.Contains("new:"))
+        if (outLine.Data == null)
         {
-            GameState.onlineMicrophones.Add((outLine.Data.Substring(outLine.Data.IndexOf(':') + 1), Node.None));
+            return;
+        }
+        string playerName = outLine.Data.Substring(0, outLine.Data.IndexOf(':'));
+        int index = GameState.onlineMicrophones.FindIndex(element => element.id == playerName);
+        if (index == -1)
+        {
+            // Adding if new microphone
+            GameState.onlineMicrophones.Add((playerName, Node.None));
         }
         else
         {
             // Updating Nodes
-            int index = GameState.onlineMicrophones.FindIndex(element => element.id == outLine.Data.Substring(0, outLine.Data.IndexOf(':')));
             GameState.onlineMicrophones[index] = (GameState.onlineMicrophones[index].id, NodeFunctions.getNodeFromString(outLine.Data.Substring(outLine.Data.IndexOf(':') + 1)));
         }
     }
+
     void optionsLeftClicked(TemplateContainer options, MicrophoneData[] microphones, int playerId)
     {
         if (microphones[playerId].channel == 1)

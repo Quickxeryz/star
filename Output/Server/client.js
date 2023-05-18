@@ -1,13 +1,27 @@
 const ip = "";
-const port = "";
+const port = "8085";
+
+function setPlayerName() {
+    let name = nameInput.value.trim();
+    if (name == "") {
+        output.innerText = "Playername can't be empty!";
+    } else {
+        playerName = name;
+        output.innerText = "Playername set to " + playerName;
+    }
+}
+
 // websocket
 function connect() {
+    serverButton.innerText = "Reconnect to server";
+    output.innerText = "Connected";
     ws = new WebSocket("wss://" + ip + ":" + port + "/ws");
     ws.onmessage = msg => {
-        playerId = msg.data;
+        //data = msg.data;
+        ws.send(playerName + ":None");
     };
     ws.onclose = e => {
-        o.innerText = e.reason;
+        output.innerText = e.reason;
     };
 };
 
@@ -156,7 +170,8 @@ function record() {
                         break;
                 }
             }
-            ws.send(playerId + ":" + node);
+            output.innerText = node;
+            ws.send(playerName + ":" + node);
         }, 100);
     }
 }
@@ -168,13 +183,17 @@ function stopRecord() {
 }
 
 let ws;
-let o;
+let output;
+let serverButton;
+let nameInput;
 let recordButton;
 window.onload = function () {
-    o = document.getElementById("output");
+    output = document.getElementById("output");
+    nameInput = document.getElementById("nameInput");
+    serverButton = document.getElementById("serverButton");
     recordButton = document.getElementById("record");
 }
 const microphone = new Microphone();
 let isRecording = false;
 let interval; // for reading mic
-let playerId = "";
+let playerName = "";

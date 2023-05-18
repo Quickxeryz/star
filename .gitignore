@@ -1,11 +1,6 @@
 
 Assets/TestAssets
 star_BurstDebugInformation_DoNotShip
-config.json
-Server/cert.pem
-Server/client.js
-Server/key.pem
-Server/server.js
 
 # Credits to https://github.com/github/gitignore/blob/main/Unity.gitignore for redy to use gitignore file
 #

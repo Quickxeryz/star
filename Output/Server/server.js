@@ -23,13 +23,10 @@ let server = https.createServer({
 }).listen(port, hostname);
 //console.log("Server started: https://" + hostname + ":" + port);
 // Websocket
-let playerId = 0;
 const wss = new ws.Server({ server, path: '/ws' });
-wss.on('connection', function connection(ws) {
-    ws.send(playerId);
-    console.log("new:" + playerId);
-    playerId++;
-    ws.on('message', (data) => {
+wss.on("connection", function connection(ws) {
+    ws.send("connected");
+    ws.on("message", (data) => {
         console.log(data.toString());
         //ws.send('Receive: ' + data)
     });
