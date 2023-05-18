@@ -13,11 +13,10 @@ public class MainMenu : MonoBehaviour
     bool inChooseSong;
     ArrayList songs;
     const int maxPlayer = 6;
+    bool serverStarted = false;
 
     void OnEnable()
     {
-        // start online microphone server
-        System.Threading.Tasks.Task.Run(() => startServer());
         // load settings
         string json = System.IO.File.ReadAllText("config.json");
         GameState.settings = JsonUtility.FromJson<Settings>(json);
@@ -27,6 +26,7 @@ public class MainMenu : MonoBehaviour
         // main menu 
         TemplateContainer mainMenu = root.Q<TemplateContainer>("MainMenu");
         Button mainMenu_Play = mainMenu.Q<Button>("Play");
+        Button mainMenu_Server = mainMenu.Q<Button>("Server");
         Button mainMenu_Options = mainMenu.Q<Button>("Options");
         Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
         // choose song
@@ -54,6 +54,15 @@ public class MainMenu : MonoBehaviour
             inChooseSong = true;
             // Load Amount Player 
             chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+        };
+        mainMenu_Server.clicked += () =>
+        {
+            // start online microphone server if not running
+            if (!serverStarted)
+            {
+                serverStarted = true;
+                System.Threading.Tasks.Task.Run(() => startServer());
+            }
         };
         mainMenu_Options.clicked += () =>
         {
@@ -297,9 +306,24 @@ public class MainMenu : MonoBehaviour
         // Create Node command for the server
         System.Diagnostics.Process process = new System.Diagnostics.Process();
         // Drop Process on exit/
-        System.AppDomain.CurrentDomain.DomainUnload += (s, e) => { process.Kill(); process.WaitForExit(); };
-        System.AppDomain.CurrentDomain.ProcessExit += (s, e) => { process.Kill(); process.WaitForExit(); };
-        System.AppDomain.CurrentDomain.UnhandledException += (s, e) => { process.Kill(); process.WaitForExit(); };
+        System.AppDomain.CurrentDomain.DomainUnload += (s, e) =>
+            {
+                serverStarted = false;
+                process.Kill();
+                process.WaitForExit();
+            };
+        System.AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+            {
+                serverStarted = false;
+                process.Kill();
+                process.WaitForExit();
+            };
+        System.AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                serverStarted = false;
+                process.Kill();
+                process.WaitForExit();
+            };
         // Command
         process.StartInfo.FileName = "node";
         process.StartInfo.Arguments = "Server/server.js";
