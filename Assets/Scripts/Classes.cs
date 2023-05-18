@@ -20,7 +20,55 @@ namespace Classes
     }
     public static class NodeFunctions
     {
-        public static Node getNode(int nodeNumber)
+        public static Node getNodeFromString(string nodeString)
+        {
+            Node node;
+            switch (nodeString)
+            {
+                case "C":
+                    node = Node.C;
+                    break;
+                case "CH":
+                    node = Node.CH;
+                    break;
+                case "D":
+                    node = Node.D;
+                    break;
+                case "DH":
+                    node = Node.DH;
+                    break;
+                case "E":
+                    node = Node.E;
+                    break;
+                case "F":
+                    node = Node.F;
+                    break;
+                case "FH":
+                    node = Node.FH;
+                    break;
+                case "G":
+                    node = Node.G;
+                    break;
+                case "GH":
+                    node = Node.GH;
+                    break;
+                case "A":
+                    node = Node.A;
+                    break;
+                case "AH":
+                    node = Node.AH;
+                    break;
+                case "B":
+                    node = Node.B;
+                    break;
+                default:
+                    node = Node.None;
+                    break;
+            }
+            return node;
+        }
+
+        public static Node getNodeFromInt(int nodeNumber)
         {
             Node node;
             while (nodeNumber < 0)
@@ -173,19 +221,22 @@ namespace Classes
         public string name;
         public int index;
         public int channel;
+        public bool isOnline;
 
         public MicrophoneData()
         {
             name = "";
             index = 0;
             channel = 0;
+            isOnline = false;
         }
 
-        public MicrophoneData(string name, int index, int channel)
+        public MicrophoneData(string name, int index, int channel, bool isOnline)
         {
             this.name = name;
             this.index = index;
             this.channel = channel;
+            this.isOnline = isOnline;
         }
 
         public bool equalsWithoutChannel(MicrophoneData mD)
