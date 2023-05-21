@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" style="position: absolute; height: 10%; width: 10%; top: auto; left: 1%; bottom: 1%;" />
-    <ui:Button text="Options" display-tooltip-when-elided="true" name="Options" style="position: absolute; right: 45%; bottom: 1%; width: 10%; height: 10%; left: 31%;" />
+    <ui:Button text="Options" display-tooltip-when-elided="true" name="Options" style="position: absolute; right: 16%; bottom: 1%; width: 10%; height: 10%; left: auto;" />
     <ui:Button text="Exit" display-tooltip-when-elided="true" name="Exit" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
     <ui:Button text="Start Server" display-tooltip-when-elided="true" name="Server" style="position: absolute; height: 10%; width: 10%; top: auto; left: 16%; bottom: 1%;" />
+    <ui:Button text="Player Profiles" display-tooltip-when-elided="true" name="Playerprofiles" style="position: absolute; height: 10%; width: 10%; top: auto; left: 31%; bottom: 1%;" />
 </ui:UXML>

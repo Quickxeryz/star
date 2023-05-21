@@ -184,7 +184,7 @@ public class GameLogic : MonoBehaviour
         // setting player name
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            roots[i].Q<Label>("Name").text = GameState.player[i].name;
+            roots[i].Q<Label>("Name").text = GameState.currentPlayer[i].name;
         }
         // Getting player node arrow
         for (int i = 0; i < GameState.amountPlayer; i++)
@@ -596,7 +596,7 @@ public class GameLogic : MonoBehaviour
             {
                 for (int i = 0; i < GameState.amountPlayer; i++)
                 {
-                    GameState.player[i].points = (int)System.Math.Ceiling(points[i]);
+                    GameState.currentPlayer[i].points = (int)System.Math.Ceiling(points[i]);
                 }
                 SceneManager.LoadScene("SongEnd");
             }

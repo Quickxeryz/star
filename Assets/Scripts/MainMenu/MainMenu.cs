@@ -14,12 +14,16 @@ public class MainMenu : MonoBehaviour
     ArrayList songs;
     const int maxPlayer = 6;
     bool serverStarted = false;
+    int currentProfileIndex = 0;
 
     void OnEnable()
     {
         // load settings
         string json = System.IO.File.ReadAllText("config.json");
         GameState.settings = JsonUtility.FromJson<Settings>(json);
+        // load playerProfiles
+        json = System.IO.File.ReadAllText("playerProfiles.json");
+        GameState.profiles = JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles;
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all Buttons
@@ -27,6 +31,7 @@ public class MainMenu : MonoBehaviour
         TemplateContainer mainMenu = root.Q<TemplateContainer>("MainMenu");
         Button mainMenu_Play = mainMenu.Q<Button>("Play");
         Button mainMenu_Server = mainMenu.Q<Button>("Server");
+        Button mainMenu_Playerprofiles = mainMenu.Q<Button>("Playerprofiles");
         Button mainMenu_Options = mainMenu.Q<Button>("Options");
         Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
         // choose song
@@ -36,6 +41,13 @@ public class MainMenu : MonoBehaviour
         GroupBox chooseSong_PlayerAmount_TextBox = chooseSong_PlayerAmount.Q<GroupBox>("TextBox");
         Button chooseSong_PlayerAmount_Left = chooseSong_PlayerAmount.Q<Button>("Left");
         Button chooseSong_PlayerAmount_Right = chooseSong_PlayerAmount.Q<Button>("Right");
+        // playerProfiles
+        TemplateContainer profiles = root.Q<TemplateContainer>("Profiles");
+        Button profiles_Back = profiles.Q<Button>("Back");
+        Label profiles_Player = profiles.Q<Label>("Player");
+        TextField profiles_NameInput = profiles.Q<TextField>("Name");
+        Button profiles_LeftButton = profiles.Q<Button>("Left");
+        Button profiles_RightButton = profiles.Q<Button>("Right");
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
         Button options_Back = options.Q<Button>("Back");
@@ -63,6 +75,13 @@ public class MainMenu : MonoBehaviour
                 serverStarted = true;
                 System.Threading.Tasks.Task.Run(() => startServer());
             }
+        };
+        mainMenu_Playerprofiles.clicked += () =>
+        {
+            mainMenu.visible = false;
+            profiles.visible = true;
+            profiles_Player.text = GameState.profiles[0].name;
+            profiles_NameInput.value = GameState.profiles[0].name;
         };
         mainMenu_Options.clicked += () =>
         {
@@ -159,6 +178,41 @@ public class MainMenu : MonoBehaviour
                 GameState.amountPlayer++;
                 chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
             }
+        };
+        // playerProfiles
+        profiles_LeftButton.clicked += () =>
+        {
+            if (currentProfileIndex > 0)
+            {
+                // save data
+                GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+                // change viewed profile
+                currentProfileIndex--;
+                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
+            }
+        };
+        profiles_RightButton.clicked += () =>
+        {
+            if (currentProfileIndex < GameState.profiles.Length - 1)
+            {
+                // save data
+                GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+                // change viewed profile
+                currentProfileIndex++;
+                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
+            }
+        };
+        profiles_Back.clicked += () =>
+        {
+            mainMenu.visible = true;
+            profiles.visible = false;
+            // saving profiles
+            GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+            JsonPlayerProfiles profilesToJson = new JsonPlayerProfiles(GameState.profiles);
+            json = JsonUtility.ToJson(profilesToJson);
+            File.WriteAllText("playerProfiles.json", json);
         };
         // options
         options_Back.clicked += () =>

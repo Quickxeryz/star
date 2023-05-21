@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
+    <ui:Label display-tooltip-when-elided="true" name="Player" text="Test" style="-unity-text-align: upper-center; left: 45%; width: 10%; position: absolute; top: 1%;" />
+    <ui:Button text="Left" display-tooltip-when-elided="true" name="Left" style="position: absolute; width: 10%; left: 30%;" />
+    <ui:Button text="Right" display-tooltip-when-elided="true" name="Right" style="position: absolute; width: 10%; left: 60%;" />
+    <ui:TextField picking-mode="Ignore" label="Name" name="Name" style="top: 5%; left: 1%; width: 98%;" />
+</ui:UXML>
