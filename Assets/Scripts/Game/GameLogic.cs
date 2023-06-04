@@ -126,8 +126,17 @@ public class GameLogic : MonoBehaviour
                     songData.Add(syllable);
                     break;
                 // Line break
-                case '-':
-                    songData.Add(int.Parse(line.Substring(2)));
+                case '-': // TODO Does only works for "- newLineTime" and not for "- deleteLineTime newLineTime"
+                    temp = line.TrimEnd();
+                    // Handle "- newLineTime" and "- deleteLineTime newLineTime"
+                    if (temp.IndexOf(' ') == temp.LastIndexOf(' '))
+                    {
+                        songData.Add(int.Parse(temp.Substring(2)));
+                    }
+                    else
+                    {
+                        songData.Add(int.Parse(temp.Substring(temp.LastIndexOf(' ') + 1)));
+                    }
                     break;
                 default:
                     break;

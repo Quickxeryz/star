@@ -310,7 +310,7 @@ public class MainMenu : MonoBehaviour
                         }
                         else if (line.StartsWith("#GAP:"))
                         {
-                            gap = int.Parse(line.Substring(5)) * 0.001f;
+                            gap = float.Parse(line.Substring(5).Replace(".", ",")) * 0.001f;
                         }
                         else if (line.StartsWith("#VIDEO:"))
                         {
