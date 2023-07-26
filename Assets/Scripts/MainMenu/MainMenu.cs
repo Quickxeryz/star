@@ -23,7 +23,10 @@ public class MainMenu : MonoBehaviour
         GameState.settings = JsonUtility.FromJson<Settings>(json);
         // load playerProfiles
         json = System.IO.File.ReadAllText("playerProfiles.json");
-        GameState.profiles = JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles;
+        if (GameState.profiles.Count == 0)
+        {
+            GameState.profiles.AddRange(JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles);
+        }
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all Buttons
@@ -41,6 +44,30 @@ public class MainMenu : MonoBehaviour
         GroupBox chooseSong_PlayerAmount_TextBox = chooseSong_PlayerAmount.Q<GroupBox>("TextBox");
         Button chooseSong_PlayerAmount_Left = chooseSong_PlayerAmount.Q<Button>("Left");
         Button chooseSong_PlayerAmount_Right = chooseSong_PlayerAmount.Q<Button>("Right");
+        TemplateContainer chooseSong_Player1 = chooseSong.Q<TemplateContainer>("Player1");
+        GroupBox chooseSong_Player1_TextBox = chooseSong_Player1.Q<GroupBox>("TextBox");
+        Button chooseSong_Player1_Left = chooseSong_Player1.Q<Button>("Left");
+        Button chooseSong_Player1_Right = chooseSong_Player1.Q<Button>("Right");
+        TemplateContainer chooseSong_Player2 = chooseSong.Q<TemplateContainer>("Player2");
+        GroupBox chooseSong_Player2_TextBox = chooseSong_Player2.Q<GroupBox>("TextBox");
+        Button chooseSong_Player2_Left = chooseSong_Player2.Q<Button>("Left");
+        Button chooseSong_Player2_Right = chooseSong_Player2.Q<Button>("Right");
+        TemplateContainer chooseSong_Player3 = chooseSong.Q<TemplateContainer>("Player3");
+        GroupBox chooseSong_Player3_TextBox = chooseSong_Player3.Q<GroupBox>("TextBox");
+        Button chooseSong_Player3_Left = chooseSong_Player3.Q<Button>("Left");
+        Button chooseSong_Player3_Right = chooseSong_Player3.Q<Button>("Right");
+        TemplateContainer chooseSong_Player4 = chooseSong.Q<TemplateContainer>("Player4");
+        GroupBox chooseSong_Player4_TextBox = chooseSong_Player4.Q<GroupBox>("TextBox");
+        Button chooseSong_Player4_Left = chooseSong_Player4.Q<Button>("Left");
+        Button chooseSong_Player4_Right = chooseSong_Player4.Q<Button>("Right");
+        TemplateContainer chooseSong_Player5 = chooseSong.Q<TemplateContainer>("Player5");
+        GroupBox chooseSong_Player5_TextBox = chooseSong_Player5.Q<GroupBox>("TextBox");
+        Button chooseSong_Player5_Left = chooseSong_Player5.Q<Button>("Left");
+        Button chooseSong_Player5_Right = chooseSong_Player5.Q<Button>("Right");
+        TemplateContainer chooseSong_Player6 = chooseSong.Q<TemplateContainer>("Player6");
+        GroupBox chooseSong_Player6_TextBox = chooseSong_Player6.Q<GroupBox>("TextBox");
+        Button chooseSong_Player6_Left = chooseSong_Player6.Q<Button>("Left");
+        Button chooseSong_Player6_Right = chooseSong_Player6.Q<Button>("Right");
         // playerProfiles
         TemplateContainer profiles = root.Q<TemplateContainer>("Profiles");
         Button profiles_Back = profiles.Q<Button>("Back");
@@ -48,6 +75,8 @@ public class MainMenu : MonoBehaviour
         TextField profiles_NameInput = profiles.Q<TextField>("Name");
         Button profiles_LeftButton = profiles.Q<Button>("Left");
         Button profiles_RightButton = profiles.Q<Button>("Right");
+        Button profiles_NewButton = profiles.Q<Button>("New");
+        Button profiles_DeleteButton = profiles.Q<Button>("Delete");
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
         Button options_Back = options.Q<Button>("Back");
@@ -66,6 +95,12 @@ public class MainMenu : MonoBehaviour
             inChooseSong = true;
             // Load Amount Player 
             chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            chooseSong_Player1_TextBox.text = GameState.profiles[GameState.currentProfileIndex[0]].name;
+            chooseSong_Player2_TextBox.text = GameState.profiles[GameState.currentProfileIndex[1]].name;
+            chooseSong_Player3_TextBox.text = GameState.profiles[GameState.currentProfileIndex[2]].name;
+            chooseSong_Player4_TextBox.text = GameState.profiles[GameState.currentProfileIndex[3]].name;
+            chooseSong_Player5_TextBox.text = GameState.profiles[GameState.currentProfileIndex[4]].name;
+            chooseSong_Player6_TextBox.text = GameState.profiles[GameState.currentProfileIndex[5]].name;
         };
         mainMenu_Server.clicked += () =>
         {
@@ -80,6 +115,7 @@ public class MainMenu : MonoBehaviour
         {
             mainMenu.visible = false;
             profiles.visible = true;
+            currentProfileIndex = 0;
             profiles_Player.text = GameState.profiles[0].name;
             profiles_NameInput.value = GameState.profiles[0].name;
         };
@@ -179,6 +215,102 @@ public class MainMenu : MonoBehaviour
                 chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
             }
         };
+        chooseSong_Player1_Left.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[0] > 0)
+            {
+                GameState.currentProfileIndex[0]--;
+                chooseSong_Player1_TextBox.text = GameState.profiles[GameState.currentProfileIndex[0]].name;
+            }
+        };
+        chooseSong_Player1_Right.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[0] < GameState.profiles.Count - 1)
+            {
+                GameState.currentProfileIndex[0]++;
+                chooseSong_Player1_TextBox.text = GameState.profiles[GameState.currentProfileIndex[0]].name;
+            }
+        };
+        chooseSong_Player2_Left.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[1] > 0)
+            {
+                GameState.currentProfileIndex[1]--;
+                chooseSong_Player2_TextBox.text = GameState.profiles[GameState.currentProfileIndex[1]].name;
+            }
+        };
+        chooseSong_Player2_Right.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[1] < GameState.profiles.Count - 1)
+            {
+                GameState.currentProfileIndex[1]++;
+                chooseSong_Player2_TextBox.text = GameState.profiles[GameState.currentProfileIndex[1]].name;
+            }
+        };
+        chooseSong_Player3_Left.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[2] > 0)
+            {
+                GameState.currentProfileIndex[2]--;
+                chooseSong_Player3_TextBox.text = GameState.profiles[GameState.currentProfileIndex[2]].name;
+            }
+        };
+        chooseSong_Player3_Right.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[2] < GameState.profiles.Count - 1)
+            {
+                GameState.currentProfileIndex[2]++;
+                chooseSong_Player3_TextBox.text = GameState.profiles[GameState.currentProfileIndex[2]].name;
+            }
+        };
+        chooseSong_Player4_Left.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[3] > 0)
+            {
+                GameState.currentProfileIndex[3]--;
+                chooseSong_Player4_TextBox.text = GameState.profiles[GameState.currentProfileIndex[3]].name;
+            }
+        };
+        chooseSong_Player4_Right.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[3] < GameState.profiles.Count - 1)
+            {
+                GameState.currentProfileIndex[3]++;
+                chooseSong_Player4_TextBox.text = GameState.profiles[GameState.currentProfileIndex[3]].name;
+            }
+        };
+        chooseSong_Player5_Left.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[4] > 0)
+            {
+                GameState.currentProfileIndex[4]--;
+                chooseSong_Player5_TextBox.text = GameState.profiles[GameState.currentProfileIndex[4]].name;
+            }
+        };
+        chooseSong_Player5_Right.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[4] < GameState.profiles.Count - 1)
+            {
+                GameState.currentProfileIndex[4]++;
+                chooseSong_Player5_TextBox.text = GameState.profiles[GameState.currentProfileIndex[4]].name;
+            }
+        };
+        chooseSong_Player6_Left.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[5] > 0)
+            {
+                GameState.currentProfileIndex[5]--;
+                chooseSong_Player6_TextBox.text = GameState.profiles[GameState.currentProfileIndex[5]].name;
+            }
+        };
+        chooseSong_Player6_Right.clicked += () =>
+        {
+            if (GameState.currentProfileIndex[5] < GameState.profiles.Count - 1)
+            {
+                GameState.currentProfileIndex[5]++;
+                chooseSong_Player6_TextBox.text = GameState.profiles[GameState.currentProfileIndex[5]].name;
+            }
+        };
         // playerProfiles
         profiles_LeftButton.clicked += () =>
         {
@@ -194,7 +326,7 @@ public class MainMenu : MonoBehaviour
         };
         profiles_RightButton.clicked += () =>
         {
-            if (currentProfileIndex < GameState.profiles.Length - 1)
+            if (currentProfileIndex < GameState.profiles.Count - 1)
             {
                 // save data
                 GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
@@ -204,13 +336,44 @@ public class MainMenu : MonoBehaviour
                 profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
             }
         };
+        profiles_NewButton.clicked += () =>
+        {
+            // save data
+            GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+            // add new profile
+            GameState.profiles.Add(new PlayerProfile("Name"));
+            // change view to new profile
+            currentProfileIndex = GameState.profiles.Count - 1;
+            profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+            profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
+        };
+        profiles_DeleteButton.clicked += () =>
+        {
+            // delete profile
+            if (GameState.profiles.Count > 1)
+            {
+                GameState.profiles.RemoveAt(currentProfileIndex);
+                // change view to other profile
+                if (currentProfileIndex >= GameState.profiles.Count)
+                {
+                    currentProfileIndex--;
+                }
+                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
+            }
+            else
+            {
+                profiles_Player.text = "Name";
+                profiles_NameInput.value = "Name";
+            }
+        };
         profiles_Back.clicked += () =>
         {
             mainMenu.visible = true;
             profiles.visible = false;
             // saving profiles
             GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
-            JsonPlayerProfiles profilesToJson = new JsonPlayerProfiles(GameState.profiles);
+            JsonPlayerProfiles profilesToJson = new JsonPlayerProfiles(GameState.profiles.ToArray());
             json = JsonUtility.ToJson(profilesToJson);
             File.WriteAllText("playerProfiles.json", json);
         };

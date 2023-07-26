@@ -20,7 +20,7 @@ public class SongEnd : MonoBehaviour
         PlayerProfile[] player = new PlayerProfile[GameState.amountPlayer];
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            player[i] = GameState.currentPlayer[i];
+            player[i] = GameState.profiles[GameState.currentProfileIndex[i]];
         }
         Array.Sort(player);
         // print amount playing people with highest number

@@ -13,8 +13,18 @@
         <ui:Button text="Button" display-tooltip-when-elided="true" name="9" />
         <ui:Button text="Button" display-tooltip-when-elided="true" name="10" />
     </ui:VisualElement>
-    <ui:Label text="Amount Player" display-tooltip-when-elided="true" name="AmountPlayerText" style="height: auto; bottom: 6%; left: 1%; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
-    <ui:Instance template="Switcher" name="PlayerAmount" style="position: absolute; left: 1%; bottom: 1%; width: 10%; height: 5%;">
-        <AttributeOverrides element-name="TextBox" />
-    </ui:Instance>
+    <ui:Label text="Amount Player" display-tooltip-when-elided="true" name="AmountPlayerText" style="height: auto; bottom: 65px; left: 10px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
+    <ui:Instance template="Switcher" name="PlayerAmount" style="position: absolute; left: 10px; bottom: 36px; width: 10%; height: 29px;" />
+    <ui:Instance template="Switcher" name="Player1" style="position: absolute; left: 210px; bottom: 100px; width: 10%; height: 29px;" />
+    <ui:Instance template="Switcher" name="Player2" style="position: absolute; left: 210px; bottom: 55px; width: 10%; height: 29px;" />
+    <ui:Label text="Player 2" display-tooltip-when-elided="true" name="Player2Text" style="height: auto; bottom: 85px; left: 210px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
+    <ui:Instance template="Switcher" name="Player3" style="position: absolute; left: 210px; bottom: 10px; width: 10%; height: 29px;" />
+    <ui:Label text="Player 3" display-tooltip-when-elided="true" name="Player3Text" style="height: auto; bottom: 40px; left: 210px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
+    <ui:Instance template="Switcher" name="Player4" style="position: absolute; left: 410px; bottom: 100px; width: 10%; height: 29px;" />
+    <ui:Label text="Player 4" display-tooltip-when-elided="true" name="Player4Text" style="height: auto; bottom: 130px; left: 410px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
+    <ui:Instance template="Switcher" name="Player5" style="position: absolute; left: 410px; bottom: 55px; width: 10%; height: 29px;" />
+    <ui:Label text="Player 5" display-tooltip-when-elided="true" name="Player5Text" style="height: auto; bottom: 85px; left: 410px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
+    <ui:Instance template="Switcher" name="Player6" style="position: absolute; left: 410px; bottom: 10px; width: 10%; height: 29px;" />
+    <ui:Label text="Player 6" display-tooltip-when-elided="true" name="Player6Text" style="height: auto; bottom: 40px; left: 410px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
+    <ui:Label text="Player 1" display-tooltip-when-elided="true" name="Player1Text" style="height: auto; bottom: 130px; left: 209px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
 </ui:UXML>
