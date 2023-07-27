@@ -44,30 +44,26 @@ public class MainMenu : MonoBehaviour
         GroupBox chooseSong_PlayerAmount_TextBox = chooseSong_PlayerAmount.Q<GroupBox>("TextBox");
         Button chooseSong_PlayerAmount_Left = chooseSong_PlayerAmount.Q<Button>("Left");
         Button chooseSong_PlayerAmount_Right = chooseSong_PlayerAmount.Q<Button>("Right");
-        TemplateContainer chooseSong_Player1 = chooseSong.Q<TemplateContainer>("Player1");
-        GroupBox chooseSong_Player1_TextBox = chooseSong_Player1.Q<GroupBox>("TextBox");
-        Button chooseSong_Player1_Left = chooseSong_Player1.Q<Button>("Left");
-        Button chooseSong_Player1_Right = chooseSong_Player1.Q<Button>("Right");
-        TemplateContainer chooseSong_Player2 = chooseSong.Q<TemplateContainer>("Player2");
-        GroupBox chooseSong_Player2_TextBox = chooseSong_Player2.Q<GroupBox>("TextBox");
-        Button chooseSong_Player2_Left = chooseSong_Player2.Q<Button>("Left");
-        Button chooseSong_Player2_Right = chooseSong_Player2.Q<Button>("Right");
-        TemplateContainer chooseSong_Player3 = chooseSong.Q<TemplateContainer>("Player3");
-        GroupBox chooseSong_Player3_TextBox = chooseSong_Player3.Q<GroupBox>("TextBox");
-        Button chooseSong_Player3_Left = chooseSong_Player3.Q<Button>("Left");
-        Button chooseSong_Player3_Right = chooseSong_Player3.Q<Button>("Right");
-        TemplateContainer chooseSong_Player4 = chooseSong.Q<TemplateContainer>("Player4");
-        GroupBox chooseSong_Player4_TextBox = chooseSong_Player4.Q<GroupBox>("TextBox");
-        Button chooseSong_Player4_Left = chooseSong_Player4.Q<Button>("Left");
-        Button chooseSong_Player4_Right = chooseSong_Player4.Q<Button>("Right");
-        TemplateContainer chooseSong_Player5 = chooseSong.Q<TemplateContainer>("Player5");
-        GroupBox chooseSong_Player5_TextBox = chooseSong_Player5.Q<GroupBox>("TextBox");
-        Button chooseSong_Player5_Left = chooseSong_Player5.Q<Button>("Left");
-        Button chooseSong_Player5_Right = chooseSong_Player5.Q<Button>("Right");
-        TemplateContainer chooseSong_Player6 = chooseSong.Q<TemplateContainer>("Player6");
-        GroupBox chooseSong_Player6_TextBox = chooseSong_Player6.Q<GroupBox>("TextBox");
-        Button chooseSong_Player6_Left = chooseSong_Player6.Q<Button>("Left");
-        Button chooseSong_Player6_Right = chooseSong_Player6.Q<Button>("Right");
+        TemplateContainer[] chooseSong_PlayerX = new TemplateContainer[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX.Length; i++)
+        {
+            chooseSong_PlayerX[i] = chooseSong.Q<TemplateContainer>("Player" + (i + 1).ToString());
+        }
+        GroupBox[] chooseSong_PlayerX_TextBox = new GroupBox[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_TextBox.Length; i++)
+        {
+            chooseSong_PlayerX_TextBox[i] = chooseSong_PlayerX[i].Q<GroupBox>("TextBox");
+        }
+        Button[] chooseSong_PlayerX_Left = new Button[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_Left.Length; i++)
+        {
+            chooseSong_PlayerX_Left[i] = chooseSong_PlayerX[i].Q<Button>("Left");
+        }
+        Button[] chooseSong_PlayerX_Right = new Button[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_Right.Length; i++)
+        {
+            chooseSong_PlayerX_Right[i] = chooseSong_PlayerX[i].Q<Button>("Right");
+        }
         // playerProfiles
         TemplateContainer profiles = root.Q<TemplateContainer>("Profiles");
         Button profiles_Back = profiles.Q<Button>("Back");
@@ -95,12 +91,10 @@ public class MainMenu : MonoBehaviour
             inChooseSong = true;
             // Load Amount Player 
             chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
-            chooseSong_Player1_TextBox.text = GameState.profiles[GameState.currentProfileIndex[0]].name;
-            chooseSong_Player2_TextBox.text = GameState.profiles[GameState.currentProfileIndex[1]].name;
-            chooseSong_Player3_TextBox.text = GameState.profiles[GameState.currentProfileIndex[2]].name;
-            chooseSong_Player4_TextBox.text = GameState.profiles[GameState.currentProfileIndex[3]].name;
-            chooseSong_Player5_TextBox.text = GameState.profiles[GameState.currentProfileIndex[4]].name;
-            chooseSong_Player6_TextBox.text = GameState.profiles[GameState.currentProfileIndex[5]].name;
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+            }
         };
         mainMenu_Server.clicked += () =>
         {
@@ -209,108 +203,32 @@ public class MainMenu : MonoBehaviour
         };
         chooseSong_PlayerAmount_Right.clicked += () =>
         {
-            if (GameState.amountPlayer < 6)
+            if (GameState.amountPlayer < maxPlayer)
             {
                 GameState.amountPlayer++;
                 chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
             }
         };
-        chooseSong_Player1_Left.clicked += () =>
+        for (int i = 0; i < maxPlayer; i++)
         {
-            if (GameState.currentProfileIndex[0] > 0)
+            int iCopy = i;
+            chooseSong_PlayerX_Left[iCopy].clicked += () =>
             {
-                GameState.currentProfileIndex[0]--;
-                chooseSong_Player1_TextBox.text = GameState.profiles[GameState.currentProfileIndex[0]].name;
-            }
-        };
-        chooseSong_Player1_Right.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[0] < GameState.profiles.Count - 1)
+                if (GameState.currentProfileIndex[iCopy] > 0)
+                {
+                    GameState.currentProfileIndex[iCopy]--;
+                    chooseSong_PlayerX_TextBox[iCopy].text = GameState.profiles[GameState.currentProfileIndex[iCopy]].name;
+                }
+            };
+            chooseSong_PlayerX_Right[iCopy].clicked += () =>
             {
-                GameState.currentProfileIndex[0]++;
-                chooseSong_Player1_TextBox.text = GameState.profiles[GameState.currentProfileIndex[0]].name;
-            }
-        };
-        chooseSong_Player2_Left.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[1] > 0)
-            {
-                GameState.currentProfileIndex[1]--;
-                chooseSong_Player2_TextBox.text = GameState.profiles[GameState.currentProfileIndex[1]].name;
-            }
-        };
-        chooseSong_Player2_Right.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[1] < GameState.profiles.Count - 1)
-            {
-                GameState.currentProfileIndex[1]++;
-                chooseSong_Player2_TextBox.text = GameState.profiles[GameState.currentProfileIndex[1]].name;
-            }
-        };
-        chooseSong_Player3_Left.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[2] > 0)
-            {
-                GameState.currentProfileIndex[2]--;
-                chooseSong_Player3_TextBox.text = GameState.profiles[GameState.currentProfileIndex[2]].name;
-            }
-        };
-        chooseSong_Player3_Right.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[2] < GameState.profiles.Count - 1)
-            {
-                GameState.currentProfileIndex[2]++;
-                chooseSong_Player3_TextBox.text = GameState.profiles[GameState.currentProfileIndex[2]].name;
-            }
-        };
-        chooseSong_Player4_Left.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[3] > 0)
-            {
-                GameState.currentProfileIndex[3]--;
-                chooseSong_Player4_TextBox.text = GameState.profiles[GameState.currentProfileIndex[3]].name;
-            }
-        };
-        chooseSong_Player4_Right.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[3] < GameState.profiles.Count - 1)
-            {
-                GameState.currentProfileIndex[3]++;
-                chooseSong_Player4_TextBox.text = GameState.profiles[GameState.currentProfileIndex[3]].name;
-            }
-        };
-        chooseSong_Player5_Left.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[4] > 0)
-            {
-                GameState.currentProfileIndex[4]--;
-                chooseSong_Player5_TextBox.text = GameState.profiles[GameState.currentProfileIndex[4]].name;
-            }
-        };
-        chooseSong_Player5_Right.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[4] < GameState.profiles.Count - 1)
-            {
-                GameState.currentProfileIndex[4]++;
-                chooseSong_Player5_TextBox.text = GameState.profiles[GameState.currentProfileIndex[4]].name;
-            }
-        };
-        chooseSong_Player6_Left.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[5] > 0)
-            {
-                GameState.currentProfileIndex[5]--;
-                chooseSong_Player6_TextBox.text = GameState.profiles[GameState.currentProfileIndex[5]].name;
-            }
-        };
-        chooseSong_Player6_Right.clicked += () =>
-        {
-            if (GameState.currentProfileIndex[5] < GameState.profiles.Count - 1)
-            {
-                GameState.currentProfileIndex[5]++;
-                chooseSong_Player6_TextBox.text = GameState.profiles[GameState.currentProfileIndex[5]].name;
-            }
-        };
+                if (GameState.currentProfileIndex[iCopy] < GameState.profiles.Count - 1)
+                {
+                    GameState.currentProfileIndex[iCopy]++;
+                    chooseSong_PlayerX_TextBox[iCopy].text = GameState.profiles[GameState.currentProfileIndex[iCopy]].name;
+                }
+            };
+        }
         // playerProfiles
         profiles_LeftButton.clicked += () =>
         {
