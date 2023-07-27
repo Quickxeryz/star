@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" style="position: absolute; height: 10%; width: 10%; top: auto; left: 1%; bottom: 1%;" />
+    <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
+    <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" selectable="true" style="position: absolute; height: 10%; width: 10%; top: auto; left: 1%; bottom: 1%;" />
     <ui:Button text="Options" display-tooltip-when-elided="true" name="Options" style="position: absolute; right: 16%; bottom: 1%; width: 10%; height: 10%; left: auto;" />
     <ui:Button text="Exit" display-tooltip-when-elided="true" name="Exit" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
     <ui:Button text="Start Server" display-tooltip-when-elided="true" name="Server" style="position: absolute; height: 10%; width: 10%; top: auto; left: 16%; bottom: 1%;" />
