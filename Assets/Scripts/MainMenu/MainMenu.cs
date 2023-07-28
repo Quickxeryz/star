@@ -49,6 +49,11 @@ public class MainMenu : MonoBehaviour
         {
             chooseSong_PlayerX[i] = chooseSong.Q<TemplateContainer>("Player" + (i + 1).ToString());
         }
+        Label[] chooseSong_PlayerX_Label = new Label[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_Label.Length; i++)
+        {
+            chooseSong_PlayerX_Label[i] = chooseSong.Q<Label>("Player" + (i + 1).ToString() + "Text");
+        }
         GroupBox[] chooseSong_PlayerX_TextBox = new GroupBox[maxPlayer];
         for (int i = 0; i < chooseSong_PlayerX_TextBox.Length; i++)
         {
@@ -94,6 +99,17 @@ public class MainMenu : MonoBehaviour
             for (int i = 0; i < maxPlayer; i++)
             {
                 chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+            }
+            // set visibility of player settings
+            for (int i = 0; i < GameState.amountPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = true;
+                chooseSong_PlayerX[i].visible = true;
+            }
+            for (int i = GameState.amountPlayer; i < maxPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = false;
+                chooseSong_PlayerX[i].visible = false;
             }
         };
         mainMenu_Server.clicked += () =>
@@ -197,14 +213,22 @@ public class MainMenu : MonoBehaviour
         {
             if (GameState.amountPlayer > 1)
             {
+                // update player number
                 GameState.amountPlayer--;
                 chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+                // make actual player unvisible
+                chooseSong_PlayerX_Label[GameState.amountPlayer].visible = false;
+                chooseSong_PlayerX[GameState.amountPlayer].visible = false;
             }
         };
         chooseSong_PlayerAmount_Right.clicked += () =>
         {
             if (GameState.amountPlayer < maxPlayer)
             {
+                // make new player visible
+                chooseSong_PlayerX_Label[GameState.amountPlayer].visible = true;
+                chooseSong_PlayerX[GameState.amountPlayer].visible = true;
+                // update player number
                 GameState.amountPlayer++;
                 chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
             }
