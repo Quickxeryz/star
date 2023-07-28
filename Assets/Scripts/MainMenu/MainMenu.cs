@@ -357,7 +357,7 @@ public class MainMenu : MonoBehaviour
         if (inChooseSong)
         {
             // check for mouse wheel
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
                 if (currentLabel < songs.Count - 10)
                 {
@@ -365,7 +365,7 @@ public class MainMenu : MonoBehaviour
                     updateSongList();
                 }
             }
-            else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+            else if (Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
                 if (currentLabel > 0)
                 {
