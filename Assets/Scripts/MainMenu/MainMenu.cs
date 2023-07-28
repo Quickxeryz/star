@@ -206,22 +206,33 @@ public class MainMenu : MonoBehaviour
                     Application.Quit();
                 };
         // choose song
-        chooseSong_Back.clicked += () =>
+        /*
+        // set song data to items
+        Button songButton;
+        for (int i = currentLabel; itemCounter <= 10 && i < songs.Count; i++)
         {
-            mainMenu.visible = true;
-            chooseSong.visible = false;
-            // clear song data elements
-            for (int i = 1; i <= 10; i++)
+            int iCopy = i;
+            songButton = chooseSong.Q<Button>(itemCounter.ToString());
+            songButton.text = ((SongData)songs[i]).title;
+            songButton.visible = true;
+            itemCounter++;
+            // set Button function
+            songButton.clicked += () =>
             {
-                chooseSong.Q<Button>(i.ToString()).visible = false;
-            }
-            for (int i = 0; i < maxPlayer; i++)
+                GameState.currentSong = (SongData)songs[iCopy];
+                SceneManager.LoadScene("GameScene");
+            };
+        }*/
+        // set song button functions
+        for (int i = 1; i <= 10; i++)
+        {
+            int iCopy = i;
+            chooseSong.Q<Button>(iCopy.ToString()).clicked += () =>
             {
-                chooseSong_PlayerX_Label[i].visible = false;
-                chooseSong_PlayerX[i].visible = false;
-            }
-            inChooseSong = false;
-        };
+                GameState.currentSong = (SongData)songs[currentLabel + iCopy - 1];
+                SceneManager.LoadScene("GameScene");
+            };
+        }
         chooseSong_PlayerAmount_Left.clicked += () =>
         {
             if (GameState.amountPlayer > 1)
@@ -266,6 +277,22 @@ public class MainMenu : MonoBehaviour
                 }
             };
         }
+        chooseSong_Back.clicked += () =>
+        {
+            mainMenu.visible = true;
+            chooseSong.visible = false;
+            // clear song data elements
+            for (int i = 1; i <= 10; i++)
+            {
+                chooseSong.Q<Button>(i.ToString()).visible = false;
+            }
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = false;
+                chooseSong_PlayerX[i].visible = false;
+            }
+            inChooseSong = false;
+        };
         // playerProfiles
         profiles_LeftButton.clicked += () =>
         {
@@ -465,12 +492,6 @@ public class MainMenu : MonoBehaviour
             songButton.text = ((SongData)songs[i]).title;
             songButton.visible = true;
             itemCounter++;
-            // set Button function
-            songButton.clicked += () =>
-            {
-                GameState.currentSong = (SongData)songs[iCopy];
-                SceneManager.LoadScene("GameScene");
-            };
         }
     }
 
