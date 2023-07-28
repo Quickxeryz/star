@@ -98,7 +98,15 @@ public class MainMenu : MonoBehaviour
             chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
             for (int i = 0; i < maxPlayer; i++)
             {
-                chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+                if (GameState.currentProfileIndex[i] < GameState.profiles.Count)
+                {
+                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+                }
+                else
+                {
+                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[0].name;
+                    GameState.currentProfileIndex[i] = 0;
+                }
             }
             // set visibility of player settings
             for (int i = 0; i < GameState.amountPlayer; i++)
@@ -206,6 +214,11 @@ public class MainMenu : MonoBehaviour
             for (int i = 1; i <= 10; i++)
             {
                 chooseSong.Q<Button>(i.ToString()).visible = false;
+            }
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = false;
+                chooseSong_PlayerX[i].visible = false;
             }
             inChooseSong = false;
         };
