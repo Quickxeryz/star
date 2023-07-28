@@ -129,25 +129,36 @@ namespace Classes
         Hard = 0
     }
 
-    public class Player : IComparable
+    [System.Serializable]
+    public class PlayerProfile : IComparable
     {
         public string name;
         public int points = 0;
 
-        public Player(string name)
+        public PlayerProfile(string name)
         {
             this.name = name;
         }
 
         public int CompareTo(object obj)
         {
-            Player Temp = (Player)obj;
+            PlayerProfile Temp = (PlayerProfile)obj;
             if (this.points < Temp.points)
                 return 1;
             if (this.points > Temp.points)
                 return -1;
             else
                 return 0;
+        }
+    }
+
+    // json wrapper class to read PlayerProfile[]
+    public class JsonPlayerProfiles
+    {
+        public PlayerProfile[] playerProfiles;
+        public JsonPlayerProfiles(PlayerProfile[] playerProfiles)
+        {
+            this.playerProfiles = playerProfiles;
         }
     }
 

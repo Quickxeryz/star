@@ -14,12 +14,19 @@ public class MainMenu : MonoBehaviour
     ArrayList songs;
     const int maxPlayer = 6;
     bool serverStarted = false;
+    int currentProfileIndex = 0;
 
     void OnEnable()
     {
         // load settings
         string json = System.IO.File.ReadAllText("config.json");
         GameState.settings = JsonUtility.FromJson<Settings>(json);
+        // load playerProfiles
+        json = System.IO.File.ReadAllText("playerProfiles.json");
+        if (GameState.profiles.Count == 0)
+        {
+            GameState.profiles.AddRange(JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles);
+        }
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all Buttons
@@ -27,6 +34,7 @@ public class MainMenu : MonoBehaviour
         TemplateContainer mainMenu = root.Q<TemplateContainer>("MainMenu");
         Button mainMenu_Play = mainMenu.Q<Button>("Play");
         Button mainMenu_Server = mainMenu.Q<Button>("Server");
+        Button mainMenu_Playerprofiles = mainMenu.Q<Button>("Playerprofiles");
         Button mainMenu_Options = mainMenu.Q<Button>("Options");
         Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
         // choose song
@@ -36,6 +44,40 @@ public class MainMenu : MonoBehaviour
         GroupBox chooseSong_PlayerAmount_TextBox = chooseSong_PlayerAmount.Q<GroupBox>("TextBox");
         Button chooseSong_PlayerAmount_Left = chooseSong_PlayerAmount.Q<Button>("Left");
         Button chooseSong_PlayerAmount_Right = chooseSong_PlayerAmount.Q<Button>("Right");
+        TemplateContainer[] chooseSong_PlayerX = new TemplateContainer[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX.Length; i++)
+        {
+            chooseSong_PlayerX[i] = chooseSong.Q<TemplateContainer>("Player" + (i + 1).ToString());
+        }
+        Label[] chooseSong_PlayerX_Label = new Label[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_Label.Length; i++)
+        {
+            chooseSong_PlayerX_Label[i] = chooseSong.Q<Label>("Player" + (i + 1).ToString() + "Text");
+        }
+        GroupBox[] chooseSong_PlayerX_TextBox = new GroupBox[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_TextBox.Length; i++)
+        {
+            chooseSong_PlayerX_TextBox[i] = chooseSong_PlayerX[i].Q<GroupBox>("TextBox");
+        }
+        Button[] chooseSong_PlayerX_Left = new Button[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_Left.Length; i++)
+        {
+            chooseSong_PlayerX_Left[i] = chooseSong_PlayerX[i].Q<Button>("Left");
+        }
+        Button[] chooseSong_PlayerX_Right = new Button[maxPlayer];
+        for (int i = 0; i < chooseSong_PlayerX_Right.Length; i++)
+        {
+            chooseSong_PlayerX_Right[i] = chooseSong_PlayerX[i].Q<Button>("Right");
+        }
+        // playerProfiles
+        TemplateContainer profiles = root.Q<TemplateContainer>("Profiles");
+        Button profiles_Back = profiles.Q<Button>("Back");
+        Label profiles_Player = profiles.Q<Label>("Player");
+        TextField profiles_NameInput = profiles.Q<TextField>("Name");
+        Button profiles_LeftButton = profiles.Q<Button>("Left");
+        Button profiles_RightButton = profiles.Q<Button>("Right");
+        Button profiles_NewButton = profiles.Q<Button>("New");
+        Button profiles_DeleteButton = profiles.Q<Button>("Delete");
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
         Button options_Back = options.Q<Button>("Back");
@@ -54,6 +96,29 @@ public class MainMenu : MonoBehaviour
             inChooseSong = true;
             // Load Amount Player 
             chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                if (GameState.currentProfileIndex[i] < GameState.profiles.Count)
+                {
+                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+                }
+                else
+                {
+                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[0].name;
+                    GameState.currentProfileIndex[i] = 0;
+                }
+            }
+            // set visibility of player settings
+            for (int i = 0; i < GameState.amountPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = true;
+                chooseSong_PlayerX[i].visible = true;
+            }
+            for (int i = GameState.amountPlayer; i < maxPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = false;
+                chooseSong_PlayerX[i].visible = false;
+            }
         };
         mainMenu_Server.clicked += () =>
         {
@@ -63,6 +128,14 @@ public class MainMenu : MonoBehaviour
                 serverStarted = true;
                 System.Threading.Tasks.Task.Run(() => startServer());
             }
+        };
+        mainMenu_Playerprofiles.clicked += () =>
+        {
+            mainMenu.visible = false;
+            profiles.visible = true;
+            currentProfileIndex = 0;
+            profiles_Player.text = GameState.profiles[0].name;
+            profiles_NameInput.value = GameState.profiles[0].name;
         };
         mainMenu_Options.clicked += () =>
         {
@@ -133,6 +206,77 @@ public class MainMenu : MonoBehaviour
                     Application.Quit();
                 };
         // choose song
+        /*
+        // set song data to items
+        Button songButton;
+        for (int i = currentLabel; itemCounter <= 10 && i < songs.Count; i++)
+        {
+            int iCopy = i;
+            songButton = chooseSong.Q<Button>(itemCounter.ToString());
+            songButton.text = ((SongData)songs[i]).title;
+            songButton.visible = true;
+            itemCounter++;
+            // set Button function
+            songButton.clicked += () =>
+            {
+                GameState.currentSong = (SongData)songs[iCopy];
+                SceneManager.LoadScene("GameScene");
+            };
+        }*/
+        // set song button functions
+        for (int i = 1; i <= 10; i++)
+        {
+            int iCopy = i;
+            chooseSong.Q<Button>(iCopy.ToString()).clicked += () =>
+            {
+                GameState.currentSong = (SongData)songs[currentLabel + iCopy - 1];
+                SceneManager.LoadScene("GameScene");
+            };
+        }
+        chooseSong_PlayerAmount_Left.clicked += () =>
+        {
+            if (GameState.amountPlayer > 1)
+            {
+                // update player number
+                GameState.amountPlayer--;
+                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+                // make actual player unvisible
+                chooseSong_PlayerX_Label[GameState.amountPlayer].visible = false;
+                chooseSong_PlayerX[GameState.amountPlayer].visible = false;
+            }
+        };
+        chooseSong_PlayerAmount_Right.clicked += () =>
+        {
+            if (GameState.amountPlayer < maxPlayer)
+            {
+                // make new player visible
+                chooseSong_PlayerX_Label[GameState.amountPlayer].visible = true;
+                chooseSong_PlayerX[GameState.amountPlayer].visible = true;
+                // update player number
+                GameState.amountPlayer++;
+                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            }
+        };
+        for (int i = 0; i < maxPlayer; i++)
+        {
+            int iCopy = i;
+            chooseSong_PlayerX_Left[iCopy].clicked += () =>
+            {
+                if (GameState.currentProfileIndex[iCopy] > 0)
+                {
+                    GameState.currentProfileIndex[iCopy]--;
+                    chooseSong_PlayerX_TextBox[iCopy].text = GameState.profiles[GameState.currentProfileIndex[iCopy]].name;
+                }
+            };
+            chooseSong_PlayerX_Right[iCopy].clicked += () =>
+            {
+                if (GameState.currentProfileIndex[iCopy] < GameState.profiles.Count - 1)
+                {
+                    GameState.currentProfileIndex[iCopy]++;
+                    chooseSong_PlayerX_TextBox[iCopy].text = GameState.profiles[GameState.currentProfileIndex[iCopy]].name;
+                }
+            };
+        }
         chooseSong_Back.clicked += () =>
         {
             mainMenu.visible = true;
@@ -142,23 +286,78 @@ public class MainMenu : MonoBehaviour
             {
                 chooseSong.Q<Button>(i.ToString()).visible = false;
             }
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = false;
+                chooseSong_PlayerX[i].visible = false;
+            }
             inChooseSong = false;
         };
-        chooseSong_PlayerAmount_Left.clicked += () =>
+        // playerProfiles
+        profiles_LeftButton.clicked += () =>
         {
-            if (GameState.amountPlayer > 1)
+            if (currentProfileIndex > 0)
             {
-                GameState.amountPlayer--;
-                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+                // save data
+                GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+                // change viewed profile
+                currentProfileIndex--;
+                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
             }
         };
-        chooseSong_PlayerAmount_Right.clicked += () =>
+        profiles_RightButton.clicked += () =>
         {
-            if (GameState.amountPlayer < 6)
+            if (currentProfileIndex < GameState.profiles.Count - 1)
             {
-                GameState.amountPlayer++;
-                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+                // save data
+                GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+                // change viewed profile
+                currentProfileIndex++;
+                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
             }
+        };
+        profiles_NewButton.clicked += () =>
+        {
+            // save data
+            GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+            // add new profile
+            GameState.profiles.Add(new PlayerProfile("Name"));
+            // change view to new profile
+            currentProfileIndex = GameState.profiles.Count - 1;
+            profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+            profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
+        };
+        profiles_DeleteButton.clicked += () =>
+        {
+            // delete profile
+            if (GameState.profiles.Count > 1)
+            {
+                GameState.profiles.RemoveAt(currentProfileIndex);
+                // change view to other profile
+                if (currentProfileIndex >= GameState.profiles.Count)
+                {
+                    currentProfileIndex--;
+                }
+                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
+                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
+            }
+            else
+            {
+                profiles_Player.text = "Name";
+                profiles_NameInput.value = "Name";
+            }
+        };
+        profiles_Back.clicked += () =>
+        {
+            mainMenu.visible = true;
+            profiles.visible = false;
+            // saving profiles
+            GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
+            JsonPlayerProfiles profilesToJson = new JsonPlayerProfiles(GameState.profiles.ToArray());
+            json = JsonUtility.ToJson(profilesToJson);
+            File.WriteAllText("playerProfiles.json", json);
         };
         // options
         options_Back.clicked += () =>
@@ -185,7 +384,7 @@ public class MainMenu : MonoBehaviour
         if (inChooseSong)
         {
             // check for mouse wheel
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
                 if (currentLabel < songs.Count - 10)
                 {
@@ -193,7 +392,7 @@ public class MainMenu : MonoBehaviour
                     updateSongList();
                 }
             }
-            else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+            else if (Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
                 if (currentLabel > 0)
                 {
@@ -256,7 +455,7 @@ public class MainMenu : MonoBehaviour
                         }
                         else if (line.StartsWith("#GAP:"))
                         {
-                            gap = int.Parse(line.Substring(5)) * 0.001f;
+                            gap = float.Parse(line.Substring(5).Replace(".", ",")) * 0.001f;
                         }
                         else if (line.StartsWith("#VIDEO:"))
                         {
@@ -293,12 +492,6 @@ public class MainMenu : MonoBehaviour
             songButton.text = ((SongData)songs[i]).title;
             songButton.visible = true;
             itemCounter++;
-            // set Button function
-            songButton.clicked += () =>
-            {
-                GameState.currentSong = (SongData)songs[iCopy];
-                SceneManager.LoadScene("GameScene");
-            };
         }
     }
 

@@ -1,19 +1,21 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="Switcher" src="project://database/Assets/UI/Templates/Switcher.uxml?fileID=9197481963319205126&amp;guid=363b3cbb44fb0e940b0606d794ac16cc&amp;type=3#Switcher" />
-    <Style src="project://database/Assets/UI/MenuOverlays/MainMenu/options.uss?fileID=7433441132597879392&amp;guid=e74800ad0ae3f4246a5f04c735ff0faf&amp;type=3#options" />
+    <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
     <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
-    <ui:TextField picking-mode="Ignore" label="song folder absolute path" value="path" name="Path" style="left: 1%; right: auto; width: 98%;" />
-    <ui:TextField picking-mode="Ignore" label="microphone delay in seconds" value="delay" name="Delay" style="left: 1%; width: 98%;" />
+    <ui:TextField picking-mode="Ignore" label="song folder absolute path" value="path" name="Path" style="left: 1%; right: auto; width: 98%; height: 40px;" />
+    <ui:TextField picking-mode="Ignore" label="microphone delay in seconds" value="delay" name="Delay" style="left: 1%; width: 98%; height: 40px;" />
     <ui:Label text="Mirophone player 1" display-tooltip-when-elided="true" name="P1" style="-unity-text-align: upper-center; left: 1%; width: 98%;" />
-    <ui:Instance template="Switcher" name="Microphone1" style="left: 1%; width: 98%; height: 20px;" />
+    <ui:Instance template="Switcher" name="Microphone1" style="left: 1%; width: 98%; height: 40px;">
+        <AttributeOverrides element-name="Text" enable-rich-text="false" parse-escape-sequences="false" />
+    </ui:Instance>
     <ui:Label text="Mirophone player 2" display-tooltip-when-elided="true" name="P2" style="-unity-text-align: upper-center; left: 1%; width: 98%;" />
-    <ui:Instance template="Switcher" name="Microphone2" style="left: 1%; width: 98%; height: 20px;" />
+    <ui:Instance template="Switcher" name="Microphone2" style="left: 1%; width: 98%; height: 40px;" />
     <ui:Label text="Mirophone player 3" display-tooltip-when-elided="true" name="P3" style="-unity-text-align: upper-center; left: 1%; width: 98%;" />
-    <ui:Instance template="Switcher" name="Microphone3" style="left: 1%; width: 98%; height: 20px;" />
+    <ui:Instance template="Switcher" name="Microphone3" style="left: 1%; width: 98%; height: 40px;" />
     <ui:Label text="Mirophone player 4" display-tooltip-when-elided="true" name="P4" style="-unity-text-align: upper-center; left: 1%; width: 98%;" />
-    <ui:Instance template="Switcher" name="Microphone4" style="left: 1%; width: 98%; height: 20px;" />
+    <ui:Instance template="Switcher" name="Microphone4" style="left: 1%; width: 98%; height: 40px;" />
     <ui:Label text="Mirophone player 5" display-tooltip-when-elided="true" name="P5" style="-unity-text-align: upper-center; left: 1%; width: 98%;" />
-    <ui:Instance template="Switcher" name="Microphone5" style="left: 1%; width: 98%; height: 20px;" />
+    <ui:Instance template="Switcher" name="Microphone5" style="left: 1%; width: 98%; height: 40px;" />
     <ui:Label text="Mirophone player 6" display-tooltip-when-elided="true" name="P6" style="-unity-text-align: upper-center; left: 1%; width: 98%;" />
-    <ui:Instance template="Switcher" name="Microphone6" style="left: 1%; width: 98%; height: 20px;" />
+    <ui:Instance template="Switcher" name="Microphone6" style="left: 1%; width: 98%; height: 40px;" />
 </ui:UXML>
