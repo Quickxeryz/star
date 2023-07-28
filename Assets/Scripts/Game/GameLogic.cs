@@ -372,7 +372,7 @@ public class GameLogic : MonoBehaviour
             {
                 double currentTime = songPlayer.getTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
-                int currentBeat = (int)System.Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm - GameState.currentSong.gap);
+                int currentBeat = (int)System.Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
                 // updating nodes, songtext and calculating score
                 string text = "";
                 SyllableData sData;
@@ -577,12 +577,12 @@ public class GameLogic : MonoBehaviour
                     // Updating player node arrow:
                     for (int i = 0; i < GameState.amountPlayer; i++)
                     {
-                        nodeArrows[i].style.left = Length.Percent(((currentBeat + GameState.currentSong.gap - startBeatLine1) * 100) / beatSumLine1 - nodeArrowWidth);
+                        nodeArrows[i].style.left = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1 - nodeArrowWidth);
                     }
                 }
                 else
                 {
-                    // Updating player node arrow
+                    // reset player node arrow to start
                     for (int i = 0; i < GameState.amountPlayer; i++)
                     {
                         nodeArrows[i].style.left = 0;

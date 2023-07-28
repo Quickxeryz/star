@@ -206,23 +206,6 @@ public class MainMenu : MonoBehaviour
                     Application.Quit();
                 };
         // choose song
-        /*
-        // set song data to items
-        Button songButton;
-        for (int i = currentLabel; itemCounter <= 10 && i < songs.Count; i++)
-        {
-            int iCopy = i;
-            songButton = chooseSong.Q<Button>(itemCounter.ToString());
-            songButton.text = ((SongData)songs[i]).title;
-            songButton.visible = true;
-            itemCounter++;
-            // set Button function
-            songButton.clicked += () =>
-            {
-                GameState.currentSong = (SongData)songs[iCopy];
-                SceneManager.LoadScene("GameScene");
-            };
-        }*/
         // set song button functions
         for (int i = 1; i <= 10; i++)
         {
