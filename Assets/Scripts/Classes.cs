@@ -2,6 +2,12 @@ using System;
 
 namespace Classes
 {
+    public enum GameMode
+    {
+        None,
+        ChooseSong
+    }
+
     public enum Node
     {
         C = 11,
@@ -18,6 +24,7 @@ namespace Classes
         B = 0,
         None = -1
     }
+
     public static class NodeFunctions
     {
         public static Node getNodeFromString(string nodeString)

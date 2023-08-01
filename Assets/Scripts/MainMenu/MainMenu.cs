@@ -212,6 +212,7 @@ public class MainMenu : MonoBehaviour
             int iCopy = i;
             chooseSong.Q<Button>(iCopy.ToString()).clicked += () =>
             {
+                GameState.currentGameMode = GameMode.ChooseSong;
                 GameState.currentSong = (SongData)songs[currentLabel + iCopy - 1];
                 SceneManager.LoadScene("GameScene");
             };
@@ -359,6 +360,39 @@ public class MainMenu : MonoBehaviour
         if (Directory.Exists(GameState.settings.absolutePathToSongs))
         {
             searchDirectory(GameState.settings.absolutePathToSongs);
+        }
+        // Change the view in dependency of last played gamemode
+        if (GameState.currentGameMode == GameMode.ChooseSong)
+        {
+            mainMenu.visible = false;
+            updateSongList();
+            chooseSong.visible = true;
+            inChooseSong = true;
+            // Load Amount Player 
+            chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
+            for (int i = 0; i < maxPlayer; i++)
+            {
+                if (GameState.currentProfileIndex[i] < GameState.profiles.Count)
+                {
+                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+                }
+                else
+                {
+                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[0].name;
+                    GameState.currentProfileIndex[i] = 0;
+                }
+            }
+            // set visibility of player settings
+            for (int i = 0; i < GameState.amountPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = true;
+                chooseSong_PlayerX[i].visible = true;
+            }
+            for (int i = GameState.amountPlayer; i < maxPlayer; i++)
+            {
+                chooseSong_PlayerX_Label[i].visible = false;
+                chooseSong_PlayerX[i].visible = false;
+            }
         }
     }
 

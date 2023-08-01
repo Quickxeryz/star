@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class GameState : MonoBehaviour
 {
+    public static GameMode currentGameMode = GameMode.None;
     public static Settings settings;
     public static SongData currentSong;
     public static Difficulty difficulty = Difficulty.Easy;
