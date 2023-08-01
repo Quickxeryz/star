@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
+using System;
+using System.IO;
 using System.Collections;
 using Classes;
 
@@ -368,7 +370,7 @@ public class GameLogic : MonoBehaviour
         }
         else
         {
-            if ((!songPlayer.currentPlayerIsAudioSource && (songPlayer.isPlaying() || songPlayer.getTime() == 0)) || (songPlayer.currentPlayerIsAudioSource == true && songPlayer.isPlaying()))
+            if ((!songPlayer.currentPlayerIsAudioSource && (songPlayer.isPlaying() || songPlayer.getTime() == 0)) || (songPlayer.currentPlayerIsAudioSource && songPlayer.isPlaying()))
             {
                 double currentTime = songPlayer.getTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
@@ -620,7 +622,17 @@ public class GameLogic : MonoBehaviour
         // get audio file per request
         UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip("file:///" + GameState.currentSong.pathToMusic, AudioType.MPEG);
         yield return req.SendWebRequest();
-        audio.clip = DownloadHandlerAudioClip.GetContent(req);
+        try
+        {
+            audio.clip = DownloadHandlerAudioClip.GetContent(req);
+        }
+        catch (Exception)
+        {
+            StreamWriter file = new StreamWriter("errors.log", true);
+            file.WriteLine("Error getting audio from " + GameState.currentSong.pathToMusic + "; Maybe the path to the mp3 or video is not found or the txt file isn't written in utf-8!");
+            file.Close();
+            SceneManager.LoadScene("MainMenu");
+        }
         songPlayer = new SongPlayer(audio);
         // play audio and video 
         audio.Play();

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using System.IO;
 using System.Collections;
+using System.IO;
 using Classes;
 
 public class MainMenu : MonoBehaviour
@@ -430,7 +430,7 @@ public class MainMenu : MonoBehaviour
                         }
                         else if (line.StartsWith("#MP3:"))
                         {
-                            songMusicPath = path + "\\" + line.Substring(5);
+                            songMusicPath = path + "/" + line.Substring(5);
                         }
                         else if (line.StartsWith("#BPM:"))
                         {
@@ -442,7 +442,7 @@ public class MainMenu : MonoBehaviour
                         }
                         else if (line.StartsWith("#VIDEO:"))
                         {
-                            songVideoPath = path + "\\" + line.Substring(7);
+                            songVideoPath = path + "/" + line.Substring(7);
                         }
                     }
                     currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap);
