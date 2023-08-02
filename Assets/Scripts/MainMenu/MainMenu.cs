@@ -1,28 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using System.Collections;
 using System.IO;
 using Classes;
 
 public class MainMenu : MonoBehaviour
 {
-    // choose song
-    public int currentLabel = 0;
-    TemplateContainer chooseSong;
-    bool inChooseSong;
-    ArrayList songs;
-    const int maxPlayer = 6;
     bool serverStarted = false;
     int currentProfileIndex = 0;
 
     void OnEnable()
     {
         // load settings
-        string json = System.IO.File.ReadAllText("config.json");
+        string json = File.ReadAllText("config.json");
         GameState.settings = JsonUtility.FromJson<Settings>(json);
         // load playerProfiles
-        json = System.IO.File.ReadAllText("playerProfiles.json");
+        json = File.ReadAllText("playerProfiles.json");
         if (GameState.profiles.Count == 0)
         {
             GameState.profiles.AddRange(JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles);
@@ -37,38 +30,6 @@ public class MainMenu : MonoBehaviour
         Button mainMenu_Playerprofiles = mainMenu.Q<Button>("Playerprofiles");
         Button mainMenu_Options = mainMenu.Q<Button>("Options");
         Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
-        // choose song
-        chooseSong = root.Q<TemplateContainer>("ChooseSong");
-        Button chooseSong_Back = chooseSong.Q<Button>("Back");
-        TemplateContainer chooseSong_PlayerAmount = chooseSong.Q<TemplateContainer>("PlayerAmount");
-        GroupBox chooseSong_PlayerAmount_TextBox = chooseSong_PlayerAmount.Q<GroupBox>("TextBox");
-        Button chooseSong_PlayerAmount_Left = chooseSong_PlayerAmount.Q<Button>("Left");
-        Button chooseSong_PlayerAmount_Right = chooseSong_PlayerAmount.Q<Button>("Right");
-        TemplateContainer[] chooseSong_PlayerX = new TemplateContainer[maxPlayer];
-        for (int i = 0; i < chooseSong_PlayerX.Length; i++)
-        {
-            chooseSong_PlayerX[i] = chooseSong.Q<TemplateContainer>("Player" + (i + 1).ToString());
-        }
-        Label[] chooseSong_PlayerX_Label = new Label[maxPlayer];
-        for (int i = 0; i < chooseSong_PlayerX_Label.Length; i++)
-        {
-            chooseSong_PlayerX_Label[i] = chooseSong.Q<Label>("Player" + (i + 1).ToString() + "Text");
-        }
-        GroupBox[] chooseSong_PlayerX_TextBox = new GroupBox[maxPlayer];
-        for (int i = 0; i < chooseSong_PlayerX_TextBox.Length; i++)
-        {
-            chooseSong_PlayerX_TextBox[i] = chooseSong_PlayerX[i].Q<GroupBox>("TextBox");
-        }
-        Button[] chooseSong_PlayerX_Left = new Button[maxPlayer];
-        for (int i = 0; i < chooseSong_PlayerX_Left.Length; i++)
-        {
-            chooseSong_PlayerX_Left[i] = chooseSong_PlayerX[i].Q<Button>("Left");
-        }
-        Button[] chooseSong_PlayerX_Right = new Button[maxPlayer];
-        for (int i = 0; i < chooseSong_PlayerX_Right.Length; i++)
-        {
-            chooseSong_PlayerX_Right[i] = chooseSong_PlayerX[i].Q<Button>("Right");
-        }
         // playerProfiles
         TemplateContainer profiles = root.Q<TemplateContainer>("Profiles");
         Button profiles_Back = profiles.Q<Button>("Back");
@@ -81,44 +42,16 @@ public class MainMenu : MonoBehaviour
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
         Button options_Back = options.Q<Button>("Back");
-        bool[] optionsLeftClickedCreated = new bool[maxPlayer];
-        bool[] optionsRightClickedCreated = new bool[maxPlayer];
+        bool[] optionsLeftClickedCreated = new bool[GameState.maxPlayer];
+        bool[] optionsRightClickedCreated = new bool[GameState.maxPlayer];
         TextField options_Path = options.Q<TextField>("Path");
         TextField options_Delay = options.Q<TextField>("Delay");
-        MicrophoneData[] microphones = new MicrophoneData[maxPlayer];
+        MicrophoneData[] microphones = new MicrophoneData[GameState.maxPlayer];
         // set functionality of all buttons
         // main menu
         mainMenu_Play.clicked += () =>
         {
-            mainMenu.visible = false;
-            updateSongList();
-            chooseSong.visible = true;
-            inChooseSong = true;
-            // Load Amount Player 
-            chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
-            for (int i = 0; i < maxPlayer; i++)
-            {
-                if (GameState.currentProfileIndex[i] < GameState.profiles.Count)
-                {
-                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
-                }
-                else
-                {
-                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[0].name;
-                    GameState.currentProfileIndex[i] = 0;
-                }
-            }
-            // set visibility of player settings
-            for (int i = 0; i < GameState.amountPlayer; i++)
-            {
-                chooseSong_PlayerX_Label[i].visible = true;
-                chooseSong_PlayerX[i].visible = true;
-            }
-            for (int i = GameState.amountPlayer; i < maxPlayer; i++)
-            {
-                chooseSong_PlayerX_Label[i].visible = false;
-                chooseSong_PlayerX[i].visible = false;
-            }
+            SceneManager.LoadScene("ChooseSong");
         };
         mainMenu_Server.clicked += () =>
         {
@@ -126,7 +59,7 @@ public class MainMenu : MonoBehaviour
             if (!serverStarted)
             {
                 serverStarted = true;
-                System.Threading.Tasks.Task.Run(() => startServer());
+                System.Threading.Tasks.Task.Run(() => StartServer());
             }
         };
         mainMenu_Playerprofiles.clicked += () =>
@@ -144,9 +77,9 @@ public class MainMenu : MonoBehaviour
             // load config
             options_Path.value = GameState.settings.absolutePathToSongs;
             options_Delay.value = GameState.settings.microphoneDelayInSeconds.ToString();
-            microphones = new MicrophoneData[maxPlayer];
+            microphones = new MicrophoneData[GameState.maxPlayer];
             // load microphones
-            for (int i = 0; i < maxPlayer; i++)
+            for (int i = 0; i < GameState.maxPlayer; i++)
             {
                 int j = 0;
                 microphones[i] = new MicrophoneData();
@@ -172,7 +105,7 @@ public class MainMenu : MonoBehaviour
                     microphones[i].isOnline = true;
                 }
                 // set default if mic not exists
-                if (microphones[i].equalsWithoutChannel(new MicrophoneData()))
+                if (microphones[i].EqualsWithoutChannel(new MicrophoneData()))
                 {
                     microphones[i].name = NAudio.Wave.WaveInEvent.GetCapabilities(0).ProductName;
                     microphones[i].index = 0;
@@ -191,7 +124,7 @@ public class MainMenu : MonoBehaviour
                 }
                 if (!optionsLeftClickedCreated[iCopy])
                 {
-                    options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Left").clicked += () => optionsLeftClicked(options, microphones, iCopy);
+                    options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Left").clicked += () => OptionsLeftClicked(options, microphones, iCopy);
                     optionsLeftClickedCreated[iCopy] = true;
                 }
                 if (!optionsRightClickedCreated[iCopy])
@@ -205,78 +138,6 @@ public class MainMenu : MonoBehaviour
                 {
                     Application.Quit();
                 };
-        // choose song
-        // set song button functions
-        for (int i = 1; i <= 10; i++)
-        {
-            int iCopy = i;
-            chooseSong.Q<Button>(iCopy.ToString()).clicked += () =>
-            {
-                GameState.currentGameMode = GameMode.ChooseSong;
-                GameState.currentSong = (SongData)songs[currentLabel + iCopy - 1];
-                SceneManager.LoadScene("GameScene");
-            };
-        }
-        chooseSong_PlayerAmount_Left.clicked += () =>
-        {
-            if (GameState.amountPlayer > 1)
-            {
-                // update player number
-                GameState.amountPlayer--;
-                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
-                // make actual player unvisible
-                chooseSong_PlayerX_Label[GameState.amountPlayer].visible = false;
-                chooseSong_PlayerX[GameState.amountPlayer].visible = false;
-            }
-        };
-        chooseSong_PlayerAmount_Right.clicked += () =>
-        {
-            if (GameState.amountPlayer < maxPlayer)
-            {
-                // make new player visible
-                chooseSong_PlayerX_Label[GameState.amountPlayer].visible = true;
-                chooseSong_PlayerX[GameState.amountPlayer].visible = true;
-                // update player number
-                GameState.amountPlayer++;
-                chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
-            }
-        };
-        for (int i = 0; i < maxPlayer; i++)
-        {
-            int iCopy = i;
-            chooseSong_PlayerX_Left[iCopy].clicked += () =>
-            {
-                if (GameState.currentProfileIndex[iCopy] > 0)
-                {
-                    GameState.currentProfileIndex[iCopy]--;
-                    chooseSong_PlayerX_TextBox[iCopy].text = GameState.profiles[GameState.currentProfileIndex[iCopy]].name;
-                }
-            };
-            chooseSong_PlayerX_Right[iCopy].clicked += () =>
-            {
-                if (GameState.currentProfileIndex[iCopy] < GameState.profiles.Count - 1)
-                {
-                    GameState.currentProfileIndex[iCopy]++;
-                    chooseSong_PlayerX_TextBox[iCopy].text = GameState.profiles[GameState.currentProfileIndex[iCopy]].name;
-                }
-            };
-        }
-        chooseSong_Back.clicked += () =>
-        {
-            mainMenu.visible = true;
-            chooseSong.visible = false;
-            // clear song data elements
-            for (int i = 1; i <= 10; i++)
-            {
-                chooseSong.Q<Button>(i.ToString()).visible = false;
-            }
-            for (int i = 0; i < maxPlayer; i++)
-            {
-                chooseSong_PlayerX_Label[i].visible = false;
-                chooseSong_PlayerX[i].visible = false;
-            }
-            inChooseSong = false;
-        };
         // playerProfiles
         profiles_LeftButton.clicked += () =>
         {
@@ -355,164 +216,9 @@ public class MainMenu : MonoBehaviour
             // update setting
             GameState.settings = settings;
         };
-        // Loading song list
-        songs = new ArrayList();
-        if (Directory.Exists(GameState.settings.absolutePathToSongs))
-        {
-            searchDirectory(GameState.settings.absolutePathToSongs);
-        }
-        // Change the view in dependency of last played gamemode
-        if (GameState.currentGameMode == GameMode.ChooseSong)
-        {
-            mainMenu.visible = false;
-            updateSongList();
-            chooseSong.visible = true;
-            inChooseSong = true;
-            // Load Amount Player 
-            chooseSong_PlayerAmount_TextBox.text = GameState.amountPlayer.ToString();
-            for (int i = 0; i < maxPlayer; i++)
-            {
-                if (GameState.currentProfileIndex[i] < GameState.profiles.Count)
-                {
-                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
-                }
-                else
-                {
-                    chooseSong_PlayerX_TextBox[i].text = GameState.profiles[0].name;
-                    GameState.currentProfileIndex[i] = 0;
-                }
-            }
-            // set visibility of player settings
-            for (int i = 0; i < GameState.amountPlayer; i++)
-            {
-                chooseSong_PlayerX_Label[i].visible = true;
-                chooseSong_PlayerX[i].visible = true;
-            }
-            for (int i = GameState.amountPlayer; i < maxPlayer; i++)
-            {
-                chooseSong_PlayerX_Label[i].visible = false;
-                chooseSong_PlayerX[i].visible = false;
-            }
-        }
     }
 
-    void Update()
-    {
-        if (inChooseSong)
-        {
-            // check for mouse wheel
-            if (Input.GetAxis("Mouse ScrollWheel") < 0f)
-            {
-                if (currentLabel < songs.Count - 10)
-                {
-                    currentLabel++;
-                    updateSongList();
-                }
-            }
-            else if (Input.GetAxis("Mouse ScrollWheel") > 0f)
-            {
-                if (currentLabel > 0)
-                {
-                    currentLabel--;
-                    updateSongList();
-                }
-            }
-        }
-    }
-
-    // Go through all files and folders
-    void searchDirectory(string path)
-    {
-        // Get all files
-        string[] files = Directory.GetFiles(path);
-        string[] text;
-        bool isSong;
-        SongData currentSong;
-        string songTitle = "";
-        string songArtist = "";
-        string songMusicPath = "";
-        float bpm = 0;
-        float gap = 0;
-        string songVideoPath = "";
-        foreach (string file in files)
-            // check for song file
-            if (file.Contains(".txt"))
-            {
-                text = System.IO.File.ReadAllLines(file);
-                isSong = false;
-                foreach (string line in text)
-                {
-                    if (line.StartsWith("#TITLE"))
-                    {
-                        isSong = true;
-                        break;
-                    }
-                }
-                if (isSong)
-                {
-                    songVideoPath = "";
-                    // when file is song file extract data
-                    foreach (string line in text)
-                    {
-                        if (line.StartsWith("#TITLE:"))
-                        {
-                            songTitle = line.Substring(7);
-                        }
-                        else if (line.StartsWith("#ARTIST:"))
-                        {
-                            songArtist = line.Substring(8);
-                        }
-                        else if (line.StartsWith("#MP3:"))
-                        {
-                            songMusicPath = path + "/" + line.Substring(5);
-                        }
-                        else if (line.StartsWith("#BPM:"))
-                        {
-                            bpm = float.Parse(line.Substring(5).Replace(".", ","));
-                        }
-                        else if (line.StartsWith("#GAP:"))
-                        {
-                            gap = float.Parse(line.Substring(5).Replace(".", ",")) * 0.001f;
-                        }
-                        else if (line.StartsWith("#VIDEO:"))
-                        {
-                            songVideoPath = path + "/" + line.Substring(7);
-                        }
-                    }
-                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap);
-                    currentSong.pathToVideo = songVideoPath;
-                    songs.Add(currentSong);
-                }
-            }
-        // Get all directorys
-        files = Directory.GetDirectories(path);
-        foreach (string dir in files)
-        {
-            searchDirectory(dir);
-        }
-    }
-
-    void updateSongList()
-    {
-        int itemCounter = 1;
-        // clear song data elements
-        for (int i = 1; i <= 10; i++)
-        {
-            chooseSong.Q<Button>(i.ToString()).visible = false;
-        }
-        // set song data to items
-        Button songButton;
-        for (int i = currentLabel; itemCounter <= 10 && i < songs.Count; i++)
-        {
-            int iCopy = i;
-            songButton = chooseSong.Q<Button>(itemCounter.ToString());
-            songButton.text = ((SongData)songs[i]).title;
-            songButton.visible = true;
-            itemCounter++;
-        }
-    }
-
-    void startServer()
+    void StartServer()
     {
         // Create Node command for the server
         System.Diagnostics.Process process = new System.Diagnostics.Process();
@@ -545,8 +251,8 @@ public class MainMenu : MonoBehaviour
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
         // Set handlers
-        process.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(outputHandler);
-        process.ErrorDataReceived += new System.Diagnostics.DataReceivedEventHandler(outputHandler);
+        process.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(OutputHandler);
+        process.ErrorDataReceived += new System.Diagnostics.DataReceivedEventHandler(OutputHandler);
         // Start server and handlers
         process.Start();
         process.BeginOutputReadLine();
@@ -555,7 +261,7 @@ public class MainMenu : MonoBehaviour
     }
 
     // output Handler for server
-    void outputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+    void OutputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
     {
         if (outLine.Data == null)
         {
@@ -571,11 +277,11 @@ public class MainMenu : MonoBehaviour
         else
         {
             // Updating Nodes
-            GameState.onlineMicrophones[index] = (GameState.onlineMicrophones[index].id, NodeFunctions.getNodeFromString(outLine.Data.Substring(outLine.Data.IndexOf(':') + 1)));
+            GameState.onlineMicrophones[index] = (GameState.onlineMicrophones[index].id, NodeFunctions.GetNodeFromString(outLine.Data.Substring(outLine.Data.IndexOf(':') + 1)));
         }
     }
 
-    void optionsLeftClicked(TemplateContainer options, MicrophoneData[] microphones, int playerId)
+    void OptionsLeftClicked(TemplateContainer options, MicrophoneData[] microphones, int playerId)
     {
         if (microphones[playerId].channel == 1)
         {

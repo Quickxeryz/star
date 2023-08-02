@@ -27,7 +27,7 @@ namespace Classes
 
     public static class NodeFunctions
     {
-        public static Node getNodeFromString(string nodeString)
+        public static Node GetNodeFromString(string nodeString)
         {
             Node node;
             switch (nodeString)
@@ -75,7 +75,7 @@ namespace Classes
             return node;
         }
 
-        public static Node getNodeFromInt(int nodeNumber)
+        public static Node GetNodeFromInt(int nodeNumber)
         {
             Node node;
             while (nodeNumber < 0)
@@ -150,9 +150,9 @@ namespace Classes
         public int CompareTo(object obj)
         {
             PlayerProfile Temp = (PlayerProfile)obj;
-            if (this.points < Temp.points)
+            if (points < Temp.points)
                 return 1;
-            if (this.points > Temp.points)
+            if (points > Temp.points)
                 return -1;
             else
                 return 0;
@@ -257,7 +257,7 @@ namespace Classes
             this.isOnline = isOnline;
         }
 
-        public bool equalsWithoutChannel(MicrophoneData mD)
+        public bool EqualsWithoutChannel(MicrophoneData mD)
         {
             return (name == mD.name && index == mD.index);
         }

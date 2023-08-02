@@ -13,7 +13,15 @@ public class SongEnd : MonoBehaviour
         Button continue_ = root.Q<Button>("Continue");
         continue_.clicked += () =>
         {
-            SceneManager.LoadScene("MainMenu");
+            switch (GameState.currentGameMode)
+            {
+                case GameMode.ChooseSong:
+                    SceneManager.LoadScene("ChooseSong");
+                    break;
+                case GameMode.None:
+                    SceneManager.LoadScene("MainMenu");
+                    break;
+            }
         };
         // show placements
         // sort after points

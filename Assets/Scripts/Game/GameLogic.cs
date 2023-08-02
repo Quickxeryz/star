@@ -60,7 +60,6 @@ public class GameLogic : MonoBehaviour
     Label textLine2Bottom;
     Label textLine1Top;
     Label textLine2Top;
-
     VisualElement[] nodeArrows = new VisualElement[GameState.amountPlayer];
     VisualElement[] nodeBoxes = new VisualElement[GameState.amountPlayer];
     Label[] pointsTexts = new Label[GameState.amountPlayer];
@@ -99,7 +98,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.node = NodeFunctions.getNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
+                    syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -111,7 +110,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.node = NodeFunctions.getNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
+                    syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -123,7 +122,7 @@ public class GameLogic : MonoBehaviour
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
                     syllable.length = int.Parse(temp.Substring(0, temp.IndexOf(' ')));
                     temp = temp.Substring(temp.IndexOf(' ') + 1);
-                    syllable.node = NodeFunctions.getNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
+                    syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp.Substring(0, temp.IndexOf(' '))));
                     syllable.syllable = temp.Substring(temp.IndexOf(' ') + 1);
                     songData.Add(syllable);
                     break;
@@ -268,7 +267,7 @@ public class GameLogic : MonoBehaviour
         }
         int index = 0;
         beatSumLine1 = startBeatLine2;
-        float currentPercent = 0f;
+        float currentPercent;
         while (songData[index].GetType() == typeof(SyllableData))
         {
             sData = (SyllableData)songData[index];
@@ -280,7 +279,7 @@ public class GameLogic : MonoBehaviour
                 nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
                 // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
                 nodeBox.style.left = Length.Percent(currentPercent);
-                nodeBox.style.width = Length.Percent(((sData.appearing + sData.length) * 100) / beatSumLine1 - currentPercent);
+                nodeBox.style.width = Length.Percent((sData.appearing + sData.length) * 100 / beatSumLine1 - currentPercent);
                 nodesLines1[i].Add(nodeBox);
             }
             index++;
@@ -340,7 +339,7 @@ public class GameLogic : MonoBehaviour
                 }
             }
         }
-        pointsPerBeat = 10000f / (float)beatSum;
+        pointsPerBeat = 10000f / beatSum;
     }
 
     void Update()
@@ -374,9 +373,9 @@ public class GameLogic : MonoBehaviour
             {
                 double currentTime = songPlayer.getTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
-                int currentBeat = (int)System.Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
+                int currentBeat = (int)Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
                 // updating nodes, songtext and calculating score
-                string text = "";
+                string text;
                 SyllableData sData;
                 VisualElement nodeBox;
                 float currentPercent;
@@ -508,7 +507,7 @@ public class GameLogic : MonoBehaviour
                             nodesLines2[i] = new ArrayList();
                         }
                         int nodesNewLineIndex = songDataNewLineIndex;
-                        int beatEnd = 0;
+                        int beatEnd;
                         if (songDataNewLineIndex < songData.Count)
                         {
                             text = "";
@@ -648,7 +647,7 @@ public class GameLogic : MonoBehaviour
     private bool hitNode(Node sung, Node toHit)
     {
         // get distance between node enums
-        int distance = 0;
+        int distance;
         if (sung > toHit)
         {
             distance = (int)sung - (int)toHit;
