@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Classes;
 
@@ -10,7 +11,7 @@ public class ChooseSong : MonoBehaviour
 {
     // choose song
     VisualElement root;
-    ArrayList songs;
+    List<SongData> songs;
     DateTime lastTimePressed;
 
     void OnEnable()
@@ -108,7 +109,7 @@ public class ChooseSong : MonoBehaviour
             SceneManager.LoadScene("MainMenu");
         };
         // Loading song list
-        songs = new ArrayList();
+        songs = new();
         if (Directory.Exists(GameState.settings.absolutePathToSongs))
         {
             SearchDirectory(GameState.settings.absolutePathToSongs);

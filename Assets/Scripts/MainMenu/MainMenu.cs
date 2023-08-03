@@ -7,7 +7,6 @@ using Classes;
 public class MainMenu : MonoBehaviour
 {
     bool serverStarted = false;
-    int currentProfileIndex = 0;
 
     void OnEnable()
     {
@@ -30,15 +29,6 @@ public class MainMenu : MonoBehaviour
         Button mainMenu_Playerprofiles = mainMenu.Q<Button>("Playerprofiles");
         Button mainMenu_Options = mainMenu.Q<Button>("Options");
         Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
-        // playerProfiles
-        TemplateContainer profiles = root.Q<TemplateContainer>("Profiles");
-        Button profiles_Back = profiles.Q<Button>("Back");
-        Label profiles_Player = profiles.Q<Label>("Player");
-        TextField profiles_NameInput = profiles.Q<TextField>("Name");
-        Button profiles_LeftButton = profiles.Q<Button>("Left");
-        Button profiles_RightButton = profiles.Q<Button>("Right");
-        Button profiles_NewButton = profiles.Q<Button>("New");
-        Button profiles_DeleteButton = profiles.Q<Button>("Delete");
         // options
         TemplateContainer options = root.Q<TemplateContainer>("Options");
         Button options_Back = options.Q<Button>("Back");
@@ -64,11 +54,7 @@ public class MainMenu : MonoBehaviour
         };
         mainMenu_Playerprofiles.clicked += () =>
         {
-            mainMenu.visible = false;
-            profiles.visible = true;
-            currentProfileIndex = 0;
-            profiles_Player.text = GameState.profiles[0].name;
-            profiles_NameInput.value = GameState.profiles[0].name;
+            SceneManager.LoadScene("PlayerProfiles");
         };
         mainMenu_Options.clicked += () =>
         {
@@ -129,7 +115,7 @@ public class MainMenu : MonoBehaviour
                 }
                 if (!optionsRightClickedCreated[iCopy])
                 {
-                    options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Right").clicked += () => optionsRightClicked(options, microphones, iCopy);
+                    options.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Right").clicked += () => OptionsRightClicked(options, microphones, iCopy);
                     optionsRightClickedCreated[iCopy] = true;
                 }
             }
@@ -138,79 +124,13 @@ public class MainMenu : MonoBehaviour
                 {
                     Application.Quit();
                 };
-        // playerProfiles
-        profiles_LeftButton.clicked += () =>
-        {
-            if (currentProfileIndex > 0)
-            {
-                // save data
-                GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
-                // change viewed profile
-                currentProfileIndex--;
-                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
-                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
-            }
-        };
-        profiles_RightButton.clicked += () =>
-        {
-            if (currentProfileIndex < GameState.profiles.Count - 1)
-            {
-                // save data
-                GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
-                // change viewed profile
-                currentProfileIndex++;
-                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
-                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
-            }
-        };
-        profiles_NewButton.clicked += () =>
-        {
-            // save data
-            GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
-            // add new profile
-            GameState.profiles.Add(new PlayerProfile("Name"));
-            // change view to new profile
-            currentProfileIndex = GameState.profiles.Count - 1;
-            profiles_Player.text = GameState.profiles[currentProfileIndex].name;
-            profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
-        };
-        profiles_DeleteButton.clicked += () =>
-        {
-            // delete profile
-            if (GameState.profiles.Count > 1)
-            {
-                GameState.profiles.RemoveAt(currentProfileIndex);
-                // change view to other profile
-                if (currentProfileIndex >= GameState.profiles.Count)
-                {
-                    currentProfileIndex--;
-                }
-                profiles_Player.text = GameState.profiles[currentProfileIndex].name;
-                profiles_NameInput.value = GameState.profiles[currentProfileIndex].name;
-            }
-            else
-            {
-                profiles_Player.text = "Name";
-                profiles_NameInput.value = "Name";
-            }
-        };
-        profiles_Back.clicked += () =>
-        {
-            mainMenu.visible = true;
-            profiles.visible = false;
-            // saving profiles
-            GameState.profiles[currentProfileIndex].name = profiles_NameInput.value;
-            JsonPlayerProfiles profilesToJson = new JsonPlayerProfiles(GameState.profiles.ToArray());
-            json = JsonUtility.ToJson(profilesToJson);
-            File.WriteAllText("playerProfiles.json", json);
-        };
         // options
         options_Back.clicked += () =>
         {
             mainMenu.visible = true;
             options.visible = false;
             // save config
-            Settings settings = new Settings(options_Path.value, float.Parse(options_Delay.value.Replace(".", ",")), microphones);
+            Settings settings = new(options_Path.value, float.Parse(options_Delay.value.Replace(".", ",")), microphones);
             json = JsonUtility.ToJson(settings);
             File.WriteAllText("config.json", json);
             // update setting
@@ -221,7 +141,7 @@ public class MainMenu : MonoBehaviour
     void StartServer()
     {
         // Create Node command for the server
-        System.Diagnostics.Process process = new System.Diagnostics.Process();
+        System.Diagnostics.Process process = new();
         // Drop Process on exit/
         System.AppDomain.CurrentDomain.DomainUnload += (s, e) =>
             {
@@ -267,7 +187,7 @@ public class MainMenu : MonoBehaviour
         {
             return;
         }
-        string playerName = outLine.Data.Substring(0, outLine.Data.IndexOf(':'));
+        string playerName = outLine.Data[..outLine.Data.IndexOf(':')];
         int index = GameState.onlineMicrophones.FindIndex(element => element.id == playerName);
         if (index == -1)
         {
@@ -277,7 +197,7 @@ public class MainMenu : MonoBehaviour
         else
         {
             // Updating Nodes
-            GameState.onlineMicrophones[index] = (GameState.onlineMicrophones[index].id, NodeFunctions.GetNodeFromString(outLine.Data.Substring(outLine.Data.IndexOf(':') + 1)));
+            GameState.onlineMicrophones[index] = (GameState.onlineMicrophones[index].id, NodeFunctions.GetNodeFromString(outLine.Data[(outLine.Data.IndexOf(':') + 1)..]));
         }
     }
 
@@ -311,7 +231,7 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    void optionsRightClicked(TemplateContainer options, MicrophoneData[] microphones, int playerId)
+    void OptionsRightClicked(TemplateContainer options, MicrophoneData[] microphones, int playerId)
     {
         if (microphones[playerId].channel == 0)
         {

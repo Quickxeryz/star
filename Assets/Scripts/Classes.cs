@@ -166,7 +166,7 @@ namespace Classes
             currentPlayerIsAudioSource = false;
         }
 
-        public bool IsPlaying()
+        public bool isPlaying()
         {
             if (currentPlayerIsAudioSource)
             {
@@ -178,7 +178,7 @@ namespace Classes
             }
         }
 
-        public double GetTime()
+        public double getTime()
         {
             if (currentPlayerIsAudioSource)
             {

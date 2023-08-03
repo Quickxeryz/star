@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 8f817fbfe732dc64a91cb60204cd739d
   - enabled: 1
+    path: Assets/Scenes/PlayerProfiles.unity
+    guid: a3bbccd0b69b1dd4281b80662154b775
+  - enabled: 1
     path: Assets/Scenes/ChooseSong.unity
     guid: 67a785cdf2388ab4ba062c3959f5f252
   - enabled: 1
