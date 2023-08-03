@@ -10,7 +10,6 @@ public class ChooseSong : MonoBehaviour
 {
     // choose song
     VisualElement root;
-    int currentLabel;
     ArrayList songs;
     DateTime lastTimePressed;
 
@@ -55,7 +54,8 @@ public class ChooseSong : MonoBehaviour
             root.Q<Button>(iCopy.ToString()).clicked += () =>
             {
                 GameState.currentGameMode = GameMode.ChooseSong;
-                GameState.currentSong = (SongData)songs[currentLabel + iCopy - 1];
+                GameState.currentSong = (SongData)songs[GameState.lastSongLabel + iCopy - 1];
+                GameState.lastSongLabel = GameState.lastSongLabel + iCopy - 1;
                 SceneManager.LoadScene("GameScene");
             };
         }
@@ -113,7 +113,18 @@ public class ChooseSong : MonoBehaviour
         {
             SearchDirectory(GameState.settings.absolutePathToSongs);
         }
-        updateSongList();
+        songs.Sort();
+        if (GameState.lastSongLabel > songs.Count - 10)
+        {
+            if (songs.Count >= 10)
+            {
+                GameState.lastSongLabel = songs.Count - 10;
+            } else
+            {
+                GameState.lastSongLabel = 0;
+            }
+        }
+        UpdateSongList();
         // Load Amount Player 
         playerAmount_TextBox.text = GameState.amountPlayer.ToString();
         for (int i = 0; i < GameState.maxPlayer; i++)
@@ -146,28 +157,28 @@ public class ChooseSong : MonoBehaviour
         // check for mouse wheel
         if (Input.GetAxis("Mouse ScrollWheel") > 0f)
         {
-            if (currentLabel > 0)
+            if (GameState.lastSongLabel > 0)
             {
-                currentLabel--;
-                updateSongList();
+                GameState.lastSongLabel--;
+                UpdateSongList();
             }
         }
         else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
         {
-            if (currentLabel < songs.Count - 10)
+            if (GameState.lastSongLabel < songs.Count - 10)
             {
-                currentLabel++;
-                updateSongList();
+                GameState.lastSongLabel++;
+                UpdateSongList();
             }
         }
         else if (Input.GetKey(KeyCode.UpArrow))
         {
             if (DateTime.Now.Subtract(lastTimePressed).TotalMilliseconds > 100)
             {
-                if (currentLabel > 0)
+                if (GameState.lastSongLabel > 0)
                 {
-                    currentLabel--;
-                    updateSongList();
+                    GameState.lastSongLabel--;
+                    UpdateSongList();
                     lastTimePressed = DateTime.Now;
                 }
             }
@@ -176,37 +187,41 @@ public class ChooseSong : MonoBehaviour
         {
             if (DateTime.Now.Subtract(lastTimePressed).TotalMilliseconds > 100)
             {
-                if (currentLabel < songs.Count - 10)
+                if (GameState.lastSongLabel < songs.Count - 10)
                 {
-                    currentLabel++;
-                    updateSongList();
+                    GameState.lastSongLabel++;
+                    UpdateSongList();
                     lastTimePressed = DateTime.Now;
                 }
             }
         }
         else if (Input.GetKeyDown(KeyCode.PageUp))
         {
-            if (currentLabel > 10)
+            if (GameState.lastSongLabel > 10)
             {
-                currentLabel-=10;
-                updateSongList();
+                GameState.lastSongLabel-=10;
+                UpdateSongList();
             } else
             {
-                currentLabel = 0;
-                updateSongList();
+                GameState.lastSongLabel = 0;
+                UpdateSongList();
             }
         }
         else if (Input.GetKeyDown(KeyCode.PageDown))
         {
-            if (currentLabel < songs.Count - 20)
+            if (songs.Count < 10)
             {
-                currentLabel += 10;
-                updateSongList();
+                return;
+            }
+            if (GameState.lastSongLabel < songs.Count - 20)
+            {
+                GameState.lastSongLabel += 10;
+                UpdateSongList();
             }
             else
             {
-                currentLabel = songs.Count - 10;
-                updateSongList();
+                GameState.lastSongLabel = songs.Count - 10;
+                UpdateSongList();
             }
         }
     }
@@ -285,7 +300,7 @@ public class ChooseSong : MonoBehaviour
         }
     }
 
-    void updateSongList()
+    void UpdateSongList()
     {
         int itemCounter = 1;
         // clear song data elements
@@ -295,11 +310,10 @@ public class ChooseSong : MonoBehaviour
         }
         // set song data to items
         Button songButton;
-        for (int i = currentLabel; itemCounter <= 10 && i < songs.Count; i++)
+        for (int i = GameState.lastSongLabel; itemCounter <= 10 && i < songs.Count; i++)
         {
-            int iCopy = i;
             songButton = root.Q<Button>(itemCounter.ToString());
-            songButton.text = ((SongData)songs[i]).title;
+            songButton.text = ((SongData)songs[i]).artist + ": "+((SongData)songs[i]).title;
             songButton.visible = true;
             itemCounter++;
         }

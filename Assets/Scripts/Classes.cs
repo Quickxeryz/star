@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Runtime.ConstrainedExecution;
 
 namespace Classes
 {
@@ -29,102 +31,48 @@ namespace Classes
     {
         public static Node GetNodeFromString(string nodeString)
         {
-            Node node;
-            switch (nodeString)
+            Node node = nodeString switch
             {
-                case "C":
-                    node = Node.C;
-                    break;
-                case "CH":
-                    node = Node.CH;
-                    break;
-                case "D":
-                    node = Node.D;
-                    break;
-                case "DH":
-                    node = Node.DH;
-                    break;
-                case "E":
-                    node = Node.E;
-                    break;
-                case "F":
-                    node = Node.F;
-                    break;
-                case "FH":
-                    node = Node.FH;
-                    break;
-                case "G":
-                    node = Node.G;
-                    break;
-                case "GH":
-                    node = Node.GH;
-                    break;
-                case "A":
-                    node = Node.A;
-                    break;
-                case "AH":
-                    node = Node.AH;
-                    break;
-                case "B":
-                    node = Node.B;
-                    break;
-                default:
-                    node = Node.None;
-                    break;
-            }
+                "C" => Node.C,
+                "CH" => Node.CH,
+                "D" => Node.D,
+                "DH" => Node.DH,
+                "E" => Node.E,
+                "F" => Node.F,
+                "FH" => Node.FH,
+                "G" => Node.G,
+                "GH" => Node.GH,
+                "A" => Node.A,
+                "AH" => Node.AH,
+                "B" => Node.B,
+                _ => Node.None,
+            };
             return node;
         }
 
         public static Node GetNodeFromInt(int nodeNumber)
         {
-            Node node;
             while (nodeNumber < 0)
             {
                 nodeNumber += 12;
             }
-            nodeNumber = nodeNumber % 12;
-            switch (nodeNumber)
+            nodeNumber %= 12;
+            Node node = nodeNumber switch
             {
-                case 0:
-                    node = Node.C;
-                    break;
-                case 1:
-                    node = Node.CH;
-                    break;
-                case 2:
-                    node = Node.D;
-                    break;
-                case 3:
-                    node = Node.DH;
-                    break;
-                case 4:
-                    node = Node.E;
-                    break;
-                case 5:
-                    node = Node.F;
-                    break;
-                case 6:
-                    node = Node.FH;
-                    break;
-                case 7:
-                    node = Node.G;
-                    break;
-                case 8:
-                    node = Node.GH;
-                    break;
-                case 9:
-                    node = Node.A;
-                    break;
-                case 10:
-                    node = Node.AH;
-                    break;
-                case 11:
-                    node = Node.B;
-                    break;
-                default:
-                    node = Node.None;
-                    break;
-            }
+                0 => Node.C,
+                1 => Node.CH,
+                2 => Node.D,
+                3 => Node.DH,
+                4 => Node.E,
+                5 => Node.F,
+                6 => Node.FH,
+                7 => Node.G,
+                8 => Node.GH,
+                9 => Node.A,
+                10 => Node.AH,
+                11 => Node.B,
+                _ => Node.None,
+            };
             return node;
         }
     }
@@ -169,7 +117,7 @@ namespace Classes
         }
     }
 
-    public class SongData
+    public class SongData : IComparable
     {
         public string path;
         public string title;
@@ -187,6 +135,16 @@ namespace Classes
             this.pathToMusic = pathToMusic;
             this.bpm = bpm;
             this.gap = gap;
+        }
+
+        public int CompareTo(object obj)
+        {
+            SongData otherSong= (SongData)obj;
+            if (artist.CompareTo(otherSong.artist) == 0)
+            {
+                return title.CompareTo(otherSong.title);
+            }
+            return artist.CompareTo(otherSong.artist);
         }
     }
 
@@ -208,7 +166,7 @@ namespace Classes
             currentPlayerIsAudioSource = false;
         }
 
-        public bool isPlaying()
+        public bool IsPlaying()
         {
             if (currentPlayerIsAudioSource)
             {
@@ -220,7 +178,7 @@ namespace Classes
             }
         }
 
-        public double getTime()
+        public double GetTime()
         {
             if (currentPlayerIsAudioSource)
             {

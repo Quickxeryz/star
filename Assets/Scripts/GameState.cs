@@ -6,6 +6,7 @@ public class GameState : MonoBehaviour
 {
     public const int maxPlayer = 6;
     public static GameMode currentGameMode = GameMode.None;
+    public static int lastSongLabel;
     public static Settings settings;
     public static SongData currentSong;
     public static Difficulty difficulty = Difficulty.Easy;
