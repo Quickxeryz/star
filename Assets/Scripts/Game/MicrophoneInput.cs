@@ -5,13 +5,11 @@ using Classes;
 public class MicrophoneInput : MonoBehaviour
 {
     NAudio.Wave.WaveInEvent[] microphoneInputs = new NAudio.Wave.WaveInEvent[GameState.amountPlayer];
-    const int spectrumLength = 8192;
     const int sampleRate = 44100;
     const int bufferMilliseconds = 20;
-    const int hzThreshold = 25;
     const int bitDepth = 16;
     public Node[] nodes;
-    double[][][] samples = new double[GameState.amountPlayer][][];
+    readonly double[][][] samples = new double[GameState.amountPlayer][][];
 
     void Start()
     {
@@ -144,7 +142,7 @@ public class MicrophoneInput : MonoBehaviour
                     else
                     {
                         nodeNumber = (int)Math.Round(Math.Log(hz / 440, 2) * 12 + 49);
-                        nodes[i] = NodeFunctions.getNodeFromInt(nodeNumber - 4);
+                        nodes[i] = NodeFunctions.GetNodeFromInt(nodeNumber - 4);
                     }
                 }
             }
