@@ -2,16 +2,16 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Classes;
 
 public class ChooseSong : MonoBehaviour
 {
-    // choose song
+    // UI
     VisualElement root;
     List<SongData> songs;
+    List<SongData> currentSongs;
     DateTime lastTimePressed;
 
     void OnEnable()
@@ -24,6 +24,7 @@ public class ChooseSong : MonoBehaviour
         Button playerAmount_Left = playerAmount.Q<Button>("Left");
         Button playerAmount_Right = playerAmount.Q<Button>("Right");
         TemplateContainer[] playerX = new TemplateContainer[GameState.maxPlayer];
+        TextField search = root.Q<TextField>("Search");
         for (int i = 0; i < playerX.Length; i++)
         {
             playerX[i] = root.Q<TemplateContainer>("Player" + (i + 1).ToString());
@@ -55,8 +56,19 @@ public class ChooseSong : MonoBehaviour
             root.Q<Button>(iCopy.ToString()).clicked += () =>
             {
                 GameState.currentGameMode = GameMode.ChooseSong;
-                GameState.currentSong = (SongData)songs[GameState.lastSongLabel + iCopy - 1];
-                GameState.lastSongLabel = GameState.lastSongLabel + iCopy - 1;
+                GameState.currentSong = currentSongs[GameState.lastSongIndex + iCopy - 1];
+                bool found = false;
+                int j = 0;
+                string path = currentSongs[GameState.lastSongIndex + iCopy - 1].path;
+                while (!found && j<songs.Count)
+                {
+                    if (songs[j].path == path)
+                    {
+                        GameState.lastSongIndex = j;
+                        found = true;
+                    }
+                    j++;
+                }
                 SceneManager.LoadScene("GameScene");
             };
         }
@@ -104,6 +116,35 @@ public class ChooseSong : MonoBehaviour
                 }
             };
         }
+        search.RegisterValueChangedCallback
+        (
+            e =>
+            {
+                string text = e.newValue.ToLower();
+                if (text == "")
+                {
+                    GameState.lastSongIndex = 0;
+                    currentSongs = new List<SongData>(songs); ;
+                }
+                else
+                {
+                    GameState.lastSongIndex = 0;
+                    currentSongs.Clear();
+                    foreach (SongData song in songs)
+                    {
+                        if (song.artist.ToLower().Contains(text))
+                        {
+                            currentSongs.Add(song);
+                        }
+                        else if (song.title.ToLower().Contains(text))
+                        {
+                            currentSongs.Add(song);
+                        }
+                    }
+                }
+                UpdateSongList();
+            }
+        );
         back.clicked += () =>
         {
             SceneManager.LoadScene("MainMenu");
@@ -115,14 +156,15 @@ public class ChooseSong : MonoBehaviour
             SearchDirectory(GameState.settings.absolutePathToSongs);
         }
         songs.Sort();
-        if (GameState.lastSongLabel > songs.Count - 10)
+        currentSongs = new List<SongData>(songs); ;
+        if (GameState.lastSongIndex > currentSongs.Count - 10)
         {
-            if (songs.Count >= 10)
+            if (currentSongs.Count >= 10)
             {
-                GameState.lastSongLabel = songs.Count - 10;
+                GameState.lastSongIndex = currentSongs.Count - 10;
             } else
             {
-                GameState.lastSongLabel = 0;
+                GameState.lastSongIndex = 0;
             }
         }
         UpdateSongList();
@@ -155,20 +197,20 @@ public class ChooseSong : MonoBehaviour
 
     void Update()
     {
-        // check for mouse wheel
+        // set up steering for navigating through song list
         if (Input.GetAxis("Mouse ScrollWheel") > 0f)
         {
-            if (GameState.lastSongLabel > 0)
+            if (GameState.lastSongIndex > 0)
             {
-                GameState.lastSongLabel--;
+                GameState.lastSongIndex--;
                 UpdateSongList();
             }
         }
         else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
         {
-            if (GameState.lastSongLabel < songs.Count - 10)
+            if (GameState.lastSongIndex < currentSongs.Count - 10)
             {
-                GameState.lastSongLabel++;
+                GameState.lastSongIndex++;
                 UpdateSongList();
             }
         }
@@ -176,9 +218,9 @@ public class ChooseSong : MonoBehaviour
         {
             if (DateTime.Now.Subtract(lastTimePressed).TotalMilliseconds > 100)
             {
-                if (GameState.lastSongLabel > 0)
+                if (GameState.lastSongIndex > 0)
                 {
-                    GameState.lastSongLabel--;
+                    GameState.lastSongIndex--;
                     UpdateSongList();
                     lastTimePressed = DateTime.Now;
                 }
@@ -188,9 +230,9 @@ public class ChooseSong : MonoBehaviour
         {
             if (DateTime.Now.Subtract(lastTimePressed).TotalMilliseconds > 100)
             {
-                if (GameState.lastSongLabel < songs.Count - 10)
+                if (GameState.lastSongIndex < currentSongs.Count - 10)
                 {
-                    GameState.lastSongLabel++;
+                    GameState.lastSongIndex++;
                     UpdateSongList();
                     lastTimePressed = DateTime.Now;
                 }
@@ -198,30 +240,30 @@ public class ChooseSong : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.PageUp))
         {
-            if (GameState.lastSongLabel > 10)
+            if (GameState.lastSongIndex > 10)
             {
-                GameState.lastSongLabel-=10;
+                GameState.lastSongIndex-=10;
                 UpdateSongList();
             } else
             {
-                GameState.lastSongLabel = 0;
+                GameState.lastSongIndex = 0;
                 UpdateSongList();
             }
         }
         else if (Input.GetKeyDown(KeyCode.PageDown))
         {
-            if (songs.Count < 10)
+            if (currentSongs.Count < 10)
             {
                 return;
             }
-            if (GameState.lastSongLabel < songs.Count - 20)
+            if (GameState.lastSongIndex < currentSongs.Count - 20)
             {
-                GameState.lastSongLabel += 10;
+                GameState.lastSongIndex += 10;
                 UpdateSongList();
             }
             else
             {
-                GameState.lastSongLabel = songs.Count - 10;
+                GameState.lastSongIndex = currentSongs.Count - 10;
                 UpdateSongList();
             }
         }
@@ -311,10 +353,10 @@ public class ChooseSong : MonoBehaviour
         }
         // set song data to items
         Button songButton;
-        for (int i = GameState.lastSongLabel; itemCounter <= 10 && i < songs.Count; i++)
+        for (int i = GameState.lastSongIndex; itemCounter <= 10 && i < currentSongs.Count; i++)
         {
             songButton = root.Q<Button>(itemCounter.ToString());
-            songButton.text = ((SongData)songs[i]).artist + ": "+((SongData)songs[i]).title;
+            songButton.text = (currentSongs[i]).artist + ": "+(currentSongs[i]).title;
             songButton.visible = true;
             itemCounter++;
         }

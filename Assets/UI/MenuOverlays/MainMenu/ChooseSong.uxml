@@ -28,4 +28,5 @@
     <ui:Instance template="Switcher" name="Player5" style="position: absolute; left: 410px; bottom: 90px; width: 10%; height: 40px;" />
     <ui:Label text="Player 6" display-tooltip-when-elided="true" name="Player6Text" style="height: auto; bottom: 50px; left: 410px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center;" />
     <ui:Instance template="Switcher" name="Player6" style="position: absolute; left: 410px; bottom: 10px; width: 10%; height: 40px;" />
+    <ui:TextField picking-mode="Ignore" label="Search" name="Search" style="bottom: 300px; position: absolute; left: 1%; right: 1%; height: 40px;" />
 </ui:UXML>
