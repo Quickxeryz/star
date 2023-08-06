@@ -10,6 +10,9 @@ public class PlayerProfiles : MonoBehaviour
     Label label;
     TextField nameInput;
     GroupBox difficulty_TextBox;
+    Toggle useOnlineMic;
+    TextField onlineMicName;
+
     void OnEnable()
     {
         // UI
@@ -26,6 +29,8 @@ public class PlayerProfiles : MonoBehaviour
         difficulty_TextBox = difficulty.Q<GroupBox>("TextBox");
         Button difficulty_Left = difficulty.Q<Button>("Left");
         Button difficulty_Right = difficulty.Q<Button>("Right");
+        useOnlineMic = root.Q<Toggle>("UseOnlineMic");
+        onlineMicName = root.Q<TextField>("OnlineMicName");
         // set functionality of all buttons
         leftButton.clicked += () =>
         {
@@ -77,6 +82,8 @@ public class PlayerProfiles : MonoBehaviour
                 label.text = "Name";
                 nameInput.value = "Name";
                 difficulty_TextBox.text = Difficulty.Easy.ToString();
+                useOnlineMic.value = false;
+                onlineMicName.value = "";
             }
         };
         difficulty_Left.clicked += () =>
@@ -116,6 +123,8 @@ public class PlayerProfiles : MonoBehaviour
     {
         GameState.profiles[index].name = nameInput.value;
         GameState.profiles[index].difficulty = DifficultyFunctions.StringToDifficulty(difficulty_TextBox.text);
+        GameState.profiles[index].useOnlineMic = useOnlineMic.value;
+        GameState.profiles[index].onlineMicName = onlineMicName.value;
     }
 
     private void ShowProfile(int index)
@@ -123,5 +132,7 @@ public class PlayerProfiles : MonoBehaviour
         label.text = GameState.profiles[index].name;
         nameInput.value = GameState.profiles[index].name;
         difficulty_TextBox.text = GameState.profiles[index].difficulty.ToString();
+        useOnlineMic.value = GameState.profiles[index].useOnlineMic;
+        onlineMicName.value = GameState.profiles[index].onlineMicName;
     }
 }

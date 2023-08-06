@@ -104,6 +104,8 @@ namespace Classes
         public string name;
         public int points = 0;
         public Difficulty difficulty = Difficulty.Easy;
+        public bool useOnlineMic = false;
+        public string onlineMicName = "";
 
         public PlayerProfile(string name)
         {

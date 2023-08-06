@@ -20,7 +20,7 @@ public class MicrophoneInput : MonoBehaviour
         bool alredyHasListener;
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            if (!GameState.settings.microphoneInput[i].isOnline)
+            if (!(GameState.settings.microphoneInput[i].isOnline || GameState.profiles[GameState.currentProfileIndex[i]].useOnlineMic))
             {
                 samples[i] = new double[2][];
                 int iCopy = i;
@@ -44,12 +44,15 @@ public class MicrophoneInput : MonoBehaviour
                     j = 0;
                     while (j < i)
                     {
-                        if (GameState.settings.microphoneInput[i].name == GameState.settings.microphoneInput[j].name)
+                        if(!(GameState.settings.microphoneInput[i].isOnline || GameState.profiles[GameState.currentProfileIndex[j]].useOnlineMic))
                         {
-                            alredyHasListener = true;
-                            otherListenerNumber = j;
-                            samples[i] = samples[j];
-                            j = i;
+                            if (GameState.settings.microphoneInput[i].name == GameState.settings.microphoneInput[j].name)
+                            {
+                                alredyHasListener = true;
+                                otherListenerNumber = j;
+                                samples[i] = samples[j];
+                                j = i;
+                            }
                         }
                         j++;
                     }
@@ -94,10 +97,26 @@ public class MicrophoneInput : MonoBehaviour
     {
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            if (GameState.settings.microphoneInput[i].isOnline)
+            if (GameState.settings.microphoneInput[i].isOnline || GameState.profiles[GameState.currentProfileIndex[i]].useOnlineMic)
             {
-                int index = GameState.onlineMicrophones.FindIndex(element => element.id == GameState.settings.microphoneInput[i].name);
-                nodes[i] = GameState.onlineMicrophones[index].node;
+                int index;
+                if (GameState.profiles[GameState.currentProfileIndex[i]].useOnlineMic)
+                {
+                    index = GameState.onlineMicrophones.FindIndex(element => element.id == GameState.profiles[GameState.currentProfileIndex[i]].onlineMicName);
+                    if(index == -1)
+                    {
+                        nodes[i] = Node.None;
+                    }
+                    else
+                    {
+                        nodes[i] = GameState.onlineMicrophones[index].node;
+                    }
+                }
+                else
+                {
+                    index = GameState.onlineMicrophones.FindIndex(element => element.id == GameState.settings.microphoneInput[i].name);
+                    nodes[i] = GameState.onlineMicrophones[index].node;
+                }
             }
             else
             {
