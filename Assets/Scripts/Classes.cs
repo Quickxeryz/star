@@ -84,11 +84,26 @@ namespace Classes
         Hard = 0
     }
 
+    public class DifficultyFunctions
+    {
+        public static Difficulty StringToDifficulty(string difficulty)
+        {
+            return difficulty switch
+            {
+                "Easy" => Difficulty.Easy,
+                "Normal" => Difficulty.Normal,
+                "Hard" => Difficulty.Hard,
+                _ => Difficulty.Easy,
+            };
+        }
+    }
+
     [System.Serializable]
     public class PlayerProfile : IComparable
     {
         public string name;
         public int points = 0;
+        public Difficulty difficulty = Difficulty.Easy;
 
         public PlayerProfile(string name)
         {
@@ -166,7 +181,7 @@ namespace Classes
             currentPlayerIsAudioSource = false;
         }
 
-        public bool isPlaying()
+        public bool IsPlaying()
         {
             if (currentPlayerIsAudioSource)
             {
@@ -178,7 +193,7 @@ namespace Classes
             }
         }
 
-        public double getTime()
+        public double GetTime()
         {
             if (currentPlayerIsAudioSource)
             {
