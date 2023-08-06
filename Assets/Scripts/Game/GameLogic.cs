@@ -370,9 +370,9 @@ public class GameLogic : MonoBehaviour
         }
         else
         {
-            if ((!songPlayer.currentPlayerIsAudioSource && (songPlayer.isPlaying() || songPlayer.getTime() == 0)) || (songPlayer.currentPlayerIsAudioSource && songPlayer.isPlaying()))
+            if ((!songPlayer.currentPlayerIsAudioSource && (songPlayer.IsPlaying() || songPlayer.GetTime() == 0)) || (songPlayer.currentPlayerIsAudioSource && songPlayer.IsPlaying()))
             {
-                double currentTime = songPlayer.getTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
+                double currentTime = songPlayer.GetTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
                 int currentBeat = (int)Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
                 // updating nodes, songtext and calculating score
@@ -434,7 +434,7 @@ public class GameLogic : MonoBehaviour
                                 if (currentBeat != lastBeats[i])
                                 {
 
-                                    if (microphoneInput.nodes[i] != Node.None && HitNode(microphoneInput.nodes[i], sData.node))
+                                    if (microphoneInput.nodes[i] != Node.None && HitNode(microphoneInput.nodes[i], sData.node, GameState.profiles[GameState.currentProfileIndex[i]]))
                                     {
                                         // creating new node box
                                         currentPercent = ((currentBeat - 1 - startBeatLine1) * 100) / beatSumLine1;
@@ -650,7 +650,7 @@ public class GameLogic : MonoBehaviour
     }
 
     // checks if sung node hits reference node
-    private bool HitNode(Node sung, Node toHit)
+    private bool HitNode(Node sung, Node toHit, PlayerProfile singer)
     {
         // get distance between node enums
         int distance;
@@ -663,7 +663,7 @@ public class GameLogic : MonoBehaviour
             distance = (int)toHit - (int)sung;
         }
         // check if hit
-        if (distance <= (int)GameState.difficulty || distance >= 12 - (int)GameState.difficulty)
+        if (distance <= (int)singer.difficulty || distance >= 12 - (int)singer.difficulty)
         {
             return true;
         }

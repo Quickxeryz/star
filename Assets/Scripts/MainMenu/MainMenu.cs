@@ -22,13 +22,11 @@ public class MainMenu : MonoBehaviour
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all Buttons
-        // main menu 
-        TemplateContainer mainMenu = root.Q<TemplateContainer>("MainMenu");
-        Button mainMenu_Play = mainMenu.Q<Button>("Play");
-        Button mainMenu_Server = mainMenu.Q<Button>("Server");
-        Button mainMenu_Playerprofiles = mainMenu.Q<Button>("Playerprofiles");
-        Button mainMenu_Options = mainMenu.Q<Button>("Options");
-        Button mainMenu_Exit = mainMenu.Q<Button>("Exit");
+        Button mainMenu_Play = root.Q<Button>("Play");
+        Button mainMenu_Server = root.Q<Button>("Server");
+        Button mainMenu_Playerprofiles = root.Q<Button>("Playerprofiles");
+        Button mainMenu_Options = root.Q<Button>("Options");
+        Button mainMenu_Exit = root.Q<Button>("Exit");
         // set functionality of all buttons
         // main menu
         mainMenu_Play.clicked += () =>
