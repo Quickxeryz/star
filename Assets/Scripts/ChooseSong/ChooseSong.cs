@@ -10,7 +10,6 @@ public class ChooseSong : MonoBehaviour
 {
     // UI
     VisualElement root;
-    List<SongData> songs;
     List<SongData> currentSongs;
     DateTime lastTimePressed;
 
@@ -60,9 +59,9 @@ public class ChooseSong : MonoBehaviour
                 bool found = false;
                 int j = 0;
                 string path = currentSongs[GameState.lastSongIndex + iCopy - 1].path;
-                while (!found && j<songs.Count)
+                while (!found && j<GameState.songs.Count)
                 {
-                    if (songs[j].path == path)
+                    if (GameState.songs[j].path == path)
                     {
                         GameState.lastSongIndex = j;
                         found = true;
@@ -124,13 +123,13 @@ public class ChooseSong : MonoBehaviour
                 if (text == "")
                 {
                     GameState.lastSongIndex = 0;
-                    currentSongs = new List<SongData>(songs); ;
+                    currentSongs = new List<SongData>(GameState.songs); ;
                 }
                 else
                 {
                     GameState.lastSongIndex = 0;
                     currentSongs.Clear();
-                    foreach (SongData song in songs)
+                    foreach (SongData song in GameState.songs)
                     {
                         if (song.artist.ToLower().Contains(text))
                         {
@@ -149,14 +148,8 @@ public class ChooseSong : MonoBehaviour
         {
             SceneManager.LoadScene("MainMenu");
         };
-        // Loading song list
-        songs = new();
-        if (Directory.Exists(GameState.settings.absolutePathToSongs))
-        {
-            SearchDirectory(GameState.settings.absolutePathToSongs);
-        }
-        songs.Sort();
-        currentSongs = new List<SongData>(songs); ;
+        // showing song list
+        currentSongs = new List<SongData>(GameState.songs); ;
         if (GameState.lastSongIndex > currentSongs.Count - 10)
         {
             if (currentSongs.Count >= 10)
@@ -266,80 +259,6 @@ public class ChooseSong : MonoBehaviour
                 GameState.lastSongIndex = currentSongs.Count - 10;
                 UpdateSongList();
             }
-        }
-    }
-
-    // Go through all files and folders
-    void SearchDirectory(string path)
-    {
-        // Get all files
-        string[] files = Directory.GetFiles(path);
-        string[] text;
-        bool isSong;
-        SongData currentSong;
-        string songTitle = "";
-        string songArtist = "";
-        string songMusicPath = "";
-        float bpm = 0;
-        float gap = 0;
-        string songVideoPath;
-        foreach (string file in files)
-            // check for song file
-            if (file.Contains(".txt"))
-            {
-                text = File.ReadAllLines(file);
-                isSong = false;
-                foreach (string line in text)
-                {
-                    if (line.StartsWith("#TITLE"))
-                    {
-                        isSong = true;
-                        break;
-                    }
-                }
-                if (isSong)
-                {
-                    songVideoPath = "";
-                    // when file is song file extract data
-                    foreach (string line in text)
-                    {
-                        if (line.StartsWith("#TITLE:"))
-                        {
-                            songTitle = line[7..];
-                        }
-                        else if (line.StartsWith("#ARTIST:"))
-                        {
-                            songArtist = line[8..];
-                        }
-                        else if (line.StartsWith("#MP3:"))
-                        {
-                            songMusicPath = path + "/" + line[5..];
-                        }
-                        else if (line.StartsWith("#BPM:"))
-                        {
-                            bpm = float.Parse(line[5..].Replace(".", ","));
-                        }
-                        else if (line.StartsWith("#GAP:"))
-                        {
-                            gap = float.Parse(line[5..].Replace(".", ",")) * 0.001f;
-                        }
-                        else if (line.StartsWith("#VIDEO:"))
-                        {
-                            songVideoPath = path + "/" + line[7..];
-                        }
-                    }
-                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap)
-                    {
-                        pathToVideo = songVideoPath
-                    };
-                    songs.Add(currentSong);
-                }
-            }
-        // Get all directorys
-        files = Directory.GetDirectories(path);
-        foreach (string dir in files)
-        {
-            SearchDirectory(dir);
         }
     }
 

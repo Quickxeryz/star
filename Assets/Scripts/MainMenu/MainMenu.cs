@@ -19,6 +19,17 @@ public class MainMenu : MonoBehaviour
         {
             GameState.profiles.AddRange(JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles);
         }
+        // Loading song list
+        if (!GameState.songsLoaded)
+        {
+            GameState.songs = new();
+            if (Directory.Exists(GameState.settings.absolutePathToSongs))
+            {
+                SearchDirectory(GameState.settings.absolutePathToSongs);
+            }
+            GameState.songs.Sort();
+            GameState.songsLoaded = true;
+        }
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all Buttons
@@ -54,6 +65,80 @@ public class MainMenu : MonoBehaviour
         {
             Application.Quit();
         };
+    }
+
+    // Go through all files and folders
+    void SearchDirectory(string path)
+    {
+        // Get all files
+        string[] files = Directory.GetFiles(path);
+        string[] text;
+        bool isSong;
+        SongData currentSong;
+        string songTitle = "";
+        string songArtist = "";
+        string songMusicPath = "";
+        float bpm = 0;
+        float gap = 0;
+        string songVideoPath;
+        foreach (string file in files)
+            // check for song file
+            if (file.Contains(".txt"))
+            {
+                text = File.ReadAllLines(file);
+                isSong = false;
+                foreach (string line in text)
+                {
+                    if (line.StartsWith("#TITLE"))
+                    {
+                        isSong = true;
+                        break;
+                    }
+                }
+                if (isSong)
+                {
+                    songVideoPath = "";
+                    // when file is song file extract data
+                    foreach (string line in text)
+                    {
+                        if (line.StartsWith("#TITLE:"))
+                        {
+                            songTitle = line[7..];
+                        }
+                        else if (line.StartsWith("#ARTIST:"))
+                        {
+                            songArtist = line[8..];
+                        }
+                        else if (line.StartsWith("#MP3:"))
+                        {
+                            songMusicPath = path + "/" + line[5..];
+                        }
+                        else if (line.StartsWith("#BPM:"))
+                        {
+                            bpm = float.Parse(line[5..].Replace(".", ","));
+                        }
+                        else if (line.StartsWith("#GAP:"))
+                        {
+                            gap = float.Parse(line[5..].Replace(".", ",")) * 0.001f;
+                        }
+                        else if (line.StartsWith("#VIDEO:"))
+                        {
+                            songVideoPath = path + "/" + line[7..];
+                        }
+                    }
+                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap)
+                    {
+                        pathToVideo = songVideoPath
+                    };
+                    GameState.songs.Add(currentSong);
+                }
+            }
+        // Get all directorys
+        files = Directory.GetDirectories(path);
+        foreach (string dir in files)
+        {
+            SearchDirectory(dir);
+        }
     }
 
     void StartServer()
