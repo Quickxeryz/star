@@ -1,3 +1,4 @@
+This file contains informations about the song file format
 # Format
 ## Header
 ### Must have arguments
@@ -10,7 +11,7 @@
 ### Optional arguments 
 - #START: seconds -> no functionality
 - #VIDEO: relativePath
-- #VIDEOGAP: miliseconds -> no functionality
+- #VIDEOGAP: miliseconds
 - #GENRE: string -> no functionality
 - #LANGUAGE: string -> no functionality
 - #YEAR: integer -> no functionality
@@ -19,7 +20,7 @@
 - #BACKGROUND: relativePath -> no functionality
 - #RELATIVE: [yes | no] -> no functionality
 - #RESOLUTION: integer -> no functionality
-- #AUTHOR: string -> no functionality
+- #AUTHOR: string
 
 ### Example header
 #TITLE: My favorite song\
@@ -85,13 +86,13 @@ F 19 13 1  is\
 F 32 8 5  Free\
 F 40 26 3 style\
 \- 68\
-: 70 5 3 No\
+: 70 5 3 Nor\
 : 77 3 8 ~\
-: 82 5 12 rmal\
+: 82 5 12 mal\
 : 90 8 3  Node\
 \- 100\
-\* 102 2 4 Doub\
-\* 106 6 6 le\
+\* 102 2 4 Dou\
+\* 106 6 6 ble\
 \* 115 7 12 Points\
 
 # Formulas
