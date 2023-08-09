@@ -7,7 +7,8 @@ namespace Classes
     public enum GameMode
     {
         None,
-        ChooseSong
+        ChooseSong,
+        Classic
     }
 
     public enum Node

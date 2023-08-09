@@ -80,6 +80,11 @@ public class Options : MonoBehaviour
         // set up buttons
         options_Back.clicked += () =>
         {
+            // reload songs if new path
+            if (options_Path.value != GameState.settings.absolutePathToSongs)
+            {
+                GameState.songsLoaded = false;
+            }
             // save config
             Settings settings = new(options_Path.value, float.Parse(options_Delay.value.Replace(".", ",")), microphones);
             string json = JsonUtility.ToJson(settings);

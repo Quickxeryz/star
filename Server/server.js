@@ -1,4 +1,3 @@
-// Server
 const hostname = "";
 const port = 8085;
 const https = require("https");

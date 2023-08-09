@@ -2,14 +2,24 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using System.IO;
+using System.Net.Sockets;
+using System.Net;
 using Classes;
 
 public class MainMenu : MonoBehaviour
 {
-    bool serverStarted = false;
-
     void OnEnable()
     {
+        // UI
+        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+        // finding all ui elements
+        Button play = root.Q<Button>("Play");
+        Button gameModes = root.Q<Button>("GameModes");
+        Button server = root.Q<Button>("Server");
+        Label website = root.Q<Label>("Website");
+        Button playerprofiles = root.Q<Button>("Playerprofiles");
+        Button options = root.Q<Button>("Options");
+        Button exit = root.Q<Button>("Exit");
         // load settings
         string json = File.ReadAllText("config.json");
         GameState.settings = JsonUtility.FromJson<Settings>(json);
@@ -19,41 +29,140 @@ public class MainMenu : MonoBehaviour
         {
             GameState.profiles.AddRange(JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles);
         }
-        // UI
-        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
-        // finding all Buttons
-        Button mainMenu_Play = root.Q<Button>("Play");
-        Button mainMenu_Server = root.Q<Button>("Server");
-        Button mainMenu_Playerprofiles = root.Q<Button>("Playerprofiles");
-        Button mainMenu_Options = root.Q<Button>("Options");
-        Button mainMenu_Exit = root.Q<Button>("Exit");
+        // get ip for server
+        if (!GameState.serverStarted)
+        {
+            Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, 0);
+            socket.Connect("8.8.8.8", 65530);
+            IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+            GameState.ip = endPoint.Address.ToString();
+            // set ip address in server and client file
+            string[] text = File.ReadAllLines("Server/client.js");
+            text[0] = "const ip = \"" + GameState.ip + "\";";
+            File.WriteAllLines("Server/client.js", text);
+            text = File.ReadAllLines("Server/server.js");
+            text[0] = "const hostname = \"" + GameState.ip + "\";";
+            File.WriteAllLines("Server/server.js", text);
+        } else
+        {
+            website.text = "Server available under: https://" + GameState.ip + ":8085";
+        }
+        // Loading song list
+        if (!GameState.songsLoaded)
+        {
+            GameState.songs = new();
+            if (Directory.Exists(GameState.settings.absolutePathToSongs))
+            {
+                SearchDirectory(GameState.settings.absolutePathToSongs);
+            }
+            GameState.songs.Sort();
+            GameState.songsLoaded = true;
+        }
         // set functionality of all buttons
-        // main menu
-        mainMenu_Play.clicked += () =>
+        play.clicked += () =>
         {
             SceneManager.LoadScene("ChooseSong");
         };
-        mainMenu_Server.clicked += () =>
+        gameModes.clicked += () =>
+        {
+            SceneManager.LoadScene("GameModeConfig");
+        };
+        server.clicked += () =>
         {
             // start online microphone server if not running
-            if (!serverStarted)
+            if (!GameState.serverStarted)
             {
-                serverStarted = true;
+                GameState.serverStarted = true;
+                website.text = "Server available under: https://" + GameState.ip + ":8085";
                 System.Threading.Tasks.Task.Run(() => StartServer());
             }
         };
-        mainMenu_Playerprofiles.clicked += () =>
+        playerprofiles.clicked += () =>
         {
             SceneManager.LoadScene("PlayerProfiles");
         };
-        mainMenu_Options.clicked += () =>
+        options.clicked += () =>
         {
             SceneManager.LoadScene("Options");
         };
-        mainMenu_Exit.clicked += () =>
+        exit.clicked += () =>
         {
             Application.Quit();
         };
+    }
+
+    // Go through all files and folders
+    void SearchDirectory(string path)
+    {
+        // Get all files
+        string[] files = Directory.GetFiles(path);
+        string[] text;
+        bool isSong;
+        SongData currentSong;
+        string songTitle = "";
+        string songArtist = "";
+        string songMusicPath = "";
+        float bpm = 0;
+        float gap = 0;
+        string songVideoPath;
+        foreach (string file in files)
+            // check for song file
+            if (file.Contains(".txt"))
+            {
+                text = File.ReadAllLines(file);
+                isSong = false;
+                foreach (string line in text)
+                {
+                    if (line.StartsWith("#TITLE"))
+                    {
+                        isSong = true;
+                        break;
+                    }
+                }
+                if (isSong)
+                {
+                    songVideoPath = "";
+                    // when file is song file extract data
+                    foreach (string line in text)
+                    {
+                        if (line.StartsWith("#TITLE:"))
+                        {
+                            songTitle = line[7..];
+                        }
+                        else if (line.StartsWith("#ARTIST:"))
+                        {
+                            songArtist = line[8..];
+                        }
+                        else if (line.StartsWith("#MP3:"))
+                        {
+                            songMusicPath = path + "/" + line[5..];
+                        }
+                        else if (line.StartsWith("#BPM:"))
+                        {
+                            bpm = float.Parse(line[5..].Replace(".", ","));
+                        }
+                        else if (line.StartsWith("#GAP:"))
+                        {
+                            gap = float.Parse(line[5..].Replace(".", ",")) * 0.001f;
+                        }
+                        else if (line.StartsWith("#VIDEO:"))
+                        {
+                            songVideoPath = path + "/" + line[7..];
+                        }
+                    }
+                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap)
+                    {
+                        pathToVideo = songVideoPath
+                    };
+                    GameState.songs.Add(currentSong);
+                }
+            }
+        // Get all directorys
+        files = Directory.GetDirectories(path);
+        foreach (string dir in files)
+        {
+            SearchDirectory(dir);
+        }
     }
 
     void StartServer()
@@ -63,19 +172,19 @@ public class MainMenu : MonoBehaviour
         // Drop Process on exit/
         System.AppDomain.CurrentDomain.DomainUnload += (s, e) =>
             {
-                serverStarted = false;
+                GameState.serverStarted = false;
                 process.Kill();
                 process.WaitForExit();
             };
         System.AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
-                serverStarted = false;
+                GameState.serverStarted = false;
                 process.Kill();
                 process.WaitForExit();
             };
         System.AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                serverStarted = false;
+                GameState.serverStarted = false;
                 process.Kill();
                 process.WaitForExit();
             };

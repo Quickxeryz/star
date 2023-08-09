@@ -1,18 +1,27 @@
-This is a file with information to the structure of the project
-
+This is a file with information to the structure of the project for developers
+# Structure
 - Assets: contains all new files
     - Scenes: contains all game scenes
     - Scripts: contains all c# scripts
+        - ChooseSong: contains all the scripts for the choose song menu
+            - ChooseSong.cs: contains the logic for the choose song scene f.e. changing player and choosing the next song
         - Game: contains all scripts for the game scene
             - GameLogic.cs: contains the logic behind the sing screen
-            - GameState.cs: contains the game state f.e. choosen song and player names
             - MicrophoneInput.cs: converts the microphone input to a node
             - VideoPlayer.cs: plays the music video
         - MainMenu: contains scripts for the main menu
-            - MainMenu.cs: script for managing the main menu
+            - MainMenu.cs: script for managing the main menu, loading the settings and starting the server if needed
+        - Options: contains the scripts for the options menu
+            - Options.cs: contains the code to change the options of star 
+        - PlayerProfiles: contains all scripts used for the player profiles options menu
+            - PlayerProfiles.cs: contains the code for managing the player profiles
         - SongEnd: scripts for the song end scene
             - SongEnd.cs: script for managing the song end scene
         - Classes.cs: contains all classes and enums used in multiple cs files
+         - GameState.cs: contains the game state f.e. choosen song and player names
     - UI: contains all ui relevant items
-        - GameOverlays: contains the uxml and uss files
-        - UITextures: contains all textures used for UI
+        - GameModes: contains the uxml for the scenes used for the game modes
+        - GameOverlays: contains the uxml and uss files needed for the ingame scenes
+        - MenuOverlays: contains all uxml files for the menu scenes (excluded the ones for game modes)
+        - Templates: contains uxml files for usage in other uxml files
+        - Textures: contains all textures used for UI

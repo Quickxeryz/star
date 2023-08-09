@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
+    <ui:Button text="Continue" display-tooltip-when-elided="true" name="Continue" style="position: absolute; left: 1%; bottom: 1%; width: 10%; height: 10%;" />
+    <ui:VisualElement name="TextBox" style="height: 50%; width: 98%; position: absolute; top: 20%; left: 1%;">
+        <ui:Label text="Placement:" display-tooltip-when-elided="true" name="Headline" />
+        <ui:Label display-tooltip-when-elided="true" name="1" />
+        <ui:Label display-tooltip-when-elided="true" name="2" />
+        <ui:Label display-tooltip-when-elided="true" name="3" />
+        <ui:Label display-tooltip-when-elided="true" name="4" />
+        <ui:Label display-tooltip-when-elided="true" name="5" />
+        <ui:Label display-tooltip-when-elided="true" name="6" />
+    </ui:VisualElement>
+</ui:UXML>
