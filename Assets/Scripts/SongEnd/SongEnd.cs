@@ -9,8 +9,9 @@ public class SongEnd : MonoBehaviour
     void OnEnable()
     {
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
-        // set button functionality
+        PlayerProfile[] player = new PlayerProfile[GameState.amountPlayer];
         Button continue_ = root.Q<Button>("Continue");
+        // set button functionality
         continue_.clicked += () =>
         {
             switch (GameState.currentGameMode)
@@ -18,14 +19,47 @@ public class SongEnd : MonoBehaviour
                 case GameMode.ChooseSong:
                     SceneManager.LoadScene("ChooseSong");
                     break;
+                case GameMode.Classic:
+                    // calculate team points
+                    int x;
+                    int y;
+                    bool found;
+                    for (int i = 0; i < GameState.amountPlayer; i++)
+                    {
+                        found = false;
+                        x = 0;
+                        while((!found) && x < GameState.teams.Count)
+                        {
+                            y = 0;
+                            while ((!found) && y < GameState.teams[x].Count)
+                            {
+                                if (GameState.teams[x][y] == player[i])
+                                {
+                                    GameState.teamPoints[x] += GameState.amountPlayer - i - 1;
+                                    found = true;
+                                }
+                                y++;
+                            }
+                            x++;
+                        }
+                    }
+                    // choose next screen
+                    GameState.roundsLeft--;
+                    if (GameState.roundsLeft == 0)
+                    {
+                        SceneManager.LoadScene("TeamScore");
+                        break;
+                    } else
+                    {
+                        SceneManager.LoadScene("ChoosenSong");
+                        break;
+                    }
                 case GameMode.None:
                     SceneManager.LoadScene("MainMenu");
                     break;
             }
         };
-        // show placements
         // sort after points
-        PlayerProfile[] player = new PlayerProfile[GameState.amountPlayer];
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
             player[i] = GameState.profiles[GameState.currentProfileIndex[i]];

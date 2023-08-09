@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
+    <ui:Button text="Classic" display-tooltip-when-elided="true" name="Classic" selectable="true" style="position: absolute; height: 40px; width: auto; top: 1%; left: 1%; bottom: 1%; right: 1%;" />
+    <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" selectable="true" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
+</ui:UXML>

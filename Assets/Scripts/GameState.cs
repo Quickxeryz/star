@@ -5,14 +5,17 @@ using System.Collections.Generic;
 public class GameState : MonoBehaviour
 {
     public const int maxPlayer = 6;
-    public static GameMode currentGameMode = GameMode.None;
     public static List<SongData> songs;
     public static bool songsLoaded = false;
-    public static int lastSongIndex;
-    public static Settings settings;
-    public static SongData currentSong;
     public static int amountPlayer = 1;
-    public static int[] currentProfileIndex = { 0, 0, 0, 0, 0, 0 };
+    public static int[] currentProfileIndex = new int[maxPlayer];
+    public static SongData currentSong;
+    public static GameMode currentGameMode = GameMode.None;
+    public static int lastSongIndex;
+    public static int roundsLeft;
+    public static List<List<PlayerProfile>> teams;
+    public static int[] teamPoints = new int[maxPlayer];
     public static List<(string id, Node node)> onlineMicrophones = new();
     public static List<PlayerProfile> profiles = new();
+    public static Settings settings;
 }

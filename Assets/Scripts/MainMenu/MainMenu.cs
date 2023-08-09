@@ -33,18 +33,22 @@ public class MainMenu : MonoBehaviour
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all Buttons
-        Button mainMenu_Play = root.Q<Button>("Play");
-        Button mainMenu_Server = root.Q<Button>("Server");
-        Button mainMenu_Playerprofiles = root.Q<Button>("Playerprofiles");
-        Button mainMenu_Options = root.Q<Button>("Options");
-        Button mainMenu_Exit = root.Q<Button>("Exit");
+        Button play = root.Q<Button>("Play");
+        Button gameModes = root.Q<Button>("GameModes");
+        Button server = root.Q<Button>("Server");
+        Button playerprofiles = root.Q<Button>("Playerprofiles");
+        Button options = root.Q<Button>("Options");
+        Button exit = root.Q<Button>("Exit");
         // set functionality of all buttons
-        // main menu
-        mainMenu_Play.clicked += () =>
+        play.clicked += () =>
         {
             SceneManager.LoadScene("ChooseSong");
         };
-        mainMenu_Server.clicked += () =>
+        gameModes.clicked += () =>
+        {
+            SceneManager.LoadScene("GameModeConfig");
+        };
+        server.clicked += () =>
         {
             // start online microphone server if not running
             if (!serverStarted)
@@ -53,15 +57,15 @@ public class MainMenu : MonoBehaviour
                 System.Threading.Tasks.Task.Run(() => StartServer());
             }
         };
-        mainMenu_Playerprofiles.clicked += () =>
+        playerprofiles.clicked += () =>
         {
             SceneManager.LoadScene("PlayerProfiles");
         };
-        mainMenu_Options.clicked += () =>
+        options.clicked += () =>
         {
             SceneManager.LoadScene("Options");
         };
-        mainMenu_Exit.clicked += () =>
+        exit.clicked += () =>
         {
             Application.Quit();
         };

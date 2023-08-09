@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Switcher" src="project://database/Assets/UI/Templates/Switcher.uxml?fileID=9197481963319205126&amp;guid=363b3cbb44fb0e940b0606d794ac16cc&amp;type=3#Switcher" />
+    <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
+    <ui:Button text="Continue" display-tooltip-when-elided="true" name="Continue" selectable="true" style="position: absolute; height: 100px; width: 10%; top: auto; left: 10px; bottom: 10px;" />
+    <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" selectable="true" style="position: absolute; right: 10px; bottom: 10px; width: 10%; height: 100px;" />
+    <ui:Label tabindex="-1" text="Amount rounds" display-tooltip-when-elided="true" name="AmountRoundsLabel" style="position: absolute; left: 10px; top: 10px;" />
+    <ui:Instance template="Switcher" name="AmountRounds" style="display: flex; height: 40px; position: absolute; left: 10px; width: 200px; top: 50px;" />
+    <ui:Label tabindex="-1" text="Amount teams" display-tooltip-when-elided="true" name="AmountTeamsLabel" style="position: absolute; left: 10px; top: 100px; height: 33px;" />
+    <ui:Instance template="Switcher" name="AmountTeams" style="display: flex; height: 40px; position: absolute; left: 10px; width: 200px; top: 140px;" />
+    <ui:DropdownField label="Player" index="0" name="Player" style="display: flex; position: absolute; top: 190px; left: 10px; width: 500px; height: 40px;" />
+    <ui:Button text="Add to team 1" display-tooltip-when-elided="true" name="AddTeam1" style="height: 40px; position: absolute; left: 10px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
+    <ui:Button text="Add to team 2" display-tooltip-when-elided="true" name="AddTeam2" style="height: 40px; position: absolute; left: 260px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
+    <ui:Button text="Add to team 3" display-tooltip-when-elided="true" name="AddTeam3" style="height: 40px; position: absolute; left: 510px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
+    <ui:Button text="Add to team 4" display-tooltip-when-elided="true" name="AddTeam4" style="height: 40px; position: absolute; left: 760px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
+    <ui:Button text="Add to team 5" display-tooltip-when-elided="true" name="AddTeam5" select-line-by-triple-click="false" style="height: 40px; position: absolute; left: 1010px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
+    <ui:Button text="Add to team 6" display-tooltip-when-elided="true" name="AddTeam6" style="height: 40px; position: absolute; left: 1260px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
+    <ui:DropdownField label="Team 1" index="0" name="Team1" style="display: flex; position: absolute; top: 290px; left: 10px; width: 500px; height: 40px; visibility: hidden;" />
+    <ui:Button text="Remove Player" display-tooltip-when-elided="true" name="RemovePlayerTeam1" parse-escape-sequences="false" select-line-by-triple-click="false" style="position: absolute; top: 290px; left: 550px; height: 40px; visibility: hidden;" />
+    <ui:DropdownField label="Team 2" index="0" name="Team2" style="display: flex; position: absolute; top: 340px; left: 10px; width: 500px; height: 40px; visibility: hidden;" />
+    <ui:Button text="Remove Player" display-tooltip-when-elided="true" name="RemovePlayerTeam2" parse-escape-sequences="false" select-line-by-triple-click="false" style="position: absolute; top: 340px; left: 550px; height: 40px; visibility: hidden;" />
+    <ui:DropdownField label="Team 3" index="0" name="Team3" style="display: flex; position: absolute; top: 390px; left: 10px; width: 500px; height: 40px; visibility: hidden;" />
+    <ui:Button text="Remove Player" display-tooltip-when-elided="true" name="RemovePlayerTeam3" parse-escape-sequences="false" select-line-by-triple-click="false" style="position: absolute; top: 390px; left: 550px; height: 40px; visibility: hidden;" />
+    <ui:DropdownField label="Team 4" index="0" name="Team4" style="display: flex; position: absolute; top: 440px; left: 10px; width: 500px; height: 40px; visibility: hidden;" />
+    <ui:Button text="Remove Player" display-tooltip-when-elided="true" name="RemovePlayerTeam4" parse-escape-sequences="false" select-line-by-triple-click="false" style="position: absolute; top: 440px; left: 550px; height: 40px; visibility: hidden;" />
+    <ui:DropdownField label="Team 5" index="0" name="Team5" style="display: flex; position: absolute; top: 490px; left: 10px; width: 500px; height: 40px; visibility: hidden;" />
+    <ui:Button text="Remove Player" display-tooltip-when-elided="true" name="RemovePlayerTeam5" parse-escape-sequences="false" select-line-by-triple-click="false" style="position: absolute; top: 490px; left: 550px; height: 40px; visibility: hidden;" />
+    <ui:DropdownField label="Team 6" index="0" name="Team6" style="display: flex; position: absolute; top: 540px; left: 10px; width: 500px; height: 40px; visibility: hidden;" />
+    <ui:Button text="Remove Player" display-tooltip-when-elided="true" name="RemovePlayerTeam6" parse-escape-sequences="false" select-line-by-triple-click="false" style="position: absolute; top: 540px; left: 550px; height: 40px; visibility: hidden;" />
+    <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Warning" style="position: absolute; left: 10px; top: auto; bottom: 150px; height: 40px;" />
+</ui:UXML>
