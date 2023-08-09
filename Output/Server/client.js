@@ -1,4 +1,4 @@
-const ip = "";
+const ip = "192.168.178.44";
 const port = "8085";
 
 function setPlayerName() {
@@ -37,7 +37,7 @@ class Microphone {
                 this.microphone.connect(this.analyser);
             }.bind(this))
             .catch(function (err) {
-                alert(err);
+                alert("Microphone access is necassary for the website to function correctly!");
             });
     }
 }
@@ -112,6 +112,7 @@ function autoCorrelate(buffer, sampleRate) {
 function record() {
     if (!isRecording) {
         isRecording = true;
+        recordButton.innerText = "Stop record";
         recordButton.style.background = "green";
         interval = setInterval(function () { // delay for user interaktion
             // find the frequency peak
@@ -173,13 +174,16 @@ function record() {
             output.innerText = node;
             ws.send(playerName + ":" + node);
         }, 100);
+    } else {
+        clearInterval(interval); // stops reading interval
+        recordButton.innerText = "Record";
+        recordButton.style.background = "red";
+        isRecording = false;
     }
 }
 
-function stopRecord() {
-    clearInterval(interval); // stops reading interval
-    recordButton.style.background = "red";
-    isRecording = false;
+function requestMic() {
+    microphone = new Microphone();
 }
 
 let ws;
@@ -193,7 +197,7 @@ window.onload = function () {
     serverButton = document.getElementById("serverButton");
     recordButton = document.getElementById("record");
 }
-const microphone = new Microphone();
+let microphone = new Microphone();
 let isRecording = false;
 let interval; // for reading mic
 let playerName = "";
