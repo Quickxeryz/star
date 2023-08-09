@@ -2,14 +2,24 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using System.IO;
+using System.Net.Sockets;
+using System.Net;
 using Classes;
 
 public class MainMenu : MonoBehaviour
 {
-    bool serverStarted = false;
-
     void OnEnable()
     {
+        // UI
+        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+        // finding all ui elements
+        Button play = root.Q<Button>("Play");
+        Button gameModes = root.Q<Button>("GameModes");
+        Button server = root.Q<Button>("Server");
+        Label website = root.Q<Label>("Website");
+        Button playerprofiles = root.Q<Button>("Playerprofiles");
+        Button options = root.Q<Button>("Options");
+        Button exit = root.Q<Button>("Exit");
         // load settings
         string json = File.ReadAllText("config.json");
         GameState.settings = JsonUtility.FromJson<Settings>(json);
@@ -18,6 +28,24 @@ public class MainMenu : MonoBehaviour
         if (GameState.profiles.Count == 0)
         {
             GameState.profiles.AddRange(JsonUtility.FromJson<JsonPlayerProfiles>(json).playerProfiles);
+        }
+        // get ip for server
+        if (!GameState.serverStarted)
+        {
+            Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, 0);
+            socket.Connect("8.8.8.8", 65530);
+            IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+            GameState.ip = endPoint.Address.ToString();
+            // set ip address in server and client file
+            string[] text = File.ReadAllLines("Server/client.js");
+            text[0] = "const ip = \"" + GameState.ip + "\";";
+            File.WriteAllLines("Server/client.js", text);
+            text = File.ReadAllLines("Server/server.js");
+            text[0] = "const hostname = \"" + GameState.ip + "\";";
+            File.WriteAllLines("Server/server.js", text);
+        } else
+        {
+            website.text = "Server available under: https://" + GameState.ip + ":8085";
         }
         // Loading song list
         if (!GameState.songsLoaded)
@@ -30,15 +58,6 @@ public class MainMenu : MonoBehaviour
             GameState.songs.Sort();
             GameState.songsLoaded = true;
         }
-        // UI
-        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
-        // finding all Buttons
-        Button play = root.Q<Button>("Play");
-        Button gameModes = root.Q<Button>("GameModes");
-        Button server = root.Q<Button>("Server");
-        Button playerprofiles = root.Q<Button>("Playerprofiles");
-        Button options = root.Q<Button>("Options");
-        Button exit = root.Q<Button>("Exit");
         // set functionality of all buttons
         play.clicked += () =>
         {
@@ -51,9 +70,10 @@ public class MainMenu : MonoBehaviour
         server.clicked += () =>
         {
             // start online microphone server if not running
-            if (!serverStarted)
+            if (!GameState.serverStarted)
             {
-                serverStarted = true;
+                GameState.serverStarted = true;
+                website.text = "Server available under: https://" + GameState.ip + ":8085";
                 System.Threading.Tasks.Task.Run(() => StartServer());
             }
         };
@@ -152,19 +172,19 @@ public class MainMenu : MonoBehaviour
         // Drop Process on exit/
         System.AppDomain.CurrentDomain.DomainUnload += (s, e) =>
             {
-                serverStarted = false;
+                GameState.serverStarted = false;
                 process.Kill();
                 process.WaitForExit();
             };
         System.AppDomain.CurrentDomain.ProcessExit += (s, e) =>
             {
-                serverStarted = false;
+                GameState.serverStarted = false;
                 process.Kill();
                 process.WaitForExit();
             };
         System.AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                serverStarted = false;
+                GameState.serverStarted = false;
                 process.Kill();
                 process.WaitForExit();
             };

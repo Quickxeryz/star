@@ -6,7 +6,8 @@ public class GameState : MonoBehaviour
 {
     public const int maxPlayer = 6;
     public static List<SongData> songs;
-    public static bool songsLoaded = false;
+    public static bool songsLoaded = false; 
+    public static List<(string id, Node node)> onlineMicrophones = new();
     public static int amountPlayer = 1;
     public static int[] currentProfileIndex = new int[maxPlayer];
     public static SongData currentSong;
@@ -15,7 +16,8 @@ public class GameState : MonoBehaviour
     public static int roundsLeft;
     public static List<List<PlayerProfile>> teams;
     public static int[] teamPoints = new int[maxPlayer];
-    public static List<(string id, Node node)> onlineMicrophones = new();
+    public static bool serverStarted = false;
+    public static string ip;
     public static List<PlayerProfile> profiles = new();
     public static Settings settings;
 }
