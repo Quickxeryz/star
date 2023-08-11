@@ -43,7 +43,7 @@ public class GameLogic : MonoBehaviour
     bool notLoadedMP3 = true;
     // Songfile data extraction
     readonly ArrayList songData = new(); // Todo: writing own class with better performance
-                                          // syllables data
+    // syllables data
     List<SyllableData> syllablesLine1 = new();
     List<SyllableData> syllablesLine2 = new();
     // node line data
@@ -83,7 +83,7 @@ public class GameLogic : MonoBehaviour
     void Start()
     {
         // Getting data from song file
-        string[] songFileData = System.IO.File.ReadAllLines(GameState.currentSong.path);
+        string[] songFileData = File.ReadAllLines(GameState.currentSong.path);
         SyllableData syllable;
         string temp;
         foreach (string line in songFileData)
