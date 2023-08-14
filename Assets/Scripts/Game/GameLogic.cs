@@ -7,6 +7,8 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using Classes;
+using TMPro;
+using System.Linq;
 
 public class GameLogic : MonoBehaviour
 {
@@ -57,7 +59,12 @@ public class GameLogic : MonoBehaviour
     int startBeatLine2 = 0;
     int endBeatLine2 = 0;
     // UI pointer
-    Label textLine1Bottom;
+    TextMeshProUGUI templateAfter;
+    TextMeshProUGUI templateBefore;
+    TextMeshProUGUI templateFirstHalfSung;
+    TextMeshProUGUI templateSecondHalfSung;
+    List<GameObject> textLine1Bottom = new();
+    //Label textLine1Bottom;
     Label textLine2Bottom;
     Label textLine1Top;
     Label textLine2Top;
@@ -175,8 +182,12 @@ public class GameLogic : MonoBehaviour
                 break;
         }
         // get UI pointer
+        templateAfter = gameObject.transform.Find("TMAfter").GetComponent<TextMeshProUGUI>();
+        templateBefore = gameObject.transform.Find("TMBefore").GetComponent<TextMeshProUGUI>();
+        templateFirstHalfSung = gameObject.transform.Find("TMFirstHalfSung").GetComponent<TextMeshProUGUI>();
+        templateSecondHalfSung = gameObject.transform.Find("TMSecondHalfSung").GetComponent<TextMeshProUGUI>();
         TemplateContainer currentContainer = root.Q<TemplateContainer>("SongLinesBottom");
-        textLine1Bottom = currentContainer.Q<Label>("SongLine1");
+        //textLine1Bottom = currentContainer.Q<Label>("SongLine1");
         textLine2Bottom = currentContainer.Q<Label>("SongLine2");
         if (GameState.amountPlayer > 1)
         {
@@ -241,7 +252,7 @@ public class GameLogic : MonoBehaviour
             {
                 if (textCounter == 1)
                 {
-                    textLine1Bottom.text = text;
+                    //textLine1Bottom.text = text;
                     // Setting beatEnd for node shower
                     startBeatLine2 = (int)songData[songDataNewLineIndex];
                 }
@@ -258,7 +269,7 @@ public class GameLogic : MonoBehaviour
         }
         if (GameState.amountPlayer > 1)
         {
-            textLine1Top.text = textLine1Bottom.text;
+            //textLine1Top.text = textLine1Bottom.text;
             textLine2Top.text = textLine2Bottom.text;
         }
         // setting nodes of first line
@@ -386,6 +397,12 @@ public class GameLogic : MonoBehaviour
                     {
                         sData = (SyllableData)songData[songDataCurrentIndex];
                         text = "";
+                        // reset song text
+                        foreach (GameObject currObject in textLine1Bottom)
+                        {
+                            Destroy(currObject, 0.0f);
+                        }
+                        textLine1Bottom.Clear();
                         // Making syllable colored
                         foreach (SyllableData s in syllablesLine1)
                         {
@@ -395,12 +412,15 @@ public class GameLogic : MonoBehaviour
                                 {
                                     case Kind.Normal:
                                         text += "<color=#0000ffff>" + s.syllable + "</color>";
+                                        CreateSyllabel(textLine1Bottom, templateBefore, "<color=#0000ffff>" + s.syllable + "</color>");
                                         break;
                                     case Kind.Free:
                                         text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
+                                        CreateSyllabel(textLine1Bottom, templateBefore, "<i><color=#0000ffff>" + s.syllable + "</color></i>");
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ff00ffff>" + s.syllable + "</color>";
+                                        CreateSyllabel(textLine1Bottom, templateBefore, "<color=#ff00ffff>" + s.syllable + "</color>");
                                         break;
                                 }
                             }
@@ -410,17 +430,38 @@ public class GameLogic : MonoBehaviour
                                 {
                                     case Kind.Normal:
                                         text += s.syllable;
+                                        CreateSyllabel(textLine1Bottom, templateBefore, s.syllable);
                                         break;
                                     case Kind.Free:
                                         text += "<i>" + s.syllable + "</i>";
+                                        CreateSyllabel(textLine1Bottom, templateBefore, "<i>" + s.syllable + "</i>");
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ffff00ff>" + s.syllable + "</color>";
+                                        CreateSyllabel(textLine1Bottom, templateBefore, "<color=#ffff00ff>" + s.syllable + "</color>");
                                         break;
                                 }
                             }
                         }
-                        textLine1Bottom.text = text;
+                        // calculate needed width
+                        float renderedWidth = 0;
+                        foreach (GameObject objectt in textLine1Bottom)
+                        {
+                            renderedWidth += objectt.GetComponent<TextMeshProUGUI>().preferredWidth;
+                        }
+                        // set position of text elements
+                        textLine1Bottom[0].GetComponent<RectTransform>().localPosition = new Vector3(100f - renderedWidth/2, -375f, 0f);
+                        TextMeshProUGUI beforeObjectTM = textLine1Bottom[0].GetComponent<TextMeshProUGUI>();
+                        beforeObjectTM.ForceMeshUpdate();
+                        TextMeshProUGUI currentObjectTM;
+                        foreach (GameObject objectt in textLine1Bottom.Skip(1))
+                        {
+                            currentObjectTM = objectt.GetComponent<TextMeshProUGUI>();
+                            currentObjectTM.transform.localPosition = new Vector3(beforeObjectTM.transform.localPosition.x + beforeObjectTM.preferredWidth, beforeObjectTM.transform.localPosition.y, beforeObjectTM.transform.localPosition.z);
+                            currentObjectTM.ForceMeshUpdate();
+                            beforeObjectTM = currentObjectTM;
+                        }
+                        //textLine1Bottom.text = text;
                         if (GameState.amountPlayer > 1)
                         {
                             textLine1Top.text = text;
@@ -478,7 +519,7 @@ public class GameLogic : MonoBehaviour
                     else
                     {
                         // Setting next line data to current line data
-                        textLine1Bottom.text = textLine2Bottom.text;
+                        //textLine1Bottom.text = textLine2Bottom.text;
                         if (GameState.amountPlayer > 1)
                         {
                             textLine1Top.text = textLine2Top.text;
@@ -647,6 +688,24 @@ public class GameLogic : MonoBehaviour
             video.videoPlayer.Play();
         }
         songPlayerNotSet = false;
+    }
+
+    private void CreateSyllabel(List<GameObject> objects, TextMeshProUGUI template, String text)
+    {
+        // create object
+        GameObject currentObject = new();
+        objects.Add(currentObject);
+        currentObject.transform.parent = gameObject.transform;
+        // set up text mesh
+        TextMeshProUGUI currentObjectTM = currentObject.AddComponent<TextMeshProUGUI>();
+        currentObjectTM.text = text;
+        currentObjectTM.fontSize = 60;
+        currentObjectTM.rectTransform.localScale = template.rectTransform.localScale;
+        currentObjectTM.enableWordWrapping = false;
+        currentObjectTM.horizontalMapping = template.horizontalMapping;
+        // set up font
+        currentObjectTM.font = template.font;
+        currentObjectTM.ForceMeshUpdate();
     }
 
     // checks if sung node hits reference node
