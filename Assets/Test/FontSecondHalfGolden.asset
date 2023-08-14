@@ -32,9 +32,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FaceTex:
-        m_Texture: {fileID: 2800000, guid: 006c1dbd7528eab47a3b831283e2292f, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0279b84e14445e04ba6cd36f80576a15, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0.19000068, y: 0}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 28684132378477856}
         m_Scale: {x: 1, y: 1}
@@ -118,11 +118,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: FontFirstHalfSung
+  m_Name: FontSecondHalfGolden
   m_EditorClassIdentifier: 
-  hashCode: -727767259
+  hashCode: 2626483
   material: {fileID: 2180264}
-  materialHashCode: -1003152667
+  materialHashCode: -924628557
   m_Version: 1.1.0
   m_SourceFontFileGUID: e3265ab4bf004d28a9537516768c1c75
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75, type: 3}

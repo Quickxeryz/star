@@ -59,10 +59,14 @@ public class GameLogic : MonoBehaviour
     int startBeatLine2 = 0;
     int endBeatLine2 = 0;
     // UI pointer
-    TextMeshProUGUI templateAfter;
-    TextMeshProUGUI templateBefore;
-    TextMeshProUGUI templateFirstHalfSung;
-    TextMeshProUGUI templateSecondHalfSung;
+    TextMeshProUGUI templateNormal;
+    TextMeshProUGUI templateNormalSung;
+    TextMeshProUGUI templateGolden;
+    TextMeshProUGUI templateGoldenSung;
+    TextMeshProUGUI templateFirstHalfNormal;
+    TextMeshProUGUI templateFirstHalfGolden;
+    TextMeshProUGUI templateSecondHalfNormal;
+    TextMeshProUGUI templateSecondHalfGolden;
     List<GameObject> textLine1Bottom = new();
     //Label textLine1Bottom;
     Label textLine2Bottom;
@@ -182,10 +186,14 @@ public class GameLogic : MonoBehaviour
                 break;
         }
         // get UI pointer
-        templateAfter = gameObject.transform.Find("TMAfter").GetComponent<TextMeshProUGUI>();
-        templateBefore = gameObject.transform.Find("TMBefore").GetComponent<TextMeshProUGUI>();
-        templateFirstHalfSung = gameObject.transform.Find("TMFirstHalfSung").GetComponent<TextMeshProUGUI>();
-        templateSecondHalfSung = gameObject.transform.Find("TMSecondHalfSung").GetComponent<TextMeshProUGUI>();
+        templateNormal = gameObject.transform.Find("TMNormal").GetComponent<TextMeshProUGUI>();
+        templateGolden = gameObject.transform.Find("TMGolden").GetComponent<TextMeshProUGUI>();
+        templateNormalSung = gameObject.transform.Find("TMNormalSung").GetComponent<TextMeshProUGUI>();
+        templateGoldenSung = gameObject.transform.Find("TMGoldenSung").GetComponent<TextMeshProUGUI>();
+        templateFirstHalfNormal = gameObject.transform.Find("TMFirstHalfNormal").GetComponent<TextMeshProUGUI>();
+        templateFirstHalfGolden = gameObject.transform.Find("TMFirstHalfGolden").GetComponent<TextMeshProUGUI>();
+        templateSecondHalfNormal = gameObject.transform.Find("TMSecondHalfNormal").GetComponent<TextMeshProUGUI>();
+        templateSecondHalfGolden = gameObject.transform.Find("TMSecondHalfGolden").GetComponent<TextMeshProUGUI>();
         TemplateContainer currentContainer = root.Q<TemplateContainer>("SongLinesBottom");
         //textLine1Bottom = currentContainer.Q<Label>("SongLine1");
         textLine2Bottom = currentContainer.Q<Label>("SongLine2");
@@ -412,15 +420,15 @@ public class GameLogic : MonoBehaviour
                                 {
                                     case Kind.Normal:
                                         text += "<color=#0000ffff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, templateBefore, "<color=#0000ffff>" + s.syllable + "</color>");
+                                        CreateSyllabel(textLine1Bottom, templateNormalSung, s.syllable);
                                         break;
                                     case Kind.Free:
                                         text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
-                                        CreateSyllabel(textLine1Bottom, templateBefore, "<i><color=#0000ffff>" + s.syllable + "</color></i>");
+                                        CreateSyllabel(textLine1Bottom, templateNormalSung, "<i>" + s.syllable + "</i>");
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ff00ffff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, templateBefore, "<color=#ff00ffff>" + s.syllable + "</color>");
+                                        CreateSyllabel(textLine1Bottom, templateGoldenSung, s.syllable);
                                         break;
                                 }
                             }
@@ -430,15 +438,15 @@ public class GameLogic : MonoBehaviour
                                 {
                                     case Kind.Normal:
                                         text += s.syllable;
-                                        CreateSyllabel(textLine1Bottom, templateBefore, s.syllable);
+                                        CreateSyllabel(textLine1Bottom, templateNormal, s.syllable);
                                         break;
                                     case Kind.Free:
                                         text += "<i>" + s.syllable + "</i>";
-                                        CreateSyllabel(textLine1Bottom, templateBefore, "<i>" + s.syllable + "</i>");
+                                        CreateSyllabel(textLine1Bottom, templateNormal, "<i>" + s.syllable + "</i>");
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ffff00ff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, templateBefore, "<color=#ffff00ff>" + s.syllable + "</color>");
+                                        CreateSyllabel(textLine1Bottom, templateGolden, s.syllable);
                                         break;
                                 }
                             }
