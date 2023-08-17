@@ -1,14 +1,15 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
+using TMPro;
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using Classes;
-using TMPro;
+using System.IO;
 using System.Linq;
+using Classes;
 
 public class GameLogic : MonoBehaviour
 {
@@ -35,6 +36,21 @@ public class GameLogic : MonoBehaviour
             syllable = "";
         }
     }
+
+    class TextObject 
+    {
+        public GameObject gameObject;
+        public TextMeshProUGUI textMesh;
+        public bool isSecondHalf;
+
+        public TextObject(GameObject gameObject, TextMeshProUGUI textMesh, bool isSecondHalf)
+        {
+            this.gameObject = gameObject;
+            this.textMesh = textMesh;
+            this.isSecondHalf = isSecondHalf;
+        }
+    }
+
     // Mic input
     public MicrophoneInput microphoneInput;
     // Video
@@ -51,23 +67,17 @@ public class GameLogic : MonoBehaviour
     // node line data
     readonly List<VisualElement>[] nodesLines1 = new List<VisualElement>[GameState.amountPlayer];
     readonly List<VisualElement>[] nodesLines2 = new List<VisualElement>[GameState.amountPlayer];
-    // songData index pointer
+    // songData index
     int songDataCurrentIndex = 0;
     int songDataNewLineIndex = 0;
-    // beat pointer
+    // beat data
     int startBeatLine1 = 0;
     int startBeatLine2 = 0;
     int endBeatLine2 = 0;
+    // UI data
+    Vector2 sizeDelta = new Vector2(1000f, 500f);
     // UI pointer
-    TextMeshProUGUI templateNormal;
-    TextMeshProUGUI templateNormalSung;
-    TextMeshProUGUI templateGolden;
-    TextMeshProUGUI templateGoldenSung;
-    TextMeshProUGUI templateFirstHalfNormal;
-    TextMeshProUGUI templateFirstHalfGolden;
-    TextMeshProUGUI templateSecondHalfNormal;
-    TextMeshProUGUI templateSecondHalfGolden;
-    List<GameObject> textLine1Bottom = new();
+    List<TextObject> textLine1Bottom = new();
     //Label textLine1Bottom;
     Label textLine2Bottom;
     Label textLine1Top;
@@ -186,14 +196,6 @@ public class GameLogic : MonoBehaviour
                 break;
         }
         // get UI pointer
-        templateNormal = gameObject.transform.Find("TMNormal").GetComponent<TextMeshProUGUI>();
-        templateGolden = gameObject.transform.Find("TMGolden").GetComponent<TextMeshProUGUI>();
-        templateNormalSung = gameObject.transform.Find("TMNormalSung").GetComponent<TextMeshProUGUI>();
-        templateGoldenSung = gameObject.transform.Find("TMGoldenSung").GetComponent<TextMeshProUGUI>();
-        templateFirstHalfNormal = gameObject.transform.Find("TMFirstHalfNormal").GetComponent<TextMeshProUGUI>();
-        templateFirstHalfGolden = gameObject.transform.Find("TMFirstHalfGolden").GetComponent<TextMeshProUGUI>();
-        templateSecondHalfNormal = gameObject.transform.Find("TMSecondHalfNormal").GetComponent<TextMeshProUGUI>();
-        templateSecondHalfGolden = gameObject.transform.Find("TMSecondHalfGolden").GetComponent<TextMeshProUGUI>();
         TemplateContainer currentContainer = root.Q<TemplateContainer>("SongLinesBottom");
         //textLine1Bottom = currentContainer.Q<Label>("SongLine1");
         textLine2Bottom = currentContainer.Q<Label>("SongLine2");
@@ -406,70 +408,99 @@ public class GameLogic : MonoBehaviour
                         sData = (SyllableData)songData[songDataCurrentIndex];
                         text = "";
                         // reset song text
-                        foreach (GameObject currObject in textLine1Bottom)
+                        foreach (TextObject currObject in textLine1Bottom)
                         {
-                            Destroy(currObject, 0.0f);
+                            Destroy(currObject.gameObject, 0.0f);
                         }
                         textLine1Bottom.Clear();
                         // Making syllable colored
+                        float currentPercentage;
                         foreach (SyllableData s in syllablesLine1)
                         {
+                            // if alredy sung
                             if (s.appearing < sData.appearing)
                             {
                                 switch (s.kind)
                                 {
                                     case Kind.Normal:
                                         text += "<color=#0000ffff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, templateNormalSung, s.syllable);
+                                        CreateSyllabel(textLine1Bottom, "<color=#0000ffff>" + s.syllable + "</color>", false);
                                         break;
                                     case Kind.Free:
                                         text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
-                                        CreateSyllabel(textLine1Bottom, templateNormalSung, "<i>" + s.syllable + "</i>");
+                                        CreateSyllabel(textLine1Bottom, "<i><color=#0000ffff>" + s.syllable + "</color></i>", false);
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ff00ffff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, templateGoldenSung, s.syllable);
+                                        CreateSyllabel(textLine1Bottom, "<color=#ff00ffff>" + s.syllable + "</color>", false);
                                         break;
                                 }
-                            }
-                            else
+                            } 
+                            // if has to sung
+                            else if (s.appearing >= currentBeat)
                             {
                                 switch (s.kind)
                                 {
                                     case Kind.Normal:
                                         text += s.syllable;
-                                        CreateSyllabel(textLine1Bottom, templateNormal, s.syllable);
+                                        CreateSyllabel(textLine1Bottom, s.syllable, false);
                                         break;
                                     case Kind.Free:
                                         text += "<i>" + s.syllable + "</i>";
-                                        CreateSyllabel(textLine1Bottom, templateNormal, "<i>" + s.syllable + "</i>");
+                                        CreateSyllabel(textLine1Bottom, "<i>" + s.syllable + "</i>", false);
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ffff00ff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, templateGolden, s.syllable);
+                                        CreateSyllabel(textLine1Bottom, "<color=#ffff00ff>" + s.syllable + "</color>", false);
+                                        break;
+                                }
+                            }
+                            // current node
+                            else
+                            {
+                                currentPercentage = ((float)(currentBeat - sData.appearing)) / (float)sData.length;
+                                switch (s.kind)
+                                {
+                                    case Kind.Normal:
+                                        text += s.syllable;
+                                        CreateCurrentSyllabel(textLine1Bottom, s.syllable, false, currentPercentage);
+                                        break;
+                                    case Kind.Free:
+                                        text += "<i>" + s.syllable + "</i>";
+                                        CreateCurrentSyllabel(textLine1Bottom, "<i>" + s.syllable + "</i>", false, currentPercentage);
+                                        break;
+                                    case Kind.Golden:
+                                        text += "<color=#ffff00ff>" + s.syllable + "</color>";
+                                        CreateCurrentSyllabel(textLine1Bottom, s.syllable, true, currentPercentage);
                                         break;
                                 }
                             }
                         }
                         // calculate needed width
                         float renderedWidth = 0;
-                        foreach (GameObject objectt in textLine1Bottom)
+                        foreach (TextObject to in textLine1Bottom)
                         {
-                            renderedWidth += objectt.GetComponent<TextMeshProUGUI>().preferredWidth;
+                            if (!to.isSecondHalf)
+                            {
+                                renderedWidth += to.textMesh.preferredWidth;
+                            }
                         }
                         // set position of text elements
-                        textLine1Bottom[0].GetComponent<RectTransform>().localPosition = new Vector3(100f - renderedWidth/2, -375f, 0f);
-                        TextMeshProUGUI beforeObjectTM = textLine1Bottom[0].GetComponent<TextMeshProUGUI>();
-                        beforeObjectTM.ForceMeshUpdate();
-                        TextMeshProUGUI currentObjectTM;
-                        foreach (GameObject objectt in textLine1Bottom.Skip(1))
+                        textLine1Bottom[0].gameObject.transform.localPosition = new Vector3(500f - renderedWidth/2, -600f, 0f);
+                        TextObject beforeObject = textLine1Bottom[0];
+                        beforeObject.textMesh.ForceMeshUpdate();
+                        foreach (TextObject to in textLine1Bottom.Skip(1))
                         {
-                            currentObjectTM = objectt.GetComponent<TextMeshProUGUI>();
-                            currentObjectTM.transform.localPosition = new Vector3(beforeObjectTM.transform.localPosition.x + beforeObjectTM.preferredWidth, beforeObjectTM.transform.localPosition.y, beforeObjectTM.transform.localPosition.z);
-                            currentObjectTM.ForceMeshUpdate();
-                            beforeObjectTM = currentObjectTM;
+                            if (to.isSecondHalf)
+                            {
+                                to.gameObject.transform.localPosition = new Vector3(beforeObject.gameObject.transform.localPosition.x, beforeObject.gameObject.transform.localPosition.y, beforeObject.gameObject.transform.localPosition.z);                               
+                            } else
+                            {
+                                to.gameObject.transform.localPosition = new Vector3(beforeObject.gameObject.transform.localPosition.x + beforeObject.textMesh.preferredWidth, beforeObject.gameObject.transform.localPosition.y, beforeObject.gameObject.transform.localPosition.z);
+                            }
+                            to.textMesh.ForceMeshUpdate();
+                            beforeObject = to;
                         }
-                        //textLine1Bottom.text = text;
                         if (GameState.amountPlayer > 1)
                         {
                             textLine1Top.text = text;
@@ -698,24 +729,67 @@ public class GameLogic : MonoBehaviour
         songPlayerNotSet = false;
     }
 
-    private void CreateSyllabel(List<GameObject> objects, TextMeshProUGUI template, String text)
+    private void CreateSyllabel(List<TextObject> objects, String text, bool isSecondHalf)
     {
         // create object
-        GameObject currentObject = new();
-        objects.Add(currentObject);
+        GameObject currentObject = new("TM");
         currentObject.transform.parent = gameObject.transform;
         // set up text mesh
         TextMeshProUGUI currentObjectTM = currentObject.AddComponent<TextMeshProUGUI>();
         currentObjectTM.text = text;
+        currentObjectTM.rectTransform.sizeDelta = sizeDelta;
         currentObjectTM.fontSize = 60;
-        currentObjectTM.rectTransform.localScale = template.rectTransform.localScale;
         currentObjectTM.enableWordWrapping = false;
-        currentObjectTM.horizontalMapping = template.horizontalMapping;
-        // set up font
-        currentObjectTM.font = template.font;
         currentObjectTM.ForceMeshUpdate();
+        objects.Add(new TextObject(currentObject, currentObjectTM, isSecondHalf));
     }
 
+    private void CreateCurrentSyllabel(List<TextObject> objects, String text, bool isGolden, float currentPercantage)
+    {
+        GameObject objectLeft = new("Mask");
+        objectLeft.transform.parent = gameObject.transform;
+        RectMask2D maskLeft = objectLeft.AddComponent<RectMask2D>();
+        maskLeft.rectTransform.sizeDelta = sizeDelta;
+        GameObject subObjectLeft = new("TM");
+        subObjectLeft.transform.parent = objectLeft.transform;
+        TextMeshProUGUI wordLeft = subObjectLeft.AddComponent<TextMeshProUGUI>();
+        if (isGolden)
+        {
+            wordLeft.text = "<color=#ffff00ff>"+text;
+        } else
+        {
+            wordLeft.text = text;
+        }
+        wordLeft.fontSize = 60;
+        wordLeft.enableWordWrapping = false;
+        wordLeft.transform.localPosition = new Vector3(0f, 0f, 0f);
+        wordLeft.rectTransform.sizeDelta = sizeDelta;
+        wordLeft.ForceMeshUpdate();
+        maskLeft.padding = new Vector4((wordLeft.preferredWidth * currentPercantage), 0f);
+        objects.Add(new TextObject(objectLeft, wordLeft, false));
+        GameObject objectRight = new("Mask");
+        objectRight.transform.parent = gameObject.transform;
+        RectMask2D maskRight = objectRight.AddComponent<RectMask2D>();
+        maskRight.rectTransform.sizeDelta = sizeDelta;
+        GameObject subObjectRight = new("TM");
+        subObjectRight.transform.parent = objectRight.transform;
+        TextMeshProUGUI wordRight = subObjectRight.AddComponent<TextMeshProUGUI>();
+        if (isGolden)
+        {
+            wordRight.text = "<color=#ff00ffff>" + text;
+        }
+        else
+        {
+            wordRight.text = "<color=#0000ffff>" + text;
+        }
+        wordRight.fontSize = 60;
+        wordRight.enableWordWrapping = false;
+        wordRight.transform.localPosition = new Vector3(0f, 0f, 0f);
+        wordRight.rectTransform.sizeDelta = sizeDelta;
+        wordRight.ForceMeshUpdate();
+        maskRight.padding = new Vector4(0f, 0f, sizeDelta.x - wordLeft.preferredWidth + (wordLeft.preferredWidth * (1f - currentPercantage))); 
+        objects.Add(new TextObject(objectRight, wordRight, true));
+    }
     // checks if sung node hits reference node
     private bool HitNode(Node sung, Node toHit, PlayerProfile singer)
     {
