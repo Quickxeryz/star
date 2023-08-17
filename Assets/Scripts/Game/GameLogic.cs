@@ -78,12 +78,12 @@ public class GameLogic : MonoBehaviour
     const String colorGoldenToSing = "<color=#ffff00ff>";
     const String colorGoldenSung = "<color=#ff00ffff>";
     // UI data
-    Vector2 sizeDelta = new Vector2(1000f, 500f);
+    Vector2 sizeDelta = new(1000f, 500f);
     // UI pointer
-    List<TextObject> textLine1Bottom = new();
+    readonly List<TextObject> textLine1Bottom = new();
     TextObject textLine2Bottom;
-    Label textLine1Top;
-    Label textLine2Top;
+    readonly List<TextObject> textLine1Top = new();
+    TextObject textLine2Top;
     readonly VisualElement[] nodeArrows = new VisualElement[GameState.amountPlayer];
     readonly VisualElement[] nodeBoxes = new VisualElement[GameState.amountPlayer];
     readonly Label[] pointsTexts = new Label[GameState.amountPlayer];
@@ -198,12 +198,9 @@ public class GameLogic : MonoBehaviour
                 break;
         }
         // get UI pointer
-        TemplateContainer currentContainer = root.Q<TemplateContainer>("SongLinesBottom");
         if (GameState.amountPlayer > 1)
         {
-            currentContainer = root.Q<TemplateContainer>("SongLinesTop");
-            textLine1Top = currentContainer.Q<Label>("SongLine1");
-            textLine2Top = currentContainer.Q<Label>("SongLine2");
+            gameObject.transform.Find("BackgroundTop").gameObject.SetActive(true);
         }
         // get ui player data pointer 
         VisualElement[] roots = new VisualElement[GameState.amountPlayer];
@@ -269,6 +266,7 @@ public class GameLogic : MonoBehaviour
                 {
                     textLine2Bottom = CreateSyllabel(text);
                     textLine2Bottom.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, -700f, 0f);
+                    textLine2Bottom.textMesh.ForceMeshUpdate();
                     // Setting beatEnd for node shower
                     beatEnd2 = (int)songData[songDataNewLineIndex];
                 }
@@ -279,8 +277,9 @@ public class GameLogic : MonoBehaviour
         }
         if (GameState.amountPlayer > 1)
         {
-            //textLine1Top.text = textLine1Bottom.text;
-            textLine2Top.text = textLine2Bottom.textMesh.text;
+            textLine2Top = CreateSyllabel(textLine2Bottom.textMesh.text);
+            textLine2Top.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, 275f, 0f);
+            textLine2Top.textMesh.ForceMeshUpdate();
         }
         // setting nodes of first line
         for (int i = 0; i < GameState.amountPlayer; i++)
@@ -415,7 +414,12 @@ public class GameLogic : MonoBehaviour
                         {
                             Destroy(currObject.gameObject, 0.0f);
                         }
+                        foreach (TextObject currObject in textLine1Top)
+                        {
+                            Destroy(currObject.gameObject, 0.0f);
+                        }
                         textLine1Bottom.Clear();
+                        textLine1Top.Clear();
                         // Making syllable colored
                         foreach (SyllableData s in syllablesLine1)
                         {
@@ -533,7 +537,7 @@ public class GameLogic : MonoBehaviour
                         }
                         if (GameState.amountPlayer > 1)
                         {
-                            textLine1Top.text = text;
+                            CloneSyllableWithY(textLine1Bottom, textLine1Top, 175f);
                         }
                         // Time in sec = Beatnumber / BPM / 4 * 60 sec
                         if (sData.appearing / GameState.currentSong.bpm / 4 * 60 <= currentTime && (sData.appearing + sData.length) / GameState.currentSong.bpm / 4 * 60 >= currentTime)
@@ -587,10 +591,6 @@ public class GameLogic : MonoBehaviour
                     }
                     else
                     {
-                        if (GameState.amountPlayer > 1)
-                        {
-                            textLine1Top.text = textLine2Top.text;
-                        }
                         syllablesLine1 = syllablesLine2;
                         for (int i = 0; i < GameState.amountPlayer; i++)
                         {
@@ -642,9 +642,13 @@ public class GameLogic : MonoBehaviour
                             Destroy(textLine2Bottom.gameObject);
                             textLine2Bottom = CreateSyllabel(text);
                             textLine2Bottom.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, -700f, 0f);
+                            textLine2Bottom.textMesh.ForceMeshUpdate();
                             if (GameState.amountPlayer > 1)
                             {
-                                textLine2Top.text = text;
+                                Destroy(textLine2Top.gameObject);
+                                textLine2Top = CreateSyllabel(text);
+                                textLine2Top.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, 275f, 0f);
+                                textLine2Top.textMesh.ForceMeshUpdate();
                             }
                             // calculating node line data
                             if (songDataNewLineIndex < songData.Count)
@@ -677,9 +681,12 @@ public class GameLogic : MonoBehaviour
                         }
                         else
                         {
+                            textLine2Bottom.textMesh.text = "";
+                            textLine2Bottom.textMesh.ForceMeshUpdate();
                             if (GameState.amountPlayer > 1)
                             {
-                                textLine2Top.text = "";
+                                textLine2Top.textMesh.text = "";
+                                textLine2Top.textMesh.ForceMeshUpdate();
                             }
                         }
                         startBeatLine1 = (int)songData[songDataCurrentIndex];
@@ -762,7 +769,7 @@ public class GameLogic : MonoBehaviour
     {
         // create object
         GameObject currentObject = new("TM");
-        currentObject.transform.parent = gameObject.transform;
+        currentObject.transform.SetParent(gameObject.transform);
         // set up text mesh
         TextMeshProUGUI currentObjectTM = currentObject.AddComponent<TextMeshProUGUI>();
         currentObjectTM.text = text;
@@ -777,7 +784,7 @@ public class GameLogic : MonoBehaviour
     {
         // create object
         GameObject currentObject = new("TM");
-        currentObject.transform.parent = gameObject.transform;
+        currentObject.transform.SetParent(gameObject.transform);
         // set up text mesh
         TextMeshProUGUI currentObjectTM = currentObject.AddComponent<TextMeshProUGUI>();
         currentObjectTM.text = text;
@@ -791,11 +798,11 @@ public class GameLogic : MonoBehaviour
     private void CreateCurrentSyllabel(List<TextObject> objects, String text, bool isGolden, float currentPercantage)
     {
         GameObject objectLeft = new("Mask");
-        objectLeft.transform.parent = gameObject.transform;
+        objectLeft.transform.SetParent(gameObject.transform);
         RectMask2D maskLeft = objectLeft.AddComponent<RectMask2D>();
         maskLeft.rectTransform.sizeDelta = sizeDelta;
         GameObject subObjectLeft = new("TM");
-        subObjectLeft.transform.parent = objectLeft.transform;
+        subObjectLeft.transform.SetParent(objectLeft.transform);
         TextMeshProUGUI wordLeft = subObjectLeft.AddComponent<TextMeshProUGUI>();
         if (isGolden)
         {
@@ -812,11 +819,11 @@ public class GameLogic : MonoBehaviour
         maskLeft.padding = new Vector4((wordLeft.preferredWidth * currentPercantage), 0f);
         objects.Add(new TextObject(objectLeft, wordLeft, false));
         GameObject objectRight = new("Mask");
-        objectRight.transform.parent = gameObject.transform;
+        objectRight.transform.SetParent(gameObject.transform);
         RectMask2D maskRight = objectRight.AddComponent<RectMask2D>();
         maskRight.rectTransform.sizeDelta = sizeDelta;
         GameObject subObjectRight = new("TM");
-        subObjectRight.transform.parent = objectRight.transform;
+        subObjectRight.transform.SetParent(objectRight.transform);
         TextMeshProUGUI wordRight = subObjectRight.AddComponent<TextMeshProUGUI>();
         if (isGolden)
         {
@@ -833,6 +840,30 @@ public class GameLogic : MonoBehaviour
         wordRight.ForceMeshUpdate();
         maskRight.padding = new Vector4(0f, 0f, sizeDelta.x - wordLeft.preferredWidth + (wordLeft.preferredWidth * (1f - currentPercantage))); 
         objects.Add(new TextObject(objectRight, wordRight, true));
+    }
+
+    private void CloneSyllableWithY(List<TextObject> list, List<TextObject> clone, float newYCoordinate)
+    {
+        GameObject currentObj;
+        TextMeshProUGUI currentTm;
+        RectMask2D currentMask;
+        foreach(TextObject to in list)
+        {
+            currentMask = to.gameObject.GetComponent<RectMask2D>();
+            currentObj = Instantiate(to.gameObject);
+            currentObj.transform.SetParent(gameObject.transform);
+            currentObj.transform.localPosition = new Vector3(to.gameObject.transform.localPosition.x, newYCoordinate, to.gameObject.transform.localPosition.z);
+            if (currentMask == null)
+            {
+                currentTm = currentObj.GetComponent<TextMeshProUGUI>();
+                
+            } else
+            {
+                currentTm = currentObj.transform.Find("TM").GetComponent<TextMeshProUGUI>();
+            }
+            currentTm.ForceMeshUpdate();
+            clone.Add(new TextObject(currentObj, currentTm, to.isSecondHalf));
+        }
     }
 
     // checks if sung node hits reference node
