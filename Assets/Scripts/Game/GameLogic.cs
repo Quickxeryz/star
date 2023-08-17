@@ -74,12 +74,14 @@ public class GameLogic : MonoBehaviour
     int startBeatLine1 = 0;
     int startBeatLine2 = 0;
     int endBeatLine2 = 0;
+    const String colorSung = "<color=#0000ffff>";
+    const String colorGoldenToSing = "<color=#ffff00ff>";
+    const String colorGoldenSung = "<color=#ff00ffff>";
     // UI data
     Vector2 sizeDelta = new Vector2(1000f, 500f);
     // UI pointer
     List<TextObject> textLine1Bottom = new();
-    //Label textLine1Bottom;
-    Label textLine2Bottom;
+    TextObject textLine2Bottom;
     Label textLine1Top;
     Label textLine2Top;
     readonly VisualElement[] nodeArrows = new VisualElement[GameState.amountPlayer];
@@ -197,8 +199,6 @@ public class GameLogic : MonoBehaviour
         }
         // get UI pointer
         TemplateContainer currentContainer = root.Q<TemplateContainer>("SongLinesBottom");
-        //textLine1Bottom = currentContainer.Q<Label>("SongLine1");
-        textLine2Bottom = currentContainer.Q<Label>("SongLine2");
         if (GameState.amountPlayer > 1)
         {
             currentContainer = root.Q<TemplateContainer>("SongLinesTop");
@@ -244,7 +244,7 @@ public class GameLogic : MonoBehaviour
                         text += "<i>" + sData.syllable + "</i>";
                         break;
                     case Kind.Golden:
-                        text += "<color=#ffff00ff>" + sData.syllable + "</color>";
+                        text += colorGoldenToSing + sData.syllable + "</color>";
                         break;
                 }
                 // Setting syllables of first line
@@ -267,7 +267,8 @@ public class GameLogic : MonoBehaviour
                 }
                 else
                 {
-                    textLine2Bottom.text = text;
+                    textLine2Bottom = CreateSyllabel(text);
+                    textLine2Bottom.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, -700f, 0f);
                     // Setting beatEnd for node shower
                     beatEnd2 = (int)songData[songDataNewLineIndex];
                 }
@@ -279,7 +280,7 @@ public class GameLogic : MonoBehaviour
         if (GameState.amountPlayer > 1)
         {
             //textLine1Top.text = textLine1Bottom.text;
-            textLine2Top.text = textLine2Bottom.text;
+            textLine2Top.text = textLine2Bottom.textMesh.text;
         }
         // setting nodes of first line
         for (int i = 0; i < GameState.amountPlayer; i++)
@@ -424,16 +425,16 @@ public class GameLogic : MonoBehaviour
                                 switch (s.kind)
                                 {
                                     case Kind.Normal:
-                                        text += "<color=#0000ffff>" + s.syllable + "</color>";
-                                        textSung += "<color=#0000ffff>" + s.syllable + "</color>";
+                                        text += colorSung + s.syllable + "</color>";
+                                        textSung += colorSung + s.syllable + "</color>";
                                         break;
                                     case Kind.Free:
-                                        text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
-                                        textSung += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
+                                        text += "<i>" + colorSung + s.syllable + "</color></i>";
+                                        textSung += "<i>" + colorSung + s.syllable + "</color></i>";
                                         break;
                                     case Kind.Golden:
-                                        text += "<color=#ff00ffff>" + s.syllable + "</color>";
-                                        textSung += "<color=#ff00ffff>" + s.syllable + "</color>";
+                                        text += colorGoldenSung + s.syllable + "</color>";
+                                        textSung += colorGoldenSung + s.syllable + "</color>";
                                         break;
                                 }
                             } 
@@ -451,8 +452,8 @@ public class GameLogic : MonoBehaviour
                                         textToSing += "<i>" + s.syllable + "</i>";
                                         break;
                                     case Kind.Golden:
-                                        text += "<color=#ffff00ff>" + s.syllable + "</color>";
-                                        textToSing += "<color=#ffff00ff>" + s.syllable + "</color>";
+                                        text += colorGoldenToSing + s.syllable + "</color>";
+                                        textToSing += colorGoldenToSing + s.syllable + "</color>";
                                         break;
                                 }
                             }
@@ -470,7 +471,7 @@ public class GameLogic : MonoBehaviour
                                         textCurrentSing += "<i>" + s.syllable + "</i>";
                                         break;
                                     case Kind.Golden:
-                                        text += "<color=#ffff00ff>" + s.syllable + "</color>";
+                                        text += colorGoldenToSing + s.syllable + "</color>";
                                         textCurrentSing += s.syllable;
                                         currentIsGolden = true;
                                         break;
@@ -480,7 +481,7 @@ public class GameLogic : MonoBehaviour
                         // render text
                         if (textSung != "")
                         {
-                            CreateSyllabel(textLine1Bottom, textSung);
+                            CreateSyllabelToList(textLine1Bottom, textSung);
                         }
                         if (textCurrentSing != "")
                         {
@@ -493,17 +494,17 @@ public class GameLogic : MonoBehaviour
                             {
                                 if (currentIsGolden)
                                 {
-                                    CreateSyllabel(textLine1Bottom, "<color=#ffff00ff>" + textCurrentSing + "</color>");
+                                    CreateSyllabelToList(textLine1Bottom, colorGoldenSung + textCurrentSing + "</color>");
                                 }
                                 else
                                 {
-                                    CreateSyllabel(textLine1Bottom, "<color=#0000ffff>" + textCurrentSing + "</color>");
+                                    CreateSyllabelToList(textLine1Bottom, colorSung + textCurrentSing + "</color>");
                                 }
                             }
                         }
                         if (textToSing != "")
                         {
-                            CreateSyllabel(textLine1Bottom, textToSing);
+                            CreateSyllabelToList(textLine1Bottom, textToSing);
                         }
                         // calculate needed width
                         float renderedWidth = 0;
@@ -586,8 +587,6 @@ public class GameLogic : MonoBehaviour
                     }
                     else
                     {
-                        // Setting next line data to current line data
-                        //textLine1Bottom.text = textLine2Bottom.text;
                         if (GameState.amountPlayer > 1)
                         {
                             textLine1Top.text = textLine2Top.text;
@@ -634,13 +633,15 @@ public class GameLogic : MonoBehaviour
                                         text += "<i>" + sData.syllable + "</i>";
                                         break;
                                     case Kind.Golden:
-                                        text += "<color=#ffff00ff>" + sData.syllable + "</color>";
+                                        text += colorGoldenToSing + sData.syllable + "</color>";
                                         break;
                                 }
                                 syllablesLine2.Add(sData);
                                 songDataNewLineIndex++;
                             }
-                            textLine2Bottom.text = text;
+                            Destroy(textLine2Bottom.gameObject);
+                            textLine2Bottom = CreateSyllabel(text);
+                            textLine2Bottom.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, -700f, 0f);
                             if (GameState.amountPlayer > 1)
                             {
                                 textLine2Top.text = text;
@@ -676,7 +677,6 @@ public class GameLogic : MonoBehaviour
                         }
                         else
                         {
-                            textLine2Bottom.text = "";
                             if (GameState.amountPlayer > 1)
                             {
                                 textLine2Top.text = "";
@@ -758,7 +758,22 @@ public class GameLogic : MonoBehaviour
         songPlayerNotSet = false;
     }
 
-    private void CreateSyllabel(List<TextObject> objects, String text)
+    private TextObject CreateSyllabel(String text)
+    {
+        // create object
+        GameObject currentObject = new("TM");
+        currentObject.transform.parent = gameObject.transform;
+        // set up text mesh
+        TextMeshProUGUI currentObjectTM = currentObject.AddComponent<TextMeshProUGUI>();
+        currentObjectTM.text = text;
+        currentObjectTM.rectTransform.sizeDelta = sizeDelta;
+        currentObjectTM.fontSize = 60;
+        currentObjectTM.enableWordWrapping = false;
+        currentObjectTM.ForceMeshUpdate();
+        return new TextObject(currentObject, currentObjectTM, false);
+    }
+
+    private void CreateSyllabelToList(List<TextObject> objects, String text)
     {
         // create object
         GameObject currentObject = new("TM");
@@ -784,7 +799,7 @@ public class GameLogic : MonoBehaviour
         TextMeshProUGUI wordLeft = subObjectLeft.AddComponent<TextMeshProUGUI>();
         if (isGolden)
         {
-            wordLeft.text = "<color=#ffff00ff>"+text;
+            wordLeft.text = colorGoldenToSing +text;
         } else
         {
             wordLeft.text = text;
@@ -805,11 +820,11 @@ public class GameLogic : MonoBehaviour
         TextMeshProUGUI wordRight = subObjectRight.AddComponent<TextMeshProUGUI>();
         if (isGolden)
         {
-            wordRight.text = "<color=#ff00ffff>" + text;
+            wordRight.text = colorGoldenSung + text;
         }
         else
         {
-            wordRight.text = "<color=#0000ffff>" + text;
+            wordRight.text = colorSung + text;
         }
         wordRight.fontSize = 60;
         wordRight.enableWordWrapping = false;
