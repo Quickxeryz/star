@@ -1,7 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/GameOverlays/GameStyle.uss?fileID=7433441132597879392&amp;guid=8de20c247a68afe47b75704253b9ba12&amp;type=3#GameStyle" />
-    <ui:VisualElement name="SongLinesBox" class="textBox" style="top: auto; left: auto; height: 100%; width: 100%; bottom: auto; -unity-background-image-tint-color: rgb(0, 0, 0); color: rgb(56, 56, 56); background-color: rgb(112, 112, 112);">
-        <ui:Label text="Song Line 1" display-tooltip-when-elided="true" name="SongLine1" picking-mode="Ignore" class="songText" />
-        <ui:Label text="Song Line 2" display-tooltip-when-elided="true" name="SongLine2" picking-mode="Ignore" class="songText" style="position: absolute; top: 50%;" />
-    </ui:VisualElement>
-</ui:UXML>
