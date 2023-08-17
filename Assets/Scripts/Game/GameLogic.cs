@@ -262,7 +262,6 @@ public class GameLogic : MonoBehaviour
             {
                 if (textCounter == 1)
                 {
-                    //textLine1Bottom.text = text;
                     // Setting beatEnd for node shower
                     startBeatLine2 = (int)songData[songDataNewLineIndex];
                 }
@@ -397,24 +396,26 @@ public class GameLogic : MonoBehaviour
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
                 int currentBeat = (int)Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
                 // updating nodes, songtext and calculating score
-                string text;
                 SyllableData sData;
                 VisualElement nodeBox;
                 float currentPercent;
+                string text = "";
                 if (songDataCurrentIndex < songData.Count)
                 {
                     if (songData[songDataCurrentIndex].GetType() == typeof(SyllableData))
                     {
                         sData = (SyllableData)songData[songDataCurrentIndex];
-                        text = "";
                         // reset song text
+                        string textToSing = "";
+                        string textCurrentSing = "";
+                        string textSung = "";
+                        bool currentIsGolden = false;
                         foreach (TextObject currObject in textLine1Bottom)
                         {
                             Destroy(currObject.gameObject, 0.0f);
                         }
                         textLine1Bottom.Clear();
                         // Making syllable colored
-                        float currentPercentage;
                         foreach (SyllableData s in syllablesLine1)
                         {
                             // if alredy sung
@@ -424,57 +425,85 @@ public class GameLogic : MonoBehaviour
                                 {
                                     case Kind.Normal:
                                         text += "<color=#0000ffff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, "<color=#0000ffff>" + s.syllable + "</color>", false);
+                                        textSung += "<color=#0000ffff>" + s.syllable + "</color>";
                                         break;
                                     case Kind.Free:
                                         text += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
-                                        CreateSyllabel(textLine1Bottom, "<i><color=#0000ffff>" + s.syllable + "</color></i>", false);
+                                        textSung += "<i><color=#0000ffff>" + s.syllable + "</color></i>";
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ff00ffff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, "<color=#ff00ffff>" + s.syllable + "</color>", false);
+                                        textSung += "<color=#ff00ffff>" + s.syllable + "</color>";
                                         break;
                                 }
                             } 
-                            // if has to sung
-                            else if (s.appearing >= currentBeat)
+                            // if has to sing
+                            else if (s.appearing > sData.appearing)
                             {
                                 switch (s.kind)
                                 {
                                     case Kind.Normal:
                                         text += s.syllable;
-                                        CreateSyllabel(textLine1Bottom, s.syllable, false);
+                                        textToSing += s.syllable;
                                         break;
                                     case Kind.Free:
                                         text += "<i>" + s.syllable + "</i>";
-                                        CreateSyllabel(textLine1Bottom, "<i>" + s.syllable + "</i>", false);
+                                        textToSing += "<i>" + s.syllable + "</i>";
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ffff00ff>" + s.syllable + "</color>";
-                                        CreateSyllabel(textLine1Bottom, "<color=#ffff00ff>" + s.syllable + "</color>", false);
+                                        textToSing += "<color=#ffff00ff>" + s.syllable + "</color>";
                                         break;
                                 }
                             }
                             // current node
                             else
                             {
-                                currentPercentage = ((float)(currentBeat - sData.appearing)) / (float)sData.length;
                                 switch (s.kind)
                                 {
                                     case Kind.Normal:
                                         text += s.syllable;
-                                        CreateCurrentSyllabel(textLine1Bottom, s.syllable, false, currentPercentage);
+                                        textCurrentSing += s.syllable;
                                         break;
                                     case Kind.Free:
                                         text += "<i>" + s.syllable + "</i>";
-                                        CreateCurrentSyllabel(textLine1Bottom, "<i>" + s.syllable + "</i>", false, currentPercentage);
+                                        textCurrentSing += "<i>" + s.syllable + "</i>";
                                         break;
                                     case Kind.Golden:
                                         text += "<color=#ffff00ff>" + s.syllable + "</color>";
-                                        CreateCurrentSyllabel(textLine1Bottom, s.syllable, true, currentPercentage);
+                                        textCurrentSing += s.syllable;
+                                        currentIsGolden = true;
                                         break;
                                 }
                             }
+                        }
+                        // render text
+                        if (textSung != "")
+                        {
+                            CreateSyllabel(textLine1Bottom, textSung);
+                        }
+                        if (textCurrentSing != "")
+                        {
+                            float currentSyllablePercent = ((float)(currentBeat - sData.appearing)) / sData.length;
+                            if (currentSyllablePercent < 1f)
+                            {
+                                CreateCurrentSyllabel(textLine1Bottom, textCurrentSing, currentIsGolden, currentSyllablePercent);
+                            }
+                            else
+                            {
+                                if (currentIsGolden)
+                                {
+                                    CreateSyllabel(textLine1Bottom, "<color=#ffff00ff>" + textCurrentSing + "</color>");
+                                }
+                                else
+                                {
+                                    CreateSyllabel(textLine1Bottom, "<color=#0000ffff>" + textCurrentSing + "</color>");
+                                }
+                            }
+                        }
+                        if (textToSing != "")
+                        {
+                            CreateSyllabel(textLine1Bottom, textToSing);
                         }
                         // calculate needed width
                         float renderedWidth = 0;
@@ -729,7 +758,7 @@ public class GameLogic : MonoBehaviour
         songPlayerNotSet = false;
     }
 
-    private void CreateSyllabel(List<TextObject> objects, String text, bool isSecondHalf)
+    private void CreateSyllabel(List<TextObject> objects, String text)
     {
         // create object
         GameObject currentObject = new("TM");
@@ -741,7 +770,7 @@ public class GameLogic : MonoBehaviour
         currentObjectTM.fontSize = 60;
         currentObjectTM.enableWordWrapping = false;
         currentObjectTM.ForceMeshUpdate();
-        objects.Add(new TextObject(currentObject, currentObjectTM, isSecondHalf));
+        objects.Add(new TextObject(currentObject, currentObjectTM, false));
     }
 
     private void CreateCurrentSyllabel(List<TextObject> objects, String text, bool isGolden, float currentPercantage)
@@ -790,6 +819,7 @@ public class GameLogic : MonoBehaviour
         maskRight.padding = new Vector4(0f, 0f, sizeDelta.x - wordLeft.preferredWidth + (wordLeft.preferredWidth * (1f - currentPercantage))); 
         objects.Add(new TextObject(objectRight, wordRight, true));
     }
+
     // checks if sung node hits reference node
     private bool HitNode(Node sung, Node toHit, PlayerProfile singer)
     {
