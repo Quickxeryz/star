@@ -31,11 +31,11 @@ public class SongEnd : MonoBehaviour
                         while((!found) && x < GameState.teams.Count)
                         {
                             y = 0;
-                            while ((!found) && y < GameState.teams[x].Count)
+                            while ((!found) && y < GameState.teams[x].players.Count)
                             {
-                                if (GameState.teams[x][y] == player[i])
+                                if (GameState.teams[x].players[y] == player[i])
                                 {
-                                    GameState.teamPoints[x] += GameState.amountPlayer - i - 1;
+                                    GameState.teams[x].points += GameState.amountPlayer - i - 1;
                                     found = true;
                                 }
                                 y++;

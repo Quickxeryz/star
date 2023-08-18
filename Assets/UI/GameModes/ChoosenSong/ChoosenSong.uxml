@@ -6,9 +6,15 @@
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Song" select-word-by-double-click="true" style="position: absolute; left: 1%; top: 50px; right: 1%; -unity-text-align: upper-center;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player" select-word-by-double-click="true" text="Player:" style="position: absolute; left: 1%; top: 90px; right: 1%; -unity-text-align: upper-center;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player1" select-word-by-double-click="true" style="position: absolute; left: 1%; top: 140px; right: 1%; -unity-text-align: upper-center;" />
+    <ui:Button display-tooltip-when-elided="true" name="Reroll1" style="width: 200px; height: 40px; position: absolute; top: 140px; left: 1100px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player2" select-word-by-double-click="true" style="position: absolute; left: 1%; top: 190px; right: 1%; -unity-text-align: upper-center;" />
+    <ui:Button display-tooltip-when-elided="true" name="Reroll2" style="width: 200px; height: 40px; position: absolute; top: 190px; left: 1100px; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player3" select-word-by-double-click="false" style="position: absolute; left: 1%; top: 240px; right: 1%; -unity-text-align: upper-center;" />
+    <ui:Button display-tooltip-when-elided="true" name="Reroll3" style="width: 200px; height: 40px; position: absolute; top: 240px; left: 1100px; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player4" select-word-by-double-click="true" style="position: absolute; left: 1%; top: 290px; right: 1%; -unity-text-align: upper-center;" />
+    <ui:Button display-tooltip-when-elided="true" name="Reroll4" style="width: 200px; height: 40px; position: absolute; top: 290px; left: 1100px; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player5" select-word-by-double-click="true" style="position: absolute; left: 1%; top: 340px; right: 1%; -unity-text-align: upper-center;" />
+    <ui:Button display-tooltip-when-elided="true" name="Reroll5" style="width: 200px; height: 40px; position: absolute; top: 340px; left: 1100px; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player6" select-word-by-double-click="true" style="position: absolute; left: 1%; top: 390px; right: 1%; -unity-text-align: upper-center;" />
+    <ui:Button display-tooltip-when-elided="true" name="Reroll6" style="width: 200px; height: 40px; position: absolute; top: 390px; left: 1100px; visibility: hidden; -unity-text-align: middle-left;" />
 </ui:UXML>

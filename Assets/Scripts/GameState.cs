@@ -14,8 +14,7 @@ public class GameState : MonoBehaviour
     public static GameMode currentGameMode = GameMode.None;
     public static int lastSongIndex;
     public static int roundsLeft;
-    public static List<List<PlayerProfile>> teams;
-    public static int[] teamPoints = new int[maxPlayer];
+    public static List<Team> teams;
     public static bool serverStarted = false;
     public static string ip;
     public static List<PlayerProfile> profiles = new();

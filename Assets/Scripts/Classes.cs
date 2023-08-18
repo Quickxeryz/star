@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Runtime.ConstrainedExecution;
+using System.Collections.Generic;
 
 namespace Classes
 {
@@ -132,6 +131,30 @@ namespace Classes
         public JsonPlayerProfiles(PlayerProfile[] playerProfiles)
         {
             this.playerProfiles = playerProfiles;
+        }
+    }
+
+    public class Team : IComparable
+    {
+        public List<PlayerProfile> players;
+        public string name = "";
+        public int points = 0;
+        public int amountRerolls = 0;
+
+        public Team(string name)
+        {
+            this.name = name;
+            players = new();
+        }
+        public int CompareTo(object obj)
+        {
+            Team Temp = (Team)obj;
+            if (points < Temp.points)
+                return 1;
+            if (points > Temp.points)
+                return -1;
+            else
+                return 0;
         }
     }
 
