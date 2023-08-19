@@ -18,6 +18,8 @@ public class GameLogic : MonoBehaviour
         Free,
         Normal,
         Golden,
+        LineBreak,
+        LineBreakExcact
     }
 
     class SyllableData
@@ -60,7 +62,7 @@ public class GameLogic : MonoBehaviour
     bool songPlayerNotSet = true;
     bool notLoadedMP3 = true;
     // Songfile data extraction
-    readonly ArrayList songData = new(); // Todo: writing own class with better performance
+    readonly List<SyllableData> songData = new ();
     // syllables data
     List<SyllableData> syllablesLine1 = new();
     List<SyllableData> syllablesLine2 = new();
@@ -151,16 +153,21 @@ public class GameLogic : MonoBehaviour
                     songData.Add(syllable);
                     break;
                 // Line break
-                case '-': // TODO Does only works for "- newLineTime" and not for "- deleteLineTime newLineTime"
+                case '-':
                     temp = line.TrimEnd();
                     // Handle "- newLineTime" and "- deleteLineTime newLineTime"
                     if (temp.IndexOf(' ') == temp.LastIndexOf(' '))
                     {
-                        songData.Add(int.Parse(temp[2..]));
+                        syllable.kind = Kind.LineBreak;
+                        syllable.appearing = int.Parse(temp[2..]);
+                        songData.Add(syllable);
                     }
                     else
                     {
-                        songData.Add(int.Parse(temp[(temp.LastIndexOf(' ') + 1)..]));
+                        syllable.kind = Kind.LineBreakExcact;
+                        syllable.appearing = int.Parse(temp[2..]);
+                        syllable.length = int.Parse(temp[(temp.LastIndexOf(' ') + 1)..]) - syllable.appearing;
+                        songData.Add(syllable);
                     }
                     break;
                 default:
@@ -224,35 +231,33 @@ public class GameLogic : MonoBehaviour
         int textCounter = 1;
         string text = "";
         VisualElement nodeBox;
-        SyllableData sData;
         int beatEnd2 = 0;
         while (textCounter < 3)
         {
-            if (songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
+            if (songData[songDataNewLineIndex].kind != Kind.LineBreak && songData[songDataNewLineIndex].kind != Kind.LineBreakExcact)
             {
-                sData = (SyllableData)songData[songDataNewLineIndex];
                 // Combininig text based on kind of syllable
-                switch (sData.kind)
+                switch (songData[songDataNewLineIndex].kind)
                 {
                     case Kind.Normal:
-                        text += sData.syllable;
+                        text += songData[songDataNewLineIndex].syllable;
                         break;
                     case Kind.Free:
-                        text += "<i>" + sData.syllable + "</i>";
+                        text += "<i>" + songData[songDataNewLineIndex].syllable + "</i>";
                         break;
                     case Kind.Golden:
-                        text += colorGoldenToSing + sData.syllable + "</color>";
+                        text += colorGoldenToSing + songData[songDataNewLineIndex].syllable + "</color>";
                         break;
                 }
                 // Setting syllables of first line
                 if (textCounter == 1)
                 {
-                    syllablesLine1.Add(sData);
+                    syllablesLine1.Add(songData[songDataNewLineIndex]);
                 }
                 // Setting syllables of second line
                 else if (textCounter == 2)
                 {
-                    syllablesLine2.Add(sData);
+                    syllablesLine2.Add(songData[songDataNewLineIndex]);
                 }
             }
             else
@@ -260,7 +265,7 @@ public class GameLogic : MonoBehaviour
                 if (textCounter == 1)
                 {
                     // Setting beatEnd for node shower
-                    startBeatLine2 = (int)songData[songDataNewLineIndex];
+                    startBeatLine2 = songData[songDataNewLineIndex].appearing;
                 }
                 else
                 {
@@ -268,7 +273,7 @@ public class GameLogic : MonoBehaviour
                     textLine2Bottom.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, -700f, 0f);
                     textLine2Bottom.textMesh.ForceMeshUpdate();
                     // Setting beatEnd for node shower
-                    beatEnd2 = (int)songData[songDataNewLineIndex];
+                    beatEnd2 = songData[songDataNewLineIndex].appearing;
                 }
                 text = "";
                 textCounter++;
@@ -289,18 +294,17 @@ public class GameLogic : MonoBehaviour
         int index = 0;
         beatSumLine1 = startBeatLine2;
         float currentPercent;
-        while (songData[index].GetType() == typeof(SyllableData))
+        while (songData[index].kind != Kind.LineBreak && songData[index].kind != Kind.LineBreakExcact)
         {
-            sData = (SyllableData)songData[index];
-            currentPercent = (sData.appearing * 100) / beatSumLine1;
+            currentPercent = (songData[index].appearing * 100) / beatSumLine1;
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
                 nodeBox = new VisualElement();
                 nodeBox.AddToClassList("nodeBox");
-                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[index].node) * 100) / nodeTextureHeight - nodeHeightOffset);
                 // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
                 nodeBox.style.left = Length.Percent(currentPercent);
-                nodeBox.style.width = Length.Percent((sData.appearing + sData.length) * 100 / beatSumLine1 - currentPercent);
+                nodeBox.style.width = Length.Percent((songData[index].appearing + songData[index].length) * 100 / beatSumLine1 - currentPercent);
                 nodesLines1[i].Add(nodeBox);
             }
             index++;
@@ -319,19 +323,18 @@ public class GameLogic : MonoBehaviour
         }
         beatSumLine2 = beatEnd2 - beatSumLine1;
         index++;
-        while (songData[index].GetType() == typeof(SyllableData))
+        while (songData[index].kind != Kind.LineBreak && songData[index].kind != Kind.LineBreakExcact)
         {
-            sData = (SyllableData)songData[index];
-            currentPercent = ((sData.appearing - startBeatLine2) * 100) / beatSumLine2;
+            currentPercent = ((songData[index].appearing - startBeatLine2) * 100) / beatSumLine2;
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
                 nodeBox = new VisualElement();
                 nodeBox.AddToClassList("nodeBox");
                 // node image location = (pitch in image * 100)/image height - node block offset
-                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[index].node) * 100) / nodeTextureHeight - nodeHeightOffset);
                 // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
                 nodeBox.style.left = Length.Percent(currentPercent);
-                nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - startBeatLine2) * 100) / beatSumLine2 - currentPercent);
+                nodeBox.style.width = Length.Percent(((songData[index].appearing + songData[index].length - startBeatLine2) * 100) / beatSumLine2 - currentPercent);
                 nodesLines2[i].Add(nodeBox);
             }
             index++;
@@ -343,17 +346,16 @@ public class GameLogic : MonoBehaviour
         // getting sum of beats (golden notes double)
         for (index = 0; index < songData.Count; index++)
         {
-            if (songData[index].GetType() == typeof(SyllableData))
+            if (songData[index].kind != Kind.LineBreak && songData[index].kind != Kind.LineBreakExcact)
             {
-                currentSyllable = (SyllableData)songData[index];
                 // handling different nodes 
-                switch (currentSyllable.kind)
+                switch (songData[index].kind)
                 {
                     case Kind.Normal:
-                        beatSum += currentSyllable.length;
+                        beatSum += songData[index].length;
                         break;
                     case Kind.Golden:
-                        beatSum += currentSyllable.length * 2;
+                        beatSum += songData[index].length * 2;
                         break;
                     default:
                         break;
@@ -396,15 +398,23 @@ public class GameLogic : MonoBehaviour
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
                 int currentBeat = (int)Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
                 // updating nodes, songtext and calculating score
-                SyllableData sData;
                 VisualElement nodeBox;
                 float currentPercent;
                 string text = "";
                 if (songDataCurrentIndex < songData.Count)
                 {
-                    if (songData[songDataCurrentIndex].GetType() == typeof(SyllableData))
+                    // Updating player node arrow:
+                    Length leftArrowPercent = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1 - nodeArrowWidth); ;
+                    for (int i = 0; i < GameState.amountPlayer; i++)
                     {
-                        sData = (SyllableData)songData[songDataCurrentIndex];
+                        if (leftArrowPercent.value < 0)
+                        {
+                            leftArrowPercent = Length.Percent(0);
+                        }
+                        nodeArrows[i].style.left = leftArrowPercent;
+                    }
+                    if (songData[songDataCurrentIndex].kind != Kind.LineBreak && songData[songDataCurrentIndex].kind != Kind.LineBreakExcact)
+                    {
                         // reset song text
                         string textToSing = "";
                         string textCurrentSing = "";
@@ -424,7 +434,7 @@ public class GameLogic : MonoBehaviour
                         foreach (SyllableData s in syllablesLine1)
                         {
                             // if alredy sung
-                            if (s.appearing < sData.appearing)
+                            if (s.appearing < songData[songDataCurrentIndex].appearing)
                             {
                                 switch (s.kind)
                                 {
@@ -443,7 +453,7 @@ public class GameLogic : MonoBehaviour
                                 }
                             } 
                             // if has to sing
-                            else if (s.appearing > sData.appearing)
+                            else if (s.appearing > songData[songDataCurrentIndex].appearing)
                             {
                                 switch (s.kind)
                                 {
@@ -489,7 +499,7 @@ public class GameLogic : MonoBehaviour
                         }
                         if (textCurrentSing != "")
                         {
-                            float currentSyllablePercent = ((float)(currentBeat - sData.appearing)) / sData.length;
+                            float currentSyllablePercent = ((float)(currentBeat - songData[songDataCurrentIndex].appearing)) / songData[songDataCurrentIndex].length;
                             if (currentSyllablePercent < 1f)
                             {
                                 CreateCurrentSyllabel(textLine1Bottom, textCurrentSing, currentIsGolden, currentSyllablePercent);
@@ -540,7 +550,7 @@ public class GameLogic : MonoBehaviour
                             CloneSyllableWithY(textLine1Bottom, textLine1Top, 175f);
                         }
                         // Time in sec = Beatnumber / BPM / 4 * 60 sec
-                        if (sData.appearing / GameState.currentSong.bpm / 4 * 60 <= currentTime && (sData.appearing + sData.length) / GameState.currentSong.bpm / 4 * 60 >= currentTime)
+                        if (songData[songDataCurrentIndex].appearing / GameState.currentSong.bpm / 4 * 60 <= currentTime && (songData[songDataCurrentIndex].appearing + songData[songDataCurrentIndex].length) / GameState.currentSong.bpm / 4 * 60 >= currentTime)
                         {
                             // calculating score and updating UI
                             for (int i = 0; i < GameState.amountPlayer; i++)
@@ -548,7 +558,7 @@ public class GameLogic : MonoBehaviour
                                 if (currentBeat != lastBeats[i])
                                 {
 
-                                    if (microphoneInput.nodes[i] != Node.None && HitNode(microphoneInput.nodes[i], sData.node, GameState.profiles[GameState.currentProfileIndex[i]]))
+                                    if (microphoneInput.nodes[i] != Node.None && HitNode(microphoneInput.nodes[i], songData[songDataCurrentIndex].node, GameState.profiles[GameState.currentProfileIndex[i]]))
                                     {
                                         // creating new node box
                                         currentPercent = ((currentBeat - 1 - startBeatLine1) * 100) / beatSumLine1;
@@ -558,7 +568,7 @@ public class GameLogic : MonoBehaviour
                                         nodeBox.style.left = Length.Percent(currentPercent);
                                         nodeBox.style.width = Length.Percent((((currentBeat - startBeatLine1) * 100) / beatSumLine1) - currentPercent);
                                         // updating score and setting node box color
-                                        switch (sData.kind)
+                                        switch (songData[songDataCurrentIndex].kind)
                                         {
                                             case Kind.Normal:
                                                 points[i] += pointsPerBeat;
@@ -581,9 +591,10 @@ public class GameLogic : MonoBehaviour
                                 }
                             }
                         }
+                        // time with no nodes
                         else
                         {
-                            if (currentTime > (sData.appearing + sData.length) / GameState.currentSong.bpm / 4 * 60)
+                            if (currentTime > (songData[songDataCurrentIndex].appearing + songData[songDataCurrentIndex].length) / GameState.currentSong.bpm / 4 * 60)
                             {
                                 songDataCurrentIndex++;
                             }
@@ -591,6 +602,13 @@ public class GameLogic : MonoBehaviour
                     }
                     else
                     {
+                        if (songData[songDataCurrentIndex].kind == Kind.LineBreak)
+                        {
+                            if (songData[songDataCurrentIndex].appearing > currentBeat)
+                            {
+                                return;
+                            }
+                        }
                         syllablesLine1 = syllablesLine2;
                         for (int i = 0; i < GameState.amountPlayer; i++)
                         {
@@ -620,23 +638,22 @@ public class GameLogic : MonoBehaviour
                         if (songDataNewLineIndex < songData.Count)
                         {
                             text = "";
-                            while (songDataNewLineIndex < songData.Count && songData[songDataNewLineIndex].GetType() == typeof(SyllableData))
+                            while (songDataNewLineIndex < songData.Count && songData[songDataNewLineIndex].kind != Kind.LineBreak && songData[songDataNewLineIndex].kind != Kind.LineBreakExcact)
                             {
-                                sData = (SyllableData)songData[songDataNewLineIndex];
                                 // adding text based on kind of syllable
-                                switch (sData.kind)
+                                switch (songData[songDataNewLineIndex].kind)
                                 {
                                     case Kind.Normal:
-                                        text += sData.syllable;
+                                        text += songData[songDataNewLineIndex].syllable;
                                         break;
                                     case Kind.Free:
-                                        text += "<i>" + sData.syllable + "</i>";
+                                        text += "<i>" + songData[songDataNewLineIndex].syllable + "</i>";
                                         break;
                                     case Kind.Golden:
-                                        text += colorGoldenToSing + sData.syllable + "</color>";
+                                        text += colorGoldenToSing + songData[songDataNewLineIndex].syllable + "</color>";
                                         break;
                                 }
-                                syllablesLine2.Add(sData);
+                                syllablesLine2.Add(songData[songDataNewLineIndex]);
                                 songDataNewLineIndex++;
                             }
                             Destroy(textLine2Bottom.gameObject);
@@ -653,25 +670,23 @@ public class GameLogic : MonoBehaviour
                             // calculating node line data
                             if (songDataNewLineIndex < songData.Count)
                             {
-                                beatEnd = (int)songData[songDataNewLineIndex];
+                                beatEnd = songData[songDataNewLineIndex].appearing;
                             }
                             else
                             {
-                                sData = (SyllableData)songData[songDataNewLineIndex - 1];
-                                beatEnd = sData.appearing + sData.length;
+                                beatEnd = songData[songDataNewLineIndex - 1].appearing + songData[songDataNewLineIndex - 1].length;
                             }
                             beatSumLine2 = beatEnd - endBeatLine2;
-                            while (nodesNewLineIndex < songData.Count && songData[nodesNewLineIndex].GetType() == typeof(SyllableData))
+                            while (nodesNewLineIndex < songData.Count && songData[nodesNewLineIndex].kind != Kind.LineBreak && songData[nodesNewLineIndex].kind != Kind.LineBreakExcact)
                             {
-                                sData = (SyllableData)songData[nodesNewLineIndex];
-                                currentPercent = ((sData.appearing - endBeatLine2) * 100) / beatSumLine2;
+                                currentPercent = ((songData[nodesNewLineIndex].appearing - endBeatLine2) * 100) / beatSumLine2;
                                 for (int i = 0; i < GameState.amountPlayer; i++)
                                 {
                                     nodeBox = new VisualElement();
                                     nodeBox.AddToClassList("nodeBox");
-                                    nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)sData.node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                    nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[nodesNewLineIndex].node) * 100) / nodeTextureHeight - nodeHeightOffset);
                                     nodeBox.style.left = Length.Percent(currentPercent);
-                                    nodeBox.style.width = Length.Percent(((sData.appearing + sData.length - endBeatLine2) * 100) / beatSumLine2 - currentPercent);
+                                    nodeBox.style.width = Length.Percent(((songData[nodesNewLineIndex].appearing + songData[nodesNewLineIndex].length - endBeatLine2) * 100) / beatSumLine2 - currentPercent);
                                     nodesLines2[i].Add(nodeBox);
                                 }
                                 nodesNewLineIndex++;
@@ -689,18 +704,8 @@ public class GameLogic : MonoBehaviour
                                 textLine2Top.textMesh.ForceMeshUpdate();
                             }
                         }
-                        startBeatLine1 = (int)songData[songDataCurrentIndex];
+                        startBeatLine1 = songData[songDataCurrentIndex].appearing;
                         songDataCurrentIndex++;
-                    }
-                    // Updating player node arrow:
-                    Length leftArrowPercent = Length.Percent(((currentBeat - startBeatLine1) * 100) / beatSumLine1 - nodeArrowWidth); ;
-                    for (int i = 0; i < GameState.amountPlayer; i++)
-                    {
-                        if (leftArrowPercent.value < 0)
-                        {
-                            leftArrowPercent = Length.Percent(0);
-                        }
-                        nodeArrows[i].style.left = leftArrowPercent;
                     }
                 }
                 else
