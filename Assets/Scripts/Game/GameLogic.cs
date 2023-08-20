@@ -165,8 +165,10 @@ public class GameLogic : MonoBehaviour
                     else
                     {
                         syllable.kind = Kind.LineBreakExcact;
-                        syllable.appearing = int.Parse(temp[2..]);
-                        syllable.length = int.Parse(temp[(temp.LastIndexOf(' ') + 1)..]) - syllable.appearing;
+                        temp = line[2..];
+                        syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
+                        temp = temp[(temp.IndexOf(' ') + 1)..];
+                        syllable.length = int.Parse(temp[(temp.IndexOf(' ') + 1)..]);
                         songData.Add(syllable);
                     }
                     break;
@@ -342,7 +344,6 @@ public class GameLogic : MonoBehaviour
         endBeatLine2 = beatEnd2;
         // calculating points per beat
         int beatSum = 0;
-        SyllableData currentSyllable;
         // getting sum of beats (golden notes double)
         for (index = 0; index < songData.Count; index++)
         {
@@ -603,6 +604,14 @@ public class GameLogic : MonoBehaviour
                     else
                     {
                         if (songData[songDataCurrentIndex].kind == Kind.LineBreak)
+                        {
+                            if (songData[songDataCurrentIndex].appearing > currentBeat)
+                            {
+                                return;
+                            }
+                        } 
+                        // has to be Kind.LineBreakExtra
+                        else
                         {
                             if (songData[songDataCurrentIndex].appearing > currentBeat)
                             {
