@@ -106,6 +106,7 @@ public class GameLogic : MonoBehaviour
         string[] songFileData = File.ReadAllLines(GameState.currentSong.path);
         SyllableData syllable;
         string temp;
+        bool needSpace = false;
         foreach (string line in songFileData)
         {
             if (line.Length > 0) 
@@ -122,7 +123,18 @@ public class GameLogic : MonoBehaviour
                         syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
                         temp = temp[(temp.IndexOf(' ') + 1)..];
                         syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
-                        syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
+                        // changing white space from end to the beginning of the next syllable for text mesh
+                        if (needSpace)
+                        {
+                            syllable.syllable = " ";
+                            needSpace = false;
+                        }
+                        syllable.syllable += temp[(temp.IndexOf(' ') + 1)..];
+                        if (syllable.syllable[^1] == ' ')
+                        {
+                            syllable.syllable = syllable.syllable[..^1];
+                            needSpace = true;
+                        }
                         songData.Add(syllable);
                         break;
                     // Golden note
@@ -134,7 +146,18 @@ public class GameLogic : MonoBehaviour
                         syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
                         temp = temp[(temp.IndexOf(' ') + 1)..];
                         syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
-                        syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
+                        // changing white space from end to the beginning of the next syllable for text mesh
+                        if (needSpace)
+                        {
+                            syllable.syllable = " ";
+                            needSpace = false;
+                        }
+                        syllable.syllable += temp[(temp.IndexOf(' ') + 1)..];
+                        if (syllable.syllable[^1] == ' ')
+                        {
+                            syllable.syllable = syllable.syllable[..^1];
+                            needSpace = true;
+                        }
                         songData.Add(syllable);
                         break;
                     // Freestyle syllable
@@ -146,7 +169,18 @@ public class GameLogic : MonoBehaviour
                         syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
                         temp = temp[(temp.IndexOf(' ') + 1)..];
                         syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
-                        syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
+                        // changing white space from end to the beginning of the next syllable for text mesh
+                        if (needSpace)
+                        {
+                            syllable.syllable = " ";
+                            needSpace = false;
+                        }
+                        syllable.syllable += temp[(temp.IndexOf(' ') + 1)..];
+                        if (syllable.syllable[^1] == ' ')
+                        {
+                            syllable.syllable = syllable.syllable[..^1];
+                            needSpace = true;
+                        }
                         songData.Add(syllable);
                         break;
                     // Line break
@@ -168,6 +202,7 @@ public class GameLogic : MonoBehaviour
                             syllable.length = int.Parse(temp[(temp.IndexOf(' ') + 1)..]) - syllable.appearing;
                             songData.Add(syllable);
                         }
+                        needSpace = false;
                         break;
                     default:
                         break;
@@ -751,7 +786,7 @@ public class GameLogic : MonoBehaviour
         TextMeshProUGUI wordLeft = subObjectLeft.AddComponent<TextMeshProUGUI>();
         if (isGolden)
         {
-            wordLeft.text = colorGoldenToSing +text;
+            wordLeft.text = colorGoldenToSing + text;
         } else
         {
             wordLeft.text = text;
@@ -770,6 +805,7 @@ public class GameLogic : MonoBehaviour
         GameObject subObjectRight = new("TM");
         subObjectRight.transform.SetParent(objectRight.transform);
         TextMeshProUGUI wordRight = subObjectRight.AddComponent<TextMeshProUGUI>();
+        // change space with non breaking space at end for tm
         if (isGolden)
         {
             wordRight.text = colorGoldenSung + text;
