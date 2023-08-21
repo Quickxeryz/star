@@ -72,7 +72,7 @@ Table like structure of the song all times are given in beats per minute
 - - line break: beat in which the line disappears
 - Third column
 - - syllable: length of the syllable
-- - line break: optional, the beat the next line appears
+- - line break: optional, the beat the next line appears, if not set the dissapear time equals the appear time
 - Fourth col
 - - syllable: pitch (0 = c1 (negative possible))
 - - line break: nothing

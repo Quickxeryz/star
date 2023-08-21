@@ -15,6 +15,10 @@ public class GameModeConfig : MonoBehaviour
         GroupBox amountRounds_TextBox = amountRounds.Q<GroupBox>("TextBox");
         Button amountRounds_Left = amountRounds.Q<Button>("Left");
         Button amountRounds_Right = amountRounds.Q<Button>("Right");
+        TemplateContainer amountRerolls = root.Q<TemplateContainer>("AmountRerolls");
+        GroupBox amountRerolls_TextBox = amountRerolls.Q<GroupBox>("TextBox");
+        Button amountRerolls_Left = amountRerolls.Q<Button>("Left");
+        Button amountRerolls_Right = amountRerolls.Q<Button>("Right");
         TemplateContainer amountTeams = root.Q<TemplateContainer>("AmountTeams");
         GroupBox amountTeams_TextBox = amountTeams.Q<GroupBox>("TextBox");
         Button amountTeams_Left = amountTeams.Q<Button>("Left");
@@ -49,6 +53,17 @@ public class GameModeConfig : MonoBehaviour
         amountRounds_Right.clicked += () =>
         {
             amountRounds_TextBox.text = (Int32.Parse(amountRounds_TextBox.text) + 1).ToString();
+        };
+        amountRerolls_Left.clicked += () =>
+        {
+            if (Int32.Parse(amountRerolls_TextBox.text) > 0)
+            {
+                amountRerolls_TextBox.text = (Int32.Parse(amountRerolls_TextBox.text) - 1).ToString();
+            }
+        };
+        amountRerolls_Right.clicked += () =>
+        {
+            amountRerolls_TextBox.text = (Int32.Parse(amountRerolls_TextBox.text) + 1).ToString();
         };
         amountTeams_Left.clicked += () =>
         {
@@ -110,15 +125,15 @@ public class GameModeConfig : MonoBehaviour
             // adding teams
             for(int i = 0; i< Int32.Parse(amountTeams_TextBox.text); i++)
             {
-                GameState.teams.Add(new());
+                GameState.teams.Add(new Team((i + 1).ToString()));
             }
-            // adding player of teams
             bool found;
             int help = 0;
             for (int i = 0; i < Int32.Parse(amountTeams_TextBox.text); i++)
             {
+                // adding player of teams
                 // print warning message if a team is empty
-                if(team[i].choices.Count==0)
+                if (team[i].choices.Count==0)
                 {
                     warning.text = "<color=red>Team "+(i+1).ToString()+" is empty!</color>";
                     return;
@@ -139,14 +154,16 @@ public class GameModeConfig : MonoBehaviour
                             help++;
                         }
                     }
-                    GameState.teams[i].Add(GameState.profiles[help]);
+                    GameState.teams[i].players.Add(GameState.profiles[help]);
                 }
+                // add rerolls
+                GameState.teams[i].amountRerolls = Int32.Parse(amountRerolls_TextBox.text);
             }
             GameState.amountPlayer = GameState.teams.Count;
             // resetting team points
             for(int i = 0; i<GameState.amountPlayer; i++)
             {
-                GameState.teamPoints[i] = 0;
+                GameState.teams[i].points = 0;
             }
             // loading new scene
             SceneManager.LoadScene("GameModeSelect");
@@ -157,6 +174,7 @@ public class GameModeConfig : MonoBehaviour
         };
         // init
         amountRounds_TextBox.text = "1";
+        amountRerolls_TextBox.text = "0";
         amountTeams_TextBox.text = "2";
         for(int i = 0; i<2; i++)
         {
