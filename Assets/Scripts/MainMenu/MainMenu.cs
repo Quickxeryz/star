@@ -8,12 +8,16 @@ using Classes;
 
 public class MainMenu : MonoBehaviour
 {
+    // global vars for song loading
+    Label songsLoaded;
+
     void OnEnable()
     {
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all ui elements
         Button play = root.Q<Button>("Play");
+        songsLoaded = root.Q<Label>("SongsLoaded");
         Button gameModes = root.Q<Button>("GameModes");
         Button server = root.Q<Button>("Server");
         Label website = root.Q<Label>("Website");
@@ -47,21 +51,22 @@ public class MainMenu : MonoBehaviour
         {
             website.text = "Server available under: https://" + GameState.ip + ":8085";
         }
-        // Loading song list
-        if (!GameState.songsLoaded)
+        // parallel loading songs 
+        if (GameState.songsLoaded)
         {
-            GameState.songs = new();
-            if (Directory.Exists(GameState.settings.absolutePathToSongs))
-            {
-                SearchDirectory(GameState.settings.absolutePathToSongs);
-            }
-            GameState.songs.Sort();
-            GameState.songsLoaded = true;
+            songsLoaded.text = "Songs loaded :)";
+        } else
+        {
+            songsLoaded.text = "Loading songs ...";
+            System.Threading.Tasks.Task.Run(() => LoadSongs());
         }
         // set functionality of all buttons
         play.clicked += () =>
         {
-            SceneManager.LoadScene("ChooseSong");
+            if (GameState.songsLoaded)
+            {
+                SceneManager.LoadScene("ChooseSong");
+            }
         };
         gameModes.clicked += () =>
         {
@@ -89,6 +94,25 @@ public class MainMenu : MonoBehaviour
         {
             Application.Quit();
         };
+    }
+
+    private void Update()
+    {
+        if (GameState.songsLoaded)
+        {
+            songsLoaded.text = "Songs loaded :)";
+        }
+    }
+
+    void LoadSongs() 
+    {
+        GameState.songs = new();
+        if (Directory.Exists(GameState.settings.absolutePathToSongs))
+        {
+            SearchDirectory(GameState.settings.absolutePathToSongs);
+        }
+        GameState.songs.Sort();
+        GameState.songsLoaded = true;
     }
 
     // Go through all files and folders

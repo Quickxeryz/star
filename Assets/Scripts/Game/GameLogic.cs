@@ -108,67 +108,70 @@ public class GameLogic : MonoBehaviour
         string temp;
         foreach (string line in songFileData)
         {
-            syllable = new SyllableData();
-            switch (line[0])
+            if (line.Length > 0) 
             {
-                // Normal note
-                case ':':
-                    syllable.kind = Kind.Normal;
-                    temp = line[2..];
-                    syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
-                    temp = temp[(temp.IndexOf(' ') + 1)..];
-                    syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
-                    temp = temp[(temp.IndexOf(' ') + 1)..];
-                    syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
-                    syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
-                    songData.Add(syllable);
-                    break;
-                // Golden note
-                case '*':
-                    syllable.kind = Kind.Golden;
-                    temp = line[2..];
-                    syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
-                    temp = temp[(temp.IndexOf(' ') + 1)..];
-                    syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
-                    temp = temp[(temp.IndexOf(' ') + 1)..];
-                    syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
-                    syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
-                    songData.Add(syllable);
-                    break;
-                // Freestyle syllable
-                case 'F':
-                    syllable.kind = Kind.Free;
-                    temp = line[2..];
-                    syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
-                    temp = temp[(temp.IndexOf(' ') + 1)..];
-                    syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
-                    temp = temp[(temp.IndexOf(' ') + 1)..];
-                    syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
-                    syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
-                    songData.Add(syllable);
-                    break;
-                // Line break
-                case '-':
-                    temp = line.TrimEnd();
-                    // Handle "- newLineTime" and "- deleteLineTime newLineTime"
-                    if (temp.IndexOf(' ') == temp.LastIndexOf(' '))
-                    {
-                        syllable.kind = Kind.LineBreak;
-                        syllable.appearing = int.Parse(temp[2..]);
-                        songData.Add(syllable);
-                    }
-                    else
-                    {
-                        syllable.kind = Kind.LineBreakExcact;
+                syllable = new SyllableData();
+                switch (line[0])
+                {
+                    // Normal note
+                    case ':':
+                        syllable.kind = Kind.Normal;
                         temp = line[2..];
                         syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
                         temp = temp[(temp.IndexOf(' ') + 1)..];
-                        syllable.length = int.Parse(temp[(temp.IndexOf(' ') + 1)..]) - syllable.appearing;
+                        syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
+                        temp = temp[(temp.IndexOf(' ') + 1)..];
+                        syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
+                        syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
                         songData.Add(syllable);
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    // Golden note
+                    case '*':
+                        syllable.kind = Kind.Golden;
+                        temp = line[2..];
+                        syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
+                        temp = temp[(temp.IndexOf(' ') + 1)..];
+                        syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
+                        temp = temp[(temp.IndexOf(' ') + 1)..];
+                        syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
+                        syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
+                        songData.Add(syllable);
+                        break;
+                    // Freestyle syllable
+                    case 'F':
+                        syllable.kind = Kind.Free;
+                        temp = line[2..];
+                        syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
+                        temp = temp[(temp.IndexOf(' ') + 1)..];
+                        syllable.length = int.Parse(temp[..temp.IndexOf(' ')]);
+                        temp = temp[(temp.IndexOf(' ') + 1)..];
+                        syllable.node = NodeFunctions.GetNodeFromInt(int.Parse(temp[..temp.IndexOf(' ')]));
+                        syllable.syllable = temp[(temp.IndexOf(' ') + 1)..];
+                        songData.Add(syllable);
+                        break;
+                    // Line break
+                    case '-':
+                        temp = line.TrimEnd();
+                        // Handle "- newLineTime" and "- deleteLineTime newLineTime"
+                        if (temp.IndexOf(' ') == temp.LastIndexOf(' '))
+                        {
+                            syllable.kind = Kind.LineBreak;
+                            syllable.appearing = int.Parse(temp[2..]);
+                            songData.Add(syllable);
+                        }
+                        else
+                        {
+                            syllable.kind = Kind.LineBreakExcact;
+                            temp = line[2..];
+                            syllable.appearing = int.Parse(temp[..temp.IndexOf(' ')]);
+                            temp = temp[(temp.IndexOf(' ') + 1)..];
+                            syllable.length = int.Parse(temp[(temp.IndexOf(' ') + 1)..]) - syllable.appearing;
+                            songData.Add(syllable);
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         // set ui screen
