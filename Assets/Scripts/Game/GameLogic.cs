@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Classes;
+using UnityEditor.TerrainTools;
 
 public class GameLogic : MonoBehaviour
 {
@@ -87,6 +88,10 @@ public class GameLogic : MonoBehaviour
     readonly VisualElement[] nodeArrows = new VisualElement[GameState.amountPlayer];
     readonly VisualElement[] nodeBoxes = new VisualElement[GameState.amountPlayer];
     readonly Label[] pointsTexts = new Label[GameState.amountPlayer];
+    GameObject whenToStartBottom;
+    RectTransform whenToStartBottomRectTransform;
+    GameObject whenToStartTop;
+    RectTransform whenToStartTopRectTransform;
     // half size of node arrow and blocks texture in %
     const int nodeHeightOffset = 5;
     // difference to next node in node texture in pixel
@@ -240,9 +245,14 @@ public class GameLogic : MonoBehaviour
                 break;
         }
         // get UI pointer
+        whenToStartBottom = gameObject.transform.Find("WhenToSingBottom").gameObject;
+        whenToStartBottomRectTransform = whenToStartBottom.GetComponent<RectTransform>();
         if (GameState.amountPlayer > 1)
         {
             gameObject.transform.Find("BackgroundTop").gameObject.SetActive(true);
+            whenToStartTop = gameObject.transform.Find("WhenToSingTop").gameObject;
+            whenToStartTop.SetActive(true);
+            whenToStartTopRectTransform = whenToStartTop.GetComponent<RectTransform>();
         }
         // get ui player data pointer 
         VisualElement[] roots = new VisualElement[GameState.amountPlayer];
@@ -590,6 +600,43 @@ public class GameLogic : MonoBehaviour
                         if (currentTime > (songData[songDataCurrentIndex].appearing + songData[songDataCurrentIndex].length) / GameState.currentSong.bpm / 4 * 60)
                         {
                             songDataCurrentIndex++;
+                        }
+                    }
+                    // set up time to start node shower
+                    if (currentBeat < startBeatLine1)
+                    {
+                        if (textLine1Bottom.Count > 0)
+                        {
+                            // 500 = textLine1Bottom[0] width / 2
+                            float startX = -945f;
+                            float endX = textLine1Bottom[0].gameObject.transform.localPosition.x - 500f;
+                            double startBeat;
+                            if (songDataCurrentIndex > 0)
+                            {
+                                startBeat = songData[songDataCurrentIndex - 1].appearing;
+                            } 
+                            // song with start gap
+                            else
+                            {
+                                startBeat = ((- GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap) / 60.0) * 4.0 * GameState.currentSong.bpm;
+                            }
+                            double percent = 100 - ((songData[songDataCurrentIndex].appearing - currentBeat) * 100) / (songData[songDataCurrentIndex].appearing - startBeat);
+                            double posX = startX + ((endX - startX) * (percent)) / 100;
+                            whenToStartBottomRectTransform.sizeDelta = new Vector2(10f, 100f);
+                            whenToStartBottom.transform.localPosition = new Vector3((float)posX, -375f, 0f);
+                            if (GameState.amountPlayer > 1)
+                            {
+                                whenToStartTopRectTransform.sizeDelta = new Vector2(10f, 100f);
+                                whenToStartTop.transform.localPosition = new Vector3((float)posX, 375f, 0f);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        whenToStartBottomRectTransform.sizeDelta = new Vector2(0f, 100f);
+                        if (GameState.amountPlayer > 1)
+                        {
+                            whenToStartTopRectTransform.sizeDelta = new Vector2(0f, 100f);
                         }
                     }
                 }
