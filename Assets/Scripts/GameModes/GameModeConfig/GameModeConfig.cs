@@ -19,6 +19,10 @@ public class GameModeConfig : MonoBehaviour
         GroupBox amountRerolls_TextBox = amountRerolls.Q<GroupBox>("TextBox");
         Button amountRerolls_Left = amountRerolls.Q<Button>("Left");
         Button amountRerolls_Right = amountRerolls.Q<Button>("Right");
+        TemplateContainer amountSwitches = root.Q<TemplateContainer>("AmountSwitches");
+        GroupBox amountSwitches_TextBox = amountSwitches.Q<GroupBox>("TextBox");
+        Button amountSwitches_Left = amountSwitches.Q<Button>("Left");
+        Button amountSwitches_Right = amountSwitches.Q<Button>("Right");
         TemplateContainer amountTeams = root.Q<TemplateContainer>("AmountTeams");
         GroupBox amountTeams_TextBox = amountTeams.Q<GroupBox>("TextBox");
         Button amountTeams_Left = amountTeams.Q<Button>("Left");
@@ -64,6 +68,17 @@ public class GameModeConfig : MonoBehaviour
         amountRerolls_Right.clicked += () =>
         {
             amountRerolls_TextBox.text = (Int32.Parse(amountRerolls_TextBox.text) + 1).ToString();
+        };
+        amountSwitches_Left.clicked += () =>
+        {
+            if (Int32.Parse(amountSwitches_TextBox.text) > 0)
+            {
+                amountSwitches_TextBox.text = (Int32.Parse(amountSwitches_TextBox.text) - 1).ToString();
+            }
+        };
+        amountSwitches_Right.clicked += () =>
+        {
+            amountSwitches_TextBox.text = (Int32.Parse(amountSwitches_TextBox.text) + 1).ToString();
         };
         amountTeams_Left.clicked += () =>
         {
@@ -156,8 +171,9 @@ public class GameModeConfig : MonoBehaviour
                     }
                     GameState.teams[i].players.Add(GameState.profiles[help]);
                 }
-                // add rerolls
+                // add rerolls and switches
                 GameState.teams[i].amountRerolls = Int32.Parse(amountRerolls_TextBox.text);
+                GameState.teams[i].amountSwitches = Int32.Parse(amountSwitches_TextBox.text);
             }
             GameState.amountPlayer = GameState.teams.Count;
             // resetting team points
@@ -175,6 +191,7 @@ public class GameModeConfig : MonoBehaviour
         // init
         amountRounds_TextBox.text = "1";
         amountRerolls_TextBox.text = "0";
+        amountSwitches_TextBox.text = "0";
         amountTeams_TextBox.text = "2";
         for(int i = 0; i<2; i++)
         {

@@ -5,9 +5,11 @@
     <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" selectable="true" style="position: absolute; right: 10px; bottom: 10px; width: 10%; height: 100px;" />
     <ui:Label tabindex="-1" text="Amount rounds" display-tooltip-when-elided="true" name="AmountRoundsLabel" style="position: absolute; left: 10px; top: 10px;" />
     <ui:Instance template="Switcher" name="AmountRounds" style="display: flex; height: 40px; position: absolute; left: 10px; width: 200px; top: 50px;" />
-    <ui:Label tabindex="-1" text="Amount teams" display-tooltip-when-elided="true" name="AmountTeamsLabel" style="position: absolute; left: 10px; top: 100px; height: 33px;" />
-    <ui:Instance template="Switcher" name="AmountRerolls" style="display: flex; height: 40px; position: absolute; left: 250px; width: 200px; top: 50px;" />
     <ui:Label tabindex="-1" text="Amount rerolls" display-tooltip-when-elided="true" name="AmountRerollsLabel" style="position: absolute; left: 250px; top: 10px;" />
+    <ui:Instance template="Switcher" name="AmountRerolls" style="display: flex; height: 40px; position: absolute; left: 250px; width: 200px; top: 50px;" />
+    <ui:Label tabindex="-1" text="Amount player switches" display-tooltip-when-elided="true" name="AmountSwitchesLabel" style="position: absolute; left: 500px; top: 10px;" />
+    <ui:Instance template="Switcher" name="AmountSwitches" style="display: flex; height: 40px; position: absolute; left: 500px; width: 200px; top: 50px;" />
+    <ui:Label tabindex="-1" text="Amount teams" display-tooltip-when-elided="true" name="AmountTeamsLabel" style="position: absolute; left: 10px; top: 100px; height: 33px;" />
     <ui:Instance template="Switcher" name="AmountTeams" style="display: flex; height: 40px; position: absolute; left: 10px; width: 200px; top: 140px;" />
     <ui:DropdownField label="Player" index="0" name="Player" style="display: flex; position: absolute; top: 190px; left: 10px; width: 500px; height: 40px;" />
     <ui:Button text="Add to team 1" display-tooltip-when-elided="true" name="AddTeam1" style="height: 40px; position: absolute; left: 10px; top: 240px; width: 200px; display: flex; visibility: hidden;" />

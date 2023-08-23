@@ -140,6 +140,7 @@ namespace Classes
         public string name = "";
         public int points = 0;
         public int amountRerolls = 0;
+        public int amountSwitches = 0;
 
         public Team(string name)
         {
