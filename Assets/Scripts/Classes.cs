@@ -168,8 +168,9 @@ namespace Classes
         public float bpm = 0f;
         public float gap = 0f;
         public string pathToVideo = "";
+        public int amountVoices;
 
-        public SongData(string path, string title, string artist, string pathToMusic, float bpm, float gap)
+        public SongData(string path, string title, string artist, string pathToMusic, float bpm, float gap, int amountVoices)
         {
             this.path = path;
             this.title = title;
@@ -177,6 +178,7 @@ namespace Classes
             this.pathToMusic = pathToMusic;
             this.bpm = bpm;
             this.gap = gap;
+            this.amountVoices = amountVoices;
         }
 
         public int CompareTo(object obj)
