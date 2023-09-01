@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Classes
 {
@@ -106,6 +107,7 @@ namespace Classes
         public Difficulty difficulty = Difficulty.Easy;
         public bool useOnlineMic = false;
         public string onlineMicName = "";
+        public Color color = new(255f, 255f, 255f);
 
         public PlayerProfile(string name)
         {

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Classes;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class GameLogic : MonoBehaviour
 {
@@ -302,9 +303,22 @@ public class GameLogic : MonoBehaviour
             pointsTexts[i] = roots[i].Q<Label>("Points");
         }
         // setting player name and get node arrows
+        Color color;
+        Label name;
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            roots[i].Q<Label>("Name").text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+            name = roots[i].Q<Label>("Name");
+            color = GameState.profiles[GameState.currentProfileIndex[i]].color;
+            name.text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+            roots[i].Q<VisualElement>("NameBox").style.unityBackgroundImageTintColor = new Color(color.r/255, color.g/255, color.b/255);
+            // change name color depending on player color
+            if (color.r * 0.299 + color.g * 0.587 + color.b * 0.114 > 186) 
+            {
+                name.style.color = new Color(0f, 0f, 0f);
+            } else
+            {
+                name.style.color = new Color(1f, 1f, 1f);
+            }
             nodeArrows[i] = roots[i].Q<VisualElement>("Node");
         }
         //Getting first song lines

@@ -12,4 +12,7 @@
     <ui:Instance template="Switcher" name="Difficulty" style="position: absolute; top: 125px; width: 500px; height: 40px; left: 175px; right: auto;" />
     <ui:Toggle label="Use online microphone as microphone" name="UseOnlineMic" style="position: absolute; left: 1%; top: 175px;" />
     <ui:TextField picking-mode="Ignore" label="Online microphone name" name="OnlineMicName" style="top: 225px; left: 1%; width: 98%; height: 40px; position: absolute;" />
+    <ui:TextField picking-mode="Ignore" label="Color red (0-255)" name="ColorRed" style="top: 275px; left: 1%; width: 98%; height: 40px; position: absolute;" />
+    <ui:TextField picking-mode="Ignore" label="Color green (0-255)" name="ColorGreen" style="top: 325px; left: 1%; width: 98%; height: 40px; position: absolute;" />
+    <ui:TextField picking-mode="Ignore" label="Color blue (0-255)" name="ColorBlue" style="top: 375px; left: 1%; width: 98%; height: 40px; position: absolute;" />
 </ui:UXML>

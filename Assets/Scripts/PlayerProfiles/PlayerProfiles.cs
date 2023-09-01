@@ -12,6 +12,9 @@ public class PlayerProfiles : MonoBehaviour
     GroupBox difficulty_TextBox;
     Toggle useOnlineMic;
     TextField onlineMicName;
+    TextField colorRed;
+    TextField colorGreen;
+    TextField colorBlue;
 
     void OnEnable()
     {
@@ -31,6 +34,9 @@ public class PlayerProfiles : MonoBehaviour
         Button difficulty_Right = difficulty.Q<Button>("Right");
         useOnlineMic = root.Q<Toggle>("UseOnlineMic");
         onlineMicName = root.Q<TextField>("OnlineMicName");
+        colorRed = root.Q<TextField>("ColorRed");
+        colorGreen = root.Q<TextField>("ColorGreen");
+        colorBlue = root.Q<TextField>("ColorBlue");
         // set functionality of all buttons
         leftButton.clicked += () =>
         {
@@ -125,6 +131,7 @@ public class PlayerProfiles : MonoBehaviour
         GameState.profiles[index].difficulty = DifficultyFunctions.StringToDifficulty(difficulty_TextBox.text);
         GameState.profiles[index].useOnlineMic = useOnlineMic.value;
         GameState.profiles[index].onlineMicName = onlineMicName.value;
+        GameState.profiles[index].color = new Color(float.Parse(colorRed.value), float.Parse(colorGreen.value), float.Parse(colorBlue.value));
     }
 
     private void ShowProfile(int index)
@@ -134,5 +141,8 @@ public class PlayerProfiles : MonoBehaviour
         difficulty_TextBox.text = GameState.profiles[index].difficulty.ToString();
         useOnlineMic.value = GameState.profiles[index].useOnlineMic;
         onlineMicName.value = GameState.profiles[index].onlineMicName;
+        colorRed.value = GameState.profiles[index].color.r.ToString();
+        colorGreen.value = GameState.profiles[index].color.g.ToString();
+        colorBlue.value = GameState.profiles[index].color.b.ToString();
     }
 }
