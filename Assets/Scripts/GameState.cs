@@ -9,11 +9,12 @@ public class GameState : MonoBehaviour
     public static bool songsLoaded = false; 
     public static List<(string id, Node node)> onlineMicrophones = new();
     public static int amountPlayer = 1;
+    public static int lastSongIndex;
     public static int[] currentProfileIndex = new int[maxPlayer];
     public static int[] currentVoice = new int[maxPlayer];
     public static SongData currentSong;
     public static GameMode currentGameMode = GameMode.None;
-    public static int lastSongIndex;
+    public static List<SongData> gameModeSongs;
     public static int roundsLeft;
     public static List<Team> teams;
     public static bool serverStarted = false;

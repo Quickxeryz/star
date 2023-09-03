@@ -105,8 +105,8 @@ public class ChoosenSong : MonoBehaviour
 
     void RandomSong()
     {
-        int index = Random.Range(0, GameState.songs.Count);
-        GameState.currentSong = GameState.songs[index];
+        int index = Random.Range(0, GameState.gameModeSongs.Count);
+        GameState.currentSong = GameState.gameModeSongs[index];
         song.text = GameState.currentSong.artist + ": " + GameState.currentSong.title;
     }
 }
