@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Classes;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class GameLogic : MonoBehaviour
 {
@@ -311,13 +310,16 @@ public class GameLogic : MonoBehaviour
             color = GameState.profiles[GameState.currentProfileIndex[i]].color;
             name.text = GameState.profiles[GameState.currentProfileIndex[i]].name;
             roots[i].Q<VisualElement>("NameBox").style.unityBackgroundImageTintColor = new Color(color.r/255, color.g/255, color.b/255);
-            // change name color depending on player color
+            roots[i].Q<VisualElement>("PointsBox").style.unityBackgroundImageTintColor = new Color(color.r / 255, color.g / 255, color.b / 255);
+            // change name and points color depending on player color
             if (color.r * 0.299 + color.g * 0.587 + color.b * 0.114 > 186) 
             {
                 name.style.color = new Color(0f, 0f, 0f);
+                pointsTexts[i].style.color = new Color(0f, 0f, 0f);
             } else
             {
                 name.style.color = new Color(1f, 1f, 1f);
+                pointsTexts[i].style.color = new Color(1f, 1f, 1f);
             }
             nodeArrows[i] = roots[i].Q<VisualElement>("Node");
         }
@@ -424,6 +426,19 @@ public class GameLogic : MonoBehaviour
                         // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
                         nodeBox.style.left = Length.Percent(currentPercent);
                         nodeBox.style.width = Length.Percent((songData[i][index].appearing + songData[i][index].length) * 100 / beatSumLine1[i] - currentPercent);
+                        color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
+                        switch (songData[i][index].kind)
+                        {
+                            case Kind.Free:
+                                nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f);
+                                break;
+                            case Kind.Normal:
+                                nodeBox.style.unityBackgroundImageTintColor = color;
+                                break;
+                            case Kind.Golden:
+                                nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
+                                break;
+                        }
                         nodeBoxes[j].Add(nodeBox);
                     } 
                 }
@@ -1024,6 +1039,7 @@ public class GameLogic : MonoBehaviour
                                 nodeBoxes[j].Clear();
                             }
                         }
+                        Color color;
                         while (nodesNewLineIndex < songData[i].Count && songData[i][nodesNewLineIndex].kind != Kind.LineBreak && songData[i][nodesNewLineIndex].kind != Kind.LineBreakExcact)
                         {
                             currentPercent = ((songData[i][nodesNewLineIndex].appearing - startBeatLine1[i]) * 100) / beatSumLine1[i];
@@ -1036,6 +1052,19 @@ public class GameLogic : MonoBehaviour
                                     nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[i][nodesNewLineIndex].node) * 100) / nodeTextureHeight - nodeHeightOffset);
                                     nodeBox.style.left = Length.Percent(currentPercent);
                                     nodeBox.style.width = Length.Percent(((songData[i][nodesNewLineIndex].appearing + songData[i][nodesNewLineIndex].length - startBeatLine1[i]) * 100) / beatSumLine1[i] - currentPercent);
+                                    color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
+                                    switch (songData[i][nodesNewLineIndex].kind)
+                                    {
+                                        case Kind.Free:
+                                            nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f);
+                                            break;
+                                        case Kind.Normal:
+                                            nodeBox.style.unityBackgroundImageTintColor = color;
+                                            break;
+                                        case Kind.Golden:
+                                            nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
+                                            break;
+                                    }
                                     nodeBoxes[j].Add(nodeBox);
                                 } 
                             }
