@@ -107,7 +107,7 @@ namespace Classes
         public Difficulty difficulty = Difficulty.Easy;
         public bool useOnlineMic = false;
         public string onlineMicName = "";
-        public Color color = new(255f, 255f, 255f);
+        public Color color = new(0f, 0f, 255f);
 
         public PlayerProfile(string name)
         {

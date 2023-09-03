@@ -426,19 +426,6 @@ public class GameLogic : MonoBehaviour
                         // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
                         nodeBox.style.left = Length.Percent(currentPercent);
                         nodeBox.style.width = Length.Percent((songData[i][index].appearing + songData[i][index].length) * 100 / beatSumLine1[i] - currentPercent);
-                        color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
-                        switch (songData[i][index].kind)
-                        {
-                            case Kind.Free:
-                                nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f);
-                                break;
-                            case Kind.Normal:
-                                nodeBox.style.unityBackgroundImageTintColor = color;
-                                break;
-                            case Kind.Golden:
-                                nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
-                                break;
-                        }
                         nodeBoxes[j].Add(nodeBox);
                     } 
                 }
@@ -795,6 +782,7 @@ public class GameLogic : MonoBehaviour
                         // Time in sec = Beatnumber / BPM / 4 * 60 sec
                         if (songData[i][songDataCurrentIndex[i]].appearing / GameState.currentSong.bpm / 4 * 60 <= currentTime && (songData[i][songDataCurrentIndex[i]].appearing + songData[i][songDataCurrentIndex[i]].length) / GameState.currentSong.bpm / 4 * 60 >= currentTime)
                         {
+                            Color color;
                             // calculating score and updating UI
                             for (int j = 0; j < GameState.amountPlayer; j++)
                             {
@@ -811,19 +799,20 @@ public class GameLogic : MonoBehaviour
                                             nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset);
                                             nodeBox.style.left = Length.Percent(currentPercent);
                                             nodeBox.style.width = Length.Percent((((currentBeat - startBeatLine1[i]) * 100) / beatSumLine1[i]) - currentPercent);
+                                            color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
                                             // updating score and setting node box color
                                             switch (songData[i][songDataCurrentIndex[i]].kind)
                                             {
                                                 case Kind.Normal:
                                                     points[j] += pointsPerBeat[i];
-                                                    nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0, 0, 1, 1));
+                                                    nodeBox.style.unityBackgroundImageTintColor = color; 
                                                     break;
                                                 case Kind.Golden:
                                                     points[j] += pointsPerBeat[i] * 2;
-                                                    nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(1, 0, 1, 1));
+                                                    nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
                                                     break;
                                                 case Kind.Free:
-                                                    nodeBox.style.unityBackgroundImageTintColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 1));
+                                                    nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f); 
                                                     break;
                                             }
                                             // updating ui elements
@@ -1052,19 +1041,6 @@ public class GameLogic : MonoBehaviour
                                     nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[i][nodesNewLineIndex].node) * 100) / nodeTextureHeight - nodeHeightOffset);
                                     nodeBox.style.left = Length.Percent(currentPercent);
                                     nodeBox.style.width = Length.Percent(((songData[i][nodesNewLineIndex].appearing + songData[i][nodesNewLineIndex].length - startBeatLine1[i]) * 100) / beatSumLine1[i] - currentPercent);
-                                    color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
-                                    switch (songData[i][nodesNewLineIndex].kind)
-                                    {
-                                        case Kind.Free:
-                                            nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f);
-                                            break;
-                                        case Kind.Normal:
-                                            nodeBox.style.unityBackgroundImageTintColor = color;
-                                            break;
-                                        case Kind.Golden:
-                                            nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
-                                            break;
-                                    }
                                     nodeBoxes[j].Add(nodeBox);
                                 } 
                             }
