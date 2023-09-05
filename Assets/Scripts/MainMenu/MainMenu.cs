@@ -129,7 +129,12 @@ public class MainMenu : MonoBehaviour
         float bpm = 0;
         float gap = 0;
         string songVideoPath;
+        int lastBeat;
+        int currentBeat;
+        int amountVoices;
+        string temp;
         foreach (string file in files)
+        {
             // check for song file
             if (file.Contains(".txt"))
             {
@@ -146,6 +151,8 @@ public class MainMenu : MonoBehaviour
                 if (isSong)
                 {
                     songVideoPath = "";
+                    amountVoices = 1;
+                    lastBeat = 0;
                     // when file is song file extract data
                     foreach (string line in text)
                     {
@@ -172,15 +179,28 @@ public class MainMenu : MonoBehaviour
                         else if (line.StartsWith("#VIDEO:"))
                         {
                             songVideoPath = path + "/" + line[7..];
+                        } else if (line.Length>0)
+                        {
+                            if (line[0] == ':')
+                            {
+                                temp = line[2..];
+                                currentBeat = int.Parse(temp[..temp.IndexOf(' ')]);
+                                if (currentBeat < lastBeat)
+                                {
+                                    amountVoices++;
+                                }
+                                lastBeat = currentBeat;
+                            }
                         }
                     }
-                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap)
+                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap, amountVoices)
                     {
                         pathToVideo = songVideoPath
                     };
                     GameState.songs.Add(currentSong);
                 }
             }
+        }
         // Get all directorys
         files = Directory.GetDirectories(path);
         foreach (string dir in files)

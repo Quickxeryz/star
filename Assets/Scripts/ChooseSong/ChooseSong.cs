@@ -67,7 +67,17 @@ public class ChooseSong : MonoBehaviour
                     }
                     j++;
                 }
-                SceneManager.LoadScene("GameScene");
+                for (j = 0; j < GameState.currentVoice.Length; j++)
+                {
+                    GameState.currentVoice[j] = 1;
+                }
+                if (GameState.currentSong.amountVoices == 1)
+                {
+                    SceneManager.LoadScene("GameScene");
+                } else
+                {
+                    SceneManager.LoadScene("ChooseVoice");
+                }
             };
         }
         playerAmount_Left.clicked += () =>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Classes
 {
@@ -106,6 +107,7 @@ namespace Classes
         public Difficulty difficulty = Difficulty.Easy;
         public bool useOnlineMic = false;
         public string onlineMicName = "";
+        public Color color = new(0f, 0f, 255f);
 
         public PlayerProfile(string name)
         {
@@ -140,6 +142,7 @@ namespace Classes
         public string name = "";
         public int points = 0;
         public int amountRerolls = 0;
+        public int amountSwitches = 0;
 
         public Team(string name)
         {
@@ -167,8 +170,9 @@ namespace Classes
         public float bpm = 0f;
         public float gap = 0f;
         public string pathToVideo = "";
+        public int amountVoices;
 
-        public SongData(string path, string title, string artist, string pathToMusic, float bpm, float gap)
+        public SongData(string path, string title, string artist, string pathToMusic, float bpm, float gap, int amountVoices)
         {
             this.path = path;
             this.title = title;
@@ -176,6 +180,7 @@ namespace Classes
             this.pathToMusic = pathToMusic;
             this.bpm = bpm;
             this.gap = gap;
+            this.amountVoices = amountVoices;
         }
 
         public int CompareTo(object obj)

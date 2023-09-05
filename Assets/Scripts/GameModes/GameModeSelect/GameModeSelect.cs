@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Classes;
+using System.Collections.Generic;
 
 public class GameModeSelect : MonoBehaviour
 {
@@ -21,6 +22,18 @@ public class GameModeSelect : MonoBehaviour
             if (GameState.songsLoaded)
             {
                 GameState.currentGameMode = GameMode.Classic;
+                GameState.gameModeSongs = new List<SongData>();
+                foreach (SongData song in GameState.songs) 
+                {
+                    if (song.amountVoices == 1)
+                    {
+                        GameState.gameModeSongs.Add(song);
+                    }
+                }
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    GameState.currentVoice[i] = 1;
+                }
                 SceneManager.LoadScene("ChoosenSong");
             }
         };
