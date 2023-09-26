@@ -5,14 +5,16 @@
     <ui:Label display-tooltip-when-elided="true" name="Player" text="Test" style="-unity-text-align: upper-center; left: 45%; width: 10%; position: absolute; top: 10px; height: 40px;" />
     <ui:Button text="Left" display-tooltip-when-elided="true" name="Left" style="position: absolute; width: 10%; left: 35%; top: 10px; height: 40px;" />
     <ui:Button text="Right" display-tooltip-when-elided="true" name="Right" style="position: absolute; width: 10%; left: 55%; top: 10px; height: 40px;" />
-    <ui:TextField picking-mode="Ignore" label="Name" name="Name" style="top: 75px; left: 1%; width: 98%; height: 40px; position: absolute;" />
+    <ui:TextField picking-mode="Ignore" label="Name" name="Name" style="top: 75px; left: 1%; width: 48%; height: 40px; position: absolute;" />
+    <ui:Label display-tooltip-when-elided="true" name="NameWarning" enable-rich-text="true" style="-unity-text-align: upper-left; left: 51%; width: 10%; position: absolute; top: 75px; height: 40px; background-color: rgba(0, 0, 0, 0); color: rgb(255, 0, 0);" />
     <ui:Button text="New" display-tooltip-when-elided="true" name="New" style="position: absolute; width: 10%; left: 70%; top: 10px; height: 40px;" />
     <ui:Button text="Delete" display-tooltip-when-elided="true" name="Delete" style="position: absolute; width: 10%; left: 85%; top: 10px; height: 40px;" />
     <ui:Label display-tooltip-when-elided="true" name="DifficultyLabel" text="Difficulty" style="-unity-text-align: upper-left; left: 1%; width: 10%; position: absolute; top: 125px; height: 40px;" />
     <ui:Instance template="Switcher" name="Difficulty" style="position: absolute; top: 125px; width: 500px; height: 40px; left: 175px; right: auto;" />
     <ui:Toggle label="Use online microphone as microphone" name="UseOnlineMic" style="position: absolute; left: 1%; top: 175px;" />
-    <ui:TextField picking-mode="Ignore" label="Online microphone name" name="OnlineMicName" style="top: 225px; left: 1%; width: 98%; height: 40px; position: absolute;" />
-    <ui:TextField picking-mode="Ignore" label="Color red (0-255)" name="ColorRed" style="top: 275px; left: 1%; width: 98%; height: 40px; position: absolute;" />
-    <ui:TextField picking-mode="Ignore" label="Color green (0-255)" name="ColorGreen" style="top: 325px; left: 1%; width: 98%; height: 40px; position: absolute;" />
-    <ui:TextField picking-mode="Ignore" label="Color blue (0-255)" name="ColorBlue" style="top: 375px; left: 1%; width: 98%; height: 40px; position: absolute;" />
+    <ui:TextField picking-mode="Ignore" label="Online microphone name" name="OnlineMicName" style="top: 225px; left: 1%; width: 48%; height: 40px; position: absolute;" />
+    <ui:Label display-tooltip-when-elided="true" name="OnlineMicNameWarning" enable-rich-text="true" selectable="false" style="-unity-text-align: upper-left; left: 51%; width: 10%; position: absolute; top: 225px; height: 40px; background-color: rgba(0, 0, 0, 0); color: rgb(255, 0, 0);" />
+    <ui:TextField picking-mode="Ignore" label="Color red (0-255)" name="ColorRed" style="top: 275px; left: 1%; width: 48%; height: 40px; position: absolute;" />
+    <ui:TextField picking-mode="Ignore" label="Color green (0-255)" name="ColorGreen" style="top: 325px; left: 1%; width: 48%; height: 40px; position: absolute;" />
+    <ui:TextField picking-mode="Ignore" label="Color blue (0-255)" name="ColorBlue" style="top: 375px; left: 1%; width: 48%; height: 40px; position: absolute;" />
 </ui:UXML>
