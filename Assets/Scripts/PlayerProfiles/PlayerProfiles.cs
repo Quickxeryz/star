@@ -9,9 +9,11 @@ public class PlayerProfiles : MonoBehaviour
     int currentProfileIndex = 0;
     Label label;
     TextField nameInput;
+    Label nameWarning;
     GroupBox difficulty_TextBox;
     Toggle useOnlineMic;
     TextField onlineMicName;
+    Label onlineMicNameWarning;
     TextField colorRed;
     TextField colorGreen;
     TextField colorBlue;
@@ -24,6 +26,7 @@ public class PlayerProfiles : MonoBehaviour
         Button back = root.Q<Button>("Back");
         label = root.Q<Label>("Player");
         nameInput = root.Q<TextField>("Name");
+        nameWarning = root.Q<Label>("NameWarning");
         Button leftButton = root.Q<Button>("Left");
         Button rightButton = root.Q<Button>("Right");
         Button newButton = root.Q<Button>("New");
@@ -34,6 +37,7 @@ public class PlayerProfiles : MonoBehaviour
         Button difficulty_Right = difficulty.Q<Button>("Right");
         useOnlineMic = root.Q<Toggle>("UseOnlineMic");
         onlineMicName = root.Q<TextField>("OnlineMicName");
+        onlineMicNameWarning = root.Q<Label>("OnlineMicNameWarning");
         colorRed = root.Q<TextField>("ColorRed");
         colorGreen = root.Q<TextField>("ColorGreen");
         colorBlue = root.Q<TextField>("ColorBlue");
@@ -42,33 +46,42 @@ public class PlayerProfiles : MonoBehaviour
         {
             if (currentProfileIndex > 0)
             {
-                // save data
-                SaveProfile(currentProfileIndex);
-                // change viewed profile
-                currentProfileIndex--;
-                ShowProfile(currentProfileIndex);
+                if (IsValid())
+                {
+                    // save data
+                    SaveProfile(currentProfileIndex);
+                    // change viewed profile
+                    currentProfileIndex--;
+                    ShowProfile(currentProfileIndex);
+                }
             }
         };
         rightButton.clicked += () =>
         {
             if (currentProfileIndex < GameState.profiles.Count - 1)
             {
-                // save data
-                SaveProfile(currentProfileIndex);
-                // change viewed profile
-                currentProfileIndex++;
-                ShowProfile(currentProfileIndex);
+                if (IsValid())
+                {
+                    // save data
+                    SaveProfile(currentProfileIndex);
+                    // change viewed profile
+                    currentProfileIndex++;
+                    ShowProfile(currentProfileIndex);
+                }
             }
         };
         newButton.clicked += () =>
         {
-            // save data
-            SaveProfile(currentProfileIndex);
-            // add new profile
-            GameState.profiles.Add(new PlayerProfile("Name"));
-            // change view to new profile
-            currentProfileIndex = GameState.profiles.Count - 1;
-            ShowProfile(currentProfileIndex);
+            if (IsValid())
+            {
+                // save data
+                SaveProfile(currentProfileIndex);
+                // add new profile
+                GameState.profiles.Add(new PlayerProfile("Name"));
+                // change view to new profile
+                currentProfileIndex = GameState.profiles.Count - 1;
+                ShowProfile(currentProfileIndex);
+            }
         };
         deleteButton.clicked += () =>
         {
@@ -114,12 +127,15 @@ public class PlayerProfiles : MonoBehaviour
         };
         back.clicked += () =>
         {
-            // saving profiles
-            SaveProfile(currentProfileIndex);
-            JsonPlayerProfiles profilesToJson = new(GameState.profiles.ToArray());
-            string json = JsonUtility.ToJson(profilesToJson);
-            File.WriteAllText("playerProfiles.json", json);
-            SceneManager.LoadScene("MainMenu");
+            if (IsValid())
+            {
+                // saving profiles
+                SaveProfile(currentProfileIndex);
+                JsonPlayerProfiles profilesToJson = new(GameState.profiles.ToArray());
+                string json = JsonUtility.ToJson(profilesToJson);
+                File.WriteAllText("playerProfiles.json", json);
+                SceneManager.LoadScene("MainMenu");
+            }
         };
         // show profile 1
         ShowProfile(0);
@@ -144,5 +160,31 @@ public class PlayerProfiles : MonoBehaviour
         colorRed.value = GameState.profiles[index].color.r.ToString();
         colorGreen.value = GameState.profiles[index].color.g.ToString();
         colorBlue.value = GameState.profiles[index].color.b.ToString();
+    }
+
+    private bool IsValid()
+    {
+        nameWarning.text = "";
+        onlineMicNameWarning.text = "";
+        for (int i = 0; i < GameState.profiles.Count; i++)
+        {
+            if (i != currentProfileIndex)
+            {
+                if (GameState.profiles[i].name == nameInput.value)
+                {
+                    nameWarning.text = "Name alredy used please use another name.";
+                    return false;
+                }
+                if (useOnlineMic.value && GameState.profiles[i].useOnlineMic)
+                {
+                    if (GameState.profiles[i].onlineMicName == onlineMicName.value)
+                    {
+                        onlineMicNameWarning.text = "Online-Microphone-Name alredy used please use another Online-Microphone-Name.";
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 }
