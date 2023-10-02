@@ -61,6 +61,7 @@ public class GameLogic : MonoBehaviour
     SongPlayer songPlayer;
     bool songPlayerNotSet = true;
     bool notLoadedMP3 = true;
+    double songLength;
     // Songfile data extraction
     readonly List<SyllableData>[] songData = new List<SyllableData>[GameState.currentSong.amountVoices];
     // syllables data
@@ -93,6 +94,7 @@ public class GameLogic : MonoBehaviour
     RectTransform whenToStartBottomRectTransform;
     GameObject whenToStartTop;
     RectTransform whenToStartTopRectTransform;
+    RectTransform currentTimePointer;
     // half size of node arrow and blocks texture in %
     const int nodeHeightOffset = 5;
     // difference to next node in node texture in pixel
@@ -286,6 +288,7 @@ public class GameLogic : MonoBehaviour
         // get UI pointer
         whenToStartBottom = gameObject.transform.Find("WhenToSingBottom").gameObject;
         whenToStartBottomRectTransform = whenToStartBottom.GetComponent<RectTransform>();
+        currentTimePointer = gameObject.transform.Find("CurrentTime").GetComponent<RectTransform>();
         if (GameState.amountPlayer > 1 || GameState.currentSong.amountVoices > 1)
         {
             gameObject.transform.Find("BackgroundTop").gameObject.SetActive(true);
@@ -477,12 +480,15 @@ public class GameLogic : MonoBehaviour
                 {
                     songPlayer = new SongPlayer(video.videoPlayer);
                     video.videoPlayer.Play();
+                    songLength = songPlayer.GetLength();
                     songPlayerNotSet = false;
                 }
             }
             return;
         }
-        if ((!songPlayer.currentPlayerIsAudioSource && (songPlayer.IsPlaying() || songPlayer.GetTime() == 0)) || (songPlayer.currentPlayerIsAudioSource && songPlayer.IsPlaying()))
+        double songPercent = (songPlayer.GetTime() * 100) / songLength;
+        // if song not ended
+        if (songPercent < 100)
         {
             double currentTime = songPlayer.GetTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
             // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
@@ -1028,7 +1034,6 @@ public class GameLogic : MonoBehaviour
                                 nodeBoxes[j].Clear();
                             }
                         }
-                        Color color;
                         while (nodesNewLineIndex < songData[i].Count && songData[i][nodesNewLineIndex].kind != Kind.LineBreak && songData[i][nodesNewLineIndex].kind != Kind.LineBreakExcact)
                         {
                             currentPercent = ((songData[i][nodesNewLineIndex].appearing - startBeatLine1[i]) * 100) / beatSumLine1[i];
@@ -1073,6 +1078,8 @@ public class GameLogic : MonoBehaviour
                     }
                 }
             }
+            // update timeline
+            currentTimePointer.anchoredPosition = new Vector3((float)(10.0 + (1895 * songPercent) / 100), -317.0f, 0f);
         }
         else
         {
@@ -1111,6 +1118,7 @@ public class GameLogic : MonoBehaviour
             video.videoPlayer.SetDirectAudioMute(0, true);
             video.videoPlayer.Play();
         }
+        songLength = songPlayer.GetLength();
         songPlayerNotSet = false;
     }
 

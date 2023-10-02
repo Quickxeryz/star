@@ -196,11 +196,11 @@ namespace Classes
 
     public class SongPlayer
     {
-        public UnityEngine.AudioSource audioSource;
+        public AudioSource audioSource;
         public UnityEngine.Video.VideoPlayer videoPlayer;
         public bool currentPlayerIsAudioSource;
 
-        public SongPlayer(UnityEngine.AudioSource audioSource)
+        public SongPlayer(AudioSource audioSource)
         {
             this.audioSource = audioSource;
             currentPlayerIsAudioSource = true;
@@ -233,6 +233,18 @@ namespace Classes
             else
             {
                 return videoPlayer.time;
+            }
+        }
+
+        public double GetLength()
+        {
+            if (currentPlayerIsAudioSource)
+            {
+                return audioSource.clip.length;
+            }
+            else
+            {
+                return videoPlayer.length;
             }
         }
     }
