@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.Video;
 
 namespace Classes
 {
@@ -168,6 +170,9 @@ namespace Classes
         public string artist;
         public string pathToMusic;
         public float bpm = 0f;
+        /// <summary>
+        /// Gap of the song in seconds
+        /// </summary>
         public float gap = 0f;
         public string pathToVideo = "";
         public int amountVoices;
@@ -224,6 +229,9 @@ namespace Classes
             }
         }
 
+        /// <summary>
+        /// Returns the running time of the song in seconds
+        /// </summary>
         public double GetTime()
         {
             if (currentPlayerIsAudioSource)
@@ -244,7 +252,19 @@ namespace Classes
             }
             else
             {
-                return videoPlayer.length;
+                return videoPlayer.frameCount / videoPlayer.frameRate;
+            }
+        }
+
+        public bool IsPrepared()
+        {
+            if (currentPlayerIsAudioSource)
+            {
+                return true;
+            }
+            else
+            {
+                return videoPlayer.isPrepared;
             }
         }
     }

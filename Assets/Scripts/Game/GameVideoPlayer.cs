@@ -7,8 +7,7 @@ public class GameVideoPlayer : MonoBehaviour
     RenderTexture renderTexture;
     UnityEngine.UI.RawImage image;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (GameState.currentSong.pathToVideo != "")
         {
