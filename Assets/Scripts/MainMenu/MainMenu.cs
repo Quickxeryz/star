@@ -144,6 +144,7 @@ public class MainMenu : MonoBehaviour
                 {
                     if (line.StartsWith("#TITLE"))
                     {
+                        Debug.Log(text[0]);
                         isSong = true;
                         break;
                     }
@@ -174,6 +175,7 @@ public class MainMenu : MonoBehaviour
                         }
                         else if (line.StartsWith("#GAP:"))
                         {
+                            // reading gap and transforming to seconds
                             gap = float.Parse(line[5..].Replace(".", ",")) * 0.001f;
                         }
                         else if (line.StartsWith("#VIDEO:"))

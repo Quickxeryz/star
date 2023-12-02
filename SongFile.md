@@ -1,5 +1,7 @@
 This file contains informations about the song file format
 # Format
+All song files should be encoded in utf-8 to work properly
+
 ## Header
 ### Must have arguments
 - #TITLE: string

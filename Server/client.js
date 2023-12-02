@@ -1,4 +1,4 @@
-const ip = "";
+const ip = "192.168.178.54";
 const port = "8085";
 
 function setPlayerName() {
@@ -51,7 +51,7 @@ function autoCorrelate(buffer, sampleRate) {
         sumOfSquares += val * val;
     }
     var rootMeanSquare = Math.sqrt(sumOfSquares / SIZE)
-    if (rootMeanSquare < 0.05) {
+    if (rootMeanSquare < 0.025) {
         return -1;
     }
     // Find a range in the buffer where the values are below a given threshold.

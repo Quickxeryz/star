@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using TMPro;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Classes;
+using System.Threading;
 
 public class GameLogic : MonoBehaviour
 {
@@ -59,8 +59,9 @@ public class GameLogic : MonoBehaviour
     public GameVideoPlayer video;
     // song player
     SongPlayer songPlayer;
-    bool songPlayerNotSet = true;
-    bool notLoadedMP3 = true;
+    double songLength = 0;
+    // timeLine
+    bool timeLineSet = false;
     // Songfile data extraction
     readonly List<SyllableData>[] songData = new List<SyllableData>[GameState.currentSong.amountVoices];
     // syllables data
@@ -93,6 +94,7 @@ public class GameLogic : MonoBehaviour
     RectTransform whenToStartBottomRectTransform;
     GameObject whenToStartTop;
     RectTransform whenToStartTopRectTransform;
+    RectTransform currentTimePointer;
     // half size of node arrow and blocks texture in %
     const int nodeHeightOffset = 5;
     // difference to next node in node texture in pixel
@@ -286,6 +288,7 @@ public class GameLogic : MonoBehaviour
         // get UI pointer
         whenToStartBottom = gameObject.transform.Find("WhenToSingBottom").gameObject;
         whenToStartBottomRectTransform = whenToStartBottom.GetComponent<RectTransform>();
+        currentTimePointer = gameObject.transform.Find("CurrentTime").GetComponent<RectTransform>();
         if (GameState.amountPlayer > 1 || GameState.currentSong.amountVoices > 1)
         {
             gameObject.transform.Find("BackgroundTop").gameObject.SetActive(true);
@@ -453,39 +456,117 @@ public class GameLogic : MonoBehaviour
                 }
             }
             pointsPerBeat[i] = 10000f / beatSum;
-        } 
+        }
+        // set song player
+        if (GameState.currentSong.pathToMusic != "" && GameState.currentSong.pathToMusic != GameState.currentSong.pathToVideo)
+        {
+            // using audiofile for sound
+            GameObject camera = GameObject.Find("MainCamera");
+            AudioSource audio = camera.AddComponent<AudioSource>();
+            UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip("file:///" + GameState.currentSong.pathToMusic, AudioType.MPEG);
+            req.SendWebRequest();
+            while (!req.isDone)
+            {
+                Thread.Sleep(100);
+            }
+            try
+            {
+                audio.clip = DownloadHandlerAudioClip.GetContent(req);
+            }
+            catch (Exception)
+            {
+                StreamWriter file = new("errors.log", true);
+                file.WriteLine("Error getting audio from " + GameState.currentSong.pathToMusic + "; Maybe the path to the mp3 or video is not found or the txt file isn't written in utf-8!");
+                file.Close();
+                SceneManager.LoadScene("MainMenu");
+            }
+            songPlayer = new SongPlayer(audio);
+            // play audio and video 
+            audio.Play();
+            if (GameState.currentSong.pathToVideo != "")
+            {
+                video.videoPlayer.SetDirectAudioMute(0, true);
+                video.videoPlayer.Play();
+            }
+            songLength = songPlayer.GetLength();
+        }
+        else
+        {
+            // using video for sound
+            if (video.videoPlayer != null)
+            {
+                songPlayer = new SongPlayer(video.videoPlayer);
+                video.videoPlayer.Play();
+                video.videoPlayer.prepareCompleted += (eventVideoPlayer) =>
+                {
+                    songLength = songPlayer.GetLength();
+                };
+            }
+        }
     }
 
     void Update()
     {
-        // set song player if not done
-        if (songPlayerNotSet)
-        {
-            if (GameState.currentSong.pathToMusic != "" && GameState.currentSong.pathToMusic != GameState.currentSong.pathToVideo)
+        if (!timeLineSet) {
+            // set nodes for timeline of first voice
+            if (songPlayer.IsPrepared())
             {
-                // using audiofile for sound
-                if (notLoadedMP3)
+                GameObject currentGameObject;
+                RectTransform currentRectTransform;
+                UnityEngine.UI.Image currentImage;
+                double beatInSec;
+                double beatPercentStart;
+                double beatPercentEnd;
+                double gapTimeInBeats = (GameState.currentSong.gap / 60.0) * 4.0 * GameState.currentSong.bpm;
+                foreach (SyllableData s in songData[0])
                 {
-                    StartCoroutine(LoadAudioFile());
-                    notLoadedMP3 = false;
+                    if(s.kind != Kind.LineBreak && s.kind != Kind.LineBreakExcact)
+                    {
+                        currentGameObject = new GameObject("TimeLineObject");
+                        currentGameObject.transform.parent = gameObject.transform;
+                        // set up rect transform
+                        currentRectTransform = currentGameObject.AddComponent<RectTransform>();
+                        beatInSec = (15 * (s.appearing + gapTimeInBeats)) / GameState.currentSong.bpm;
+                        beatPercentStart = (beatInSec * 100.0) / songLength;
+                        currentRectTransform.anchoredPosition = new Vector3((float)(15.0 + (1895.0 * beatPercentStart) / 100.0), -317.0f, 0f);
+                        beatPercentEnd = ((15 * (s.appearing + s.length + gapTimeInBeats)) / GameState.currentSong.bpm) * 100 / songLength;
+                        currentRectTransform.sizeDelta = new Vector2((float)(15.0 + (1895.0 * beatPercentEnd) / 100.0 - currentRectTransform.anchoredPosition.x + 2.5), 10f);
+                        currentRectTransform.pivot = new Vector2(0, 0.5f);
+                        // set anchor to middle left
+                        currentRectTransform.anchorMin = new Vector2(0, 0.5f);
+                        currentRectTransform.anchorMax = new Vector2(0, 0.5f);
+                        // set up image
+                        currentImage = currentGameObject.AddComponent<UnityEngine.UI.Image>();
+                        switch (s.kind)
+                        {
+                            case Kind.Free:
+                                currentImage.color = Color.gray;
+                                break;
+                            case Kind.Normal:
+                                currentImage.color = Color.blue;
+                                break;
+                            case Kind.Golden:
+                                currentImage.color = Color.yellow;
+                                break;
+                        }
+                    }
                 }
-            }
-            else
+                currentTimePointer.SetAsLastSibling();
+                timeLineSet = true;
+            } else
             {
-                // using video for sound
-                if (video.videoPlayer != null)
-                {
-                    songPlayer = new SongPlayer(video.videoPlayer);
-                    video.videoPlayer.Play();
-                    songPlayerNotSet = false;
-                }
+                return;
             }
-            return;
         }
-        if ((!songPlayer.currentPlayerIsAudioSource && (songPlayer.IsPlaying() || songPlayer.GetTime() == 0)) || (songPlayer.currentPlayerIsAudioSource && songPlayer.IsPlaying()))
+        double songPercent = (songPlayer.GetTime() * 100.0) / songLength;
+        // if song not ended
+        if (songPlayer.IsPlaying() || songPercent<10.0)
         {
+            // update timeline
+            currentTimePointer.anchoredPosition = new Vector3((float)(10.0 + (1895.0 * songPercent) / 100.0), -317.0f, 0f);
+            // calculate sing time
             double currentTime = songPlayer.GetTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
-            // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM - GAP
+            // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
             int currentTimeStamp = (int)Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
             // updating nodes, songtext and calculating score
             VisualElement nodeBox;
@@ -1028,7 +1109,6 @@ public class GameLogic : MonoBehaviour
                                 nodeBoxes[j].Clear();
                             }
                         }
-                        Color color;
                         while (nodesNewLineIndex < songData[i].Count && songData[i][nodesNewLineIndex].kind != Kind.LineBreak && songData[i][nodesNewLineIndex].kind != Kind.LineBreakExcact)
                         {
                             currentPercent = ((songData[i][nodesNewLineIndex].appearing - startBeatLine1[i]) * 100) / beatSumLine1[i];
@@ -1082,36 +1162,6 @@ public class GameLogic : MonoBehaviour
             }
             SceneManager.LoadScene("SongEnd");
         }
-    }
-
-    private IEnumerator LoadAudioFile()
-    {
-        // setting up audio source object
-        GameObject camera = GameObject.Find("MainCamera");
-        AudioSource audio = camera.AddComponent<AudioSource>();
-        // get audio file per request
-        UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip("file:///" + GameState.currentSong.pathToMusic, AudioType.MPEG);
-        yield return req.SendWebRequest();
-        try
-        {
-            audio.clip = DownloadHandlerAudioClip.GetContent(req);
-        }
-        catch (Exception)
-        {
-            StreamWriter file = new("errors.log", true);
-            file.WriteLine("Error getting audio from " + GameState.currentSong.pathToMusic + "; Maybe the path to the mp3 or video is not found or the txt file isn't written in utf-8!");
-            file.Close();
-            SceneManager.LoadScene("MainMenu");
-        }
-        songPlayer = new SongPlayer(audio);
-        // play audio and video 
-        audio.Play();
-        if (GameState.currentSong.pathToVideo != "")
-        {
-            video.videoPlayer.SetDirectAudioMute(0, true);
-            video.videoPlayer.Play();
-        }
-        songPlayerNotSet = false;
     }
 
     private TextObject CreateSyllabel(String text)
