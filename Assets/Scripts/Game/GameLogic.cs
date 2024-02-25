@@ -558,10 +558,10 @@ public class GameLogic : MonoBehaviour
                 return;
             }
         }
-        double songPercent = (songPlayer.GetTime() * 100.0) / songLength;
         // if song not ended
-        if (songPlayer.IsPlaying() || songPercent<10.0)
+        if (!songPlayer.HasFinished())
         {
+            double songPercent = (songPlayer.GetTime() * 100.0) / songLength;
             // update timeline
             currentTimePointer.anchoredPosition = new Vector3((float)(10.0 + (1895.0 * songPercent) / 100.0), -317.0f, 0f);
             // calculate sing time

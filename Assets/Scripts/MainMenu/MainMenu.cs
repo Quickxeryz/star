@@ -144,7 +144,6 @@ public class MainMenu : MonoBehaviour
                 {
                     if (line.StartsWith("#TITLE"))
                     {
-                        Debug.Log(text[0]);
                         isSong = true;
                         break;
                     }

@@ -1,4 +1,5 @@
 using Classes;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -17,7 +18,7 @@ public class ChoosenSong : MonoBehaviour
         Button[] reroll = new Button[GameState.amountPlayer];
         DropdownField[] switchPlayer = new DropdownField[GameState.amountPlayer];
         Button[] switchPlayer_Button = new Button[GameState.amountPlayer];
-        for (int i = 0; i< GameState.amountPlayer; i++)
+        for (int i = 0; i < GameState.amountPlayer; i++)
         {
             player[i] = root.Q<Label>("Player" + (i + 1).ToString());
             reroll[i] = root.Q<Button>("Reroll" + (i + 1).ToString());
@@ -61,15 +62,16 @@ public class ChoosenSong : MonoBehaviour
         {
             int index;
             bool found;
-            for (int i = 0; i<GameState.teams.Count; i++)
+            for (int i = 0; i < GameState.teams.Count; i++)
             {
                 index = 0;
                 found = false;
-                while(!found && index < GameState.teams[i].players.Count)
+                while (!found && index < GameState.teams[i].players.Count)
                 {
                     if (GameState.teams[i].players[index].name == player[i].text)
                     {
                         found = true;
+                        GameState.playersPlayed[i][index]--;
                     } else
                     {
                         index++;
@@ -83,14 +85,25 @@ public class ChoosenSong : MonoBehaviour
         {
             SceneManager.LoadScene("MainMenu");
         };
-        // get random song
         RandomSong();
-        // get random singer per team
+        // random singer
         int index;
         int profileIndex;
-        for (int i = 0; i<GameState.teams.Count; i++)
+        List<int> teamMemberNotSungToOften;
+        for (int i = 0; i < GameState.teams.Count; i++)
         {
-            index = Random.Range(0, GameState.teams[i].players.Count);
+            teamMemberNotSungToOften = new List<int>();
+            // get next singer wich hasn't sung to often
+            for (int x = 0; x<GameState.playersPlayed[i].Count; x++)
+            {
+                if (GameState.playersPlayed[i][x]>0)
+                {
+                    teamMemberNotSungToOften.Add(x);
+                }
+            }
+            index = Random.Range(0, teamMemberNotSungToOften.Count);
+            index = teamMemberNotSungToOften[index];
+            // set choosen player as singer
             profileIndex = GameState.profiles.IndexOf(GameState.teams[i].players[index]);
             player[i].text = GameState.profiles[profileIndex].name;
             foreach (PlayerProfile p in GameState.teams[i].players)

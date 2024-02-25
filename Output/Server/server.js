@@ -1,4 +1,4 @@
-const hostname = "192.168.178.44";
+const hostname = "";
 const port = 8085;
 const https = require("https");
 const fs = require("fs");

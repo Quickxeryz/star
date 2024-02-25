@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -202,7 +201,7 @@ namespace Classes
     public class SongPlayer
     {
         public AudioSource audioSource;
-        public UnityEngine.Video.VideoPlayer videoPlayer;
+        public VideoPlayer videoPlayer;
         public bool currentPlayerIsAudioSource;
 
         public SongPlayer(AudioSource audioSource)
@@ -211,7 +210,7 @@ namespace Classes
             currentPlayerIsAudioSource = true;
         }
 
-        public SongPlayer(UnityEngine.Video.VideoPlayer videoPlayer)
+        public SongPlayer(VideoPlayer videoPlayer)
         {
             this.videoPlayer = videoPlayer;
             currentPlayerIsAudioSource = false;
@@ -265,6 +264,18 @@ namespace Classes
             else
             {
                 return videoPlayer.isPrepared;
+            }
+        }
+
+        public bool HasFinished()
+        {
+            if (currentPlayerIsAudioSource)
+            {
+                return audioSource.clip.length - audioSource.time < 0;
+            }
+            else
+            {
+                return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time + 1) < 0;
             }
         }
     }
