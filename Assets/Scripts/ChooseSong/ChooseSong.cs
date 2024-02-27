@@ -4,13 +4,19 @@ using UnityEngine.UIElements;
 using System;
 using System.Collections.Generic;
 using Classes;
+using System.Threading;
+using UnityEngine.Networking;
+using UnityEngine.Video;
 
 public class ChooseSong : MonoBehaviour
 {
-    // UI
+    // ui
     VisualElement root;
     List<SongData> currentSongs;
     DateTime lastTimePressed;
+    // song preview
+    new AudioSource audio;
+    VideoPlayer videoPlayer;
 
     void OnEnable()
     {
@@ -79,6 +85,7 @@ public class ChooseSong : MonoBehaviour
                     SceneManager.LoadScene("ChooseVoice");
                 }
             };
+            root.Q<Button>(iCopy.ToString()).RegisterCallback<MouseEnterEvent, int>(PlaySong, iCopy);
         }
         playerAmount_Left.clicked += () =>
         {
@@ -195,6 +202,10 @@ public class ChooseSong : MonoBehaviour
             playerX_Label[i].visible = false;
             playerX[i].visible = false;
         }
+        // init songpreview
+        GameObject player = GameObject.Find("Player");
+        audio = player.AddComponent<AudioSource>();
+        videoPlayer = player.AddComponent<VideoPlayer>();
     }
 
     void Update()
@@ -287,6 +298,28 @@ public class ChooseSong : MonoBehaviour
             songButton.text = (currentSongs[i]).artist + ": "+(currentSongs[i]).title;
             songButton.visible = true;
             itemCounter++;
+        }
+    }
+
+    void PlaySong(MouseEnterEvent evt, int id)
+    {
+        // using audio for sound
+        if (currentSongs[GameState.lastSongIndex + id - 1].pathToMusic != "" && currentSongs[GameState.lastSongIndex + id - 1].pathToMusic != currentSongs[GameState.lastSongIndex + id - 1].pathToVideo)
+        {
+            videoPlayer.Pause();
+            UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip("file:///" + currentSongs[GameState.lastSongIndex + id - 1].pathToMusic, AudioType.MPEG);
+            req.SendWebRequest();
+            while (!req.isDone)
+            {
+                Thread.Sleep(100);
+            }
+            audio.clip = DownloadHandlerAudioClip.GetContent(req);
+            audio.Play();
+        } else // using video for sound
+        {
+            audio.Pause();
+            videoPlayer.url = currentSongs[GameState.lastSongIndex + id - 1].pathToVideo;
+            videoPlayer.Play();
         }
     }
 }

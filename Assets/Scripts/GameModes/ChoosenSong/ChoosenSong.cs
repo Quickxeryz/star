@@ -1,12 +1,17 @@
 using Classes;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using UnityEngine.Video;
 
 public class ChoosenSong : MonoBehaviour
 {
     Label song;
+    new AudioSource audio;
+    VideoPlayer videoPlayer;
 
     void Start()
     {
@@ -85,6 +90,11 @@ public class ChoosenSong : MonoBehaviour
         {
             SceneManager.LoadScene("MainMenu");
         };
+        // init preview
+        GameObject music = GameObject.Find("Player");
+        audio = music.AddComponent<AudioSource>();
+        videoPlayer = music.AddComponent<VideoPlayer>();
+        // random song
         RandomSong();
         // random singer
         int index;
@@ -121,5 +131,24 @@ public class ChoosenSong : MonoBehaviour
         int index = Random.Range(0, GameState.gameModeSongs.Count);
         GameState.currentSong = GameState.gameModeSongs[index];
         song.text = GameState.currentSong.artist + ": " + GameState.currentSong.title;
+        // using audio for sound
+        if (GameState.currentSong.pathToMusic != "" && GameState.currentSong.pathToMusic != GameState.currentSong.pathToVideo)
+        {
+            videoPlayer.Pause();
+            UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip("file:///" + GameState.currentSong.pathToMusic, AudioType.MPEG);
+            req.SendWebRequest();
+            while (!req.isDone)
+            {
+                Thread.Sleep(100);
+            }
+            audio.clip = DownloadHandlerAudioClip.GetContent(req);
+            audio.Play();
+        }
+        else // using video for sound
+        {
+            audio.Pause();
+            videoPlayer.url = GameState.currentSong.pathToVideo;
+            videoPlayer.Play();
+        }
     }
 }

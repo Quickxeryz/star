@@ -1174,7 +1174,7 @@ public class GameLogic : MonoBehaviour
         currentObjectTM.text = text;
         currentObjectTM.rectTransform.sizeDelta = sizeDelta;
         currentObjectTM.fontSize = 60;
-        currentObjectTM.enableWordWrapping = false;
+        currentObjectTM.textWrappingMode = TextWrappingModes.NoWrap;
         currentObjectTM.ForceMeshUpdate();
         return new TextObject(currentObject, currentObjectTM, false);
     }
@@ -1189,7 +1189,7 @@ public class GameLogic : MonoBehaviour
         currentObjectTM.text = text;
         currentObjectTM.rectTransform.sizeDelta = sizeDelta;
         currentObjectTM.fontSize = 60;
-        currentObjectTM.enableWordWrapping = false;
+        currentObjectTM.textWrappingMode = TextWrappingModes.NoWrap;
         currentObjectTM.ForceMeshUpdate();
         objects.Add(new TextObject(currentObject, currentObjectTM, false));
     }
@@ -1211,7 +1211,7 @@ public class GameLogic : MonoBehaviour
             wordLeft.text = text;
         }
         wordLeft.fontSize = 60;
-        wordLeft.enableWordWrapping = false;
+        wordLeft.textWrappingMode = TextWrappingModes.NoWrap;
         wordLeft.transform.localPosition = new Vector3(0f, 0f, 0f);
         wordLeft.rectTransform.sizeDelta = sizeDelta;
         wordLeft.ForceMeshUpdate();
@@ -1234,7 +1234,7 @@ public class GameLogic : MonoBehaviour
             wordRight.text = colorSung + text;
         }
         wordRight.fontSize = 60;
-        wordRight.enableWordWrapping = false;
+        wordRight.textWrappingMode = TextWrappingModes.NoWrap;
         wordRight.transform.localPosition = new Vector3(0f, 0f, 0f);
         wordRight.rectTransform.sizeDelta = sizeDelta;
         wordRight.ForceMeshUpdate();

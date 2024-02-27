@@ -269,9 +269,10 @@ namespace Classes
 
         public bool HasFinished()
         {
+            // + 1 because of timer jumping back when last frames skips end time
             if (currentPlayerIsAudioSource)
             {
-                return audioSource.clip.length - audioSource.time < 0;
+                return audioSource.clip.length - (audioSource.time + 1) < 0;
             }
             else
             {
