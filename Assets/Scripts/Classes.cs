@@ -9,7 +9,8 @@ namespace Classes
     {
         None,
         ChooseSong,
-        Classic
+        Classic,
+        Together
     }
 
     public enum Node

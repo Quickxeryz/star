@@ -2,5 +2,6 @@
     <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="SongsLoaded" style="-unity-text-align: upper-center;" />
     <ui:Button text="Classic" display-tooltip-when-elided="true" name="Classic" selectable="true" style="position: absolute; height: 40px; width: auto; top: 10%; left: 1%; bottom: 1%; right: 1%;" />
+    <ui:Button text="Together" display-tooltip-when-elided="true" name="Together" selectable="true" style="position: absolute; height: 40px; width: auto; top: 15%; left: 1%; bottom: 1%; right: 1%;" />
     <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" selectable="true" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
 </ui:UXML>

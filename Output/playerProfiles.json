@@ -1,17 +1,1 @@
-{
-    "playerProfiles": [
-        {
-            "name": "Name",
-            "points": 0,
-            "difficulty": 2,
-            "useOnlineMic": false,
-            "onlineMicName": "",
-            "color": {
-                "r": 255.0,
-                "g": 255.0,
-                "b": 255.0,
-                "a": 1.0
-            } 
-        }
-    ]
-}
+{"playerProfiles":[{"name":"Maurice","points":6284,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Maurice","color":{"r":0.0,"g":255.0,"b":0.0,"a":1.0}},{"name":"Julia","points":5432,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Julia","color":{"r":100.0,"g":36.0,"b":114.0,"a":1.0}},{"name":"Phil","points":7564,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Phil","color":{"r":0.0,"g":123.0,"b":123.0,"a":1.0}},{"name":"Nora","points":3761,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Nora","color":{"r":0.0,"g":255.0,"b":0.0,"a":1.0}},{"name":"Max","points":5162,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Max","color":{"r":255.0,"g":0.0,"b":0.0,"a":1.0}},{"name":"Tine","points":6362,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Tine","color":{"r":0.0,"g":139.0,"b":139.0,"a":1.0}},{"name":"Lean","points":4404,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Lean","color":{"r":0.0,"g":0.0,"b":255.0,"a":1.0}},{"name":"Tobias","points":3150,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Tobias","color":{"r":255.0,"g":165.0,"b":0.0,"a":1.0}},{"name":"Jasmin","points":0,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Jasmin","color":{"r":0.0,"g":0.0,"b":255.0,"a":1.0}},{"name":"Francesco","points":0,"difficulty":2,"useOnlineMic":true,"onlineMicName":"Cesco","color":{"r":0.0,"g":0.0,"b":255.0,"a":1.0}}]}

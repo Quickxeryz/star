@@ -311,7 +311,15 @@ public class GameLogic : MonoBehaviour
         {
             name = roots[i].Q<Label>("Name");
             color = GameState.profiles[GameState.currentProfileIndex[i]].color;
-            name.text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+            if (GameState.currentGameMode == GameMode.Together)
+            {
+                name.text = GameState.profiles[GameState.currentProfileIndex[i]].name + " und " + GameState.profiles[GameState.currentSecondProfileIndex[i]].name;
+            }
+            else
+            {
+                name.text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+
+            }
             roots[i].Q<VisualElement>("NameBox").style.unityBackgroundImageTintColor = new Color(color.r/255, color.g/255, color.b/255);
             roots[i].Q<VisualElement>("PointsBox").style.unityBackgroundImageTintColor = new Color(color.r / 255, color.g / 255, color.b / 255);
             // change name and points color depending on player color

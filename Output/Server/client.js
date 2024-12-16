@@ -1,4 +1,4 @@
-const ip = "";
+const ip = "192.168.178.50";
 const port = "8085";
 
 function setPlayerName() {
