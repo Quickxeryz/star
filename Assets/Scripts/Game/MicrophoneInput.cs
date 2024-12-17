@@ -4,7 +4,7 @@ using Classes;
 
 public class MicrophoneInput : MonoBehaviour
 {
-    NAudio.Wave.WaveInEvent[] microphoneInputs = new NAudio.Wave.WaveInEvent[GameState.amountPlayer];
+    readonly NAudio.Wave.WaveInEvent[] microphoneInputs = new NAudio.Wave.WaveInEvent[GameState.amountPlayer];
     const int sampleRate = 44100;
     const int bufferMilliseconds = 20;
     const int bitDepth = 16;
@@ -14,7 +14,14 @@ public class MicrophoneInput : MonoBehaviour
     void Start()
     {
         // init nodes
-        nodes = new Node[GameState.amountPlayer];
+        if (GameState.currentGameMode == GameMode.Together)
+        {
+            nodes = new Node[GameState.amountPlayer*2];
+        }
+        else
+        {
+            nodes = new Node[GameState.amountPlayer];
+        }
         // set microphones
         bool inMicrophones;
         bool alredyHasListener;
@@ -103,7 +110,7 @@ public class MicrophoneInput : MonoBehaviour
                 if (GameState.profiles[GameState.currentProfileIndex[i]].useOnlineMic)
                 {
                     index = GameState.onlineMicrophones.FindIndex(element => element.id == GameState.profiles[GameState.currentProfileIndex[i]].onlineMicName);
-                    if(index == -1)
+                    if (index == -1)
                     {
                         nodes[i] = Node.None;
                     }
@@ -163,6 +170,28 @@ public class MicrophoneInput : MonoBehaviour
                         nodeNumber = (int)Math.Round(Math.Log(hz / 440, 2) * 12 + 49);
                         nodes[i] = NodeFunctions.GetNodeFromInt(nodeNumber - 4);
                     }
+                }
+            }
+        }
+        if (GameState.currentGameMode == GameMode.Together)
+        {
+            for (int i = GameState.amountPlayer; i < GameState.amountPlayer * 2; i++)
+            {
+                int index;
+                if (GameState.profiles[GameState.currentSecondProfileIndex[i - GameState.amountPlayer]].useOnlineMic)
+                {
+                    index = GameState.onlineMicrophones.FindIndex(element => element.id == GameState.profiles[GameState.currentSecondProfileIndex[i - GameState.amountPlayer]].onlineMicName);
+                    if (index == -1)
+                    {
+                        nodes[i] = Node.None;
+                    }
+                    else
+                    {
+                        nodes[i] = GameState.onlineMicrophones[index].node;
+                    }
+                } else
+                {
+                    nodes[i] = Node.None;
                 }
             }
         }

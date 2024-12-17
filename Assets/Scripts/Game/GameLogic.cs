@@ -107,6 +107,8 @@ public class GameLogic : MonoBehaviour
     readonly float[] pointsPerBeat = new float[GameState.currentSong.amountVoices];
     readonly int[] lastTimeStamps = new int[GameState.amountPlayer];
     readonly float[] points = new float[GameState.amountPlayer];
+    // middle values of nodes for together game mode
+    readonly Node[,] middle_nodes = { { Node.C, Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.A, Node.AH, Node.AH, Node.B, Node.B }, { Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.AH, Node.B, Node.B, Node.C }, { Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.B, Node.C, Node.C }, { Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.C, Node.C, Node.CH }, { Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.CH, Node.CH }, { Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.D }, { Node.A, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH }, { Node.A, Node.AH, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A }, { Node.AH, Node.AH, Node.B, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A }, { Node.AH, Node.B, Node.B, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH }, { Node.B, Node.B, Node.C, Node.C, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH }, { Node.B, Node.C, Node.C, Node.CH, Node.CH, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH, Node.B } };
 
     void Start()
     {
@@ -879,36 +881,73 @@ public class GameLogic : MonoBehaviour
                                 {
                                     if (currentTimeStamp != lastTimeStamps[j])
                                     {
-                                        if (microphoneInput.nodes[j] != Node.None && HitNode(microphoneInput.nodes[j], songData[i][songDataCurrentIndex[i]].node, GameState.profiles[GameState.currentProfileIndex[j]]))
+                                        if (GameState.currentGameMode == GameMode.Together)
                                         {
-                                            // creating new node box
-                                            currentPercent = ((currentTimeStamp - 1 - startBeatLine1[i]) * 100) / beatSumLine1[i];
-                                            nodeBox = new VisualElement();
-                                            nodeBox.AddToClassList("nodeBox");
-                                            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset);
-                                            nodeBox.style.left = Length.Percent(currentPercent);
-                                            nodeBox.style.width = Length.Percent((((currentTimeStamp - startBeatLine1[i]) * 100) / beatSumLine1[i]) - currentPercent);
-                                            color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
-                                            // updating score and setting node box color
-                                            switch (songData[i][songDataCurrentIndex[i]].kind)
+                                            if (microphoneInput.nodes[j] != Node.None && microphoneInput.nodes[j + GameState.amountPlayer] != Node.None && HitNode(MiddleNode(microphoneInput.nodes[j], microphoneInput.nodes[j + GameState.amountPlayer]), songData[i][songDataCurrentIndex[i]].node, GameState.profiles[GameState.currentSecondProfileIndex[j]]))
                                             {
-                                                case Kind.Normal:
-                                                    points[j] += pointsPerBeat[i];
-                                                    nodeBox.style.unityBackgroundImageTintColor = color; 
-                                                    break;
-                                                case Kind.Golden:
-                                                    points[j] += pointsPerBeat[i] * 2;
-                                                    nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
-                                                    break;
-                                                case Kind.Free:
-                                                    nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f); 
-                                                    break;
+                                                // creating new node box
+                                                currentPercent = ((currentTimeStamp - 1 - startBeatLine1[i]) * 100) / beatSumLine1[i];
+                                                nodeBox = new VisualElement();
+                                                nodeBox.AddToClassList("nodeBox");
+                                                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)MiddleNode(microphoneInput.nodes[j], microphoneInput.nodes[j + GameState.amountPlayer])) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                                nodeBox.style.left = Length.Percent(currentPercent);
+                                                nodeBox.style.width = Length.Percent((((currentTimeStamp - startBeatLine1[i]) * 100) / beatSumLine1[i]) - currentPercent);
+                                                color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
+                                                // updating score and setting node box color
+                                                switch (songData[i][songDataCurrentIndex[i]].kind)
+                                                {
+                                                    case Kind.Normal:
+                                                        points[j] += pointsPerBeat[i];
+                                                        nodeBox.style.unityBackgroundImageTintColor = color;
+                                                        break;
+                                                    case Kind.Golden:
+                                                        points[j] += pointsPerBeat[i] * 2;
+                                                        nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
+                                                        break;
+                                                    case Kind.Free:
+                                                        nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f);
+                                                        break;
+                                                }
+                                                // updating ui elements
+                                                pointsTexts[j].text = ((int)System.Math.Ceiling(points[j])).ToString();
+                                                nodeBoxes[j].Add(nodeBox);
+                                                // set actual beat as handled
+                                                lastTimeStamps[j] = currentTimeStamp;
                                             }
-                                            // updating ui elements
-                                            pointsTexts[j].text = ((int)System.Math.Ceiling(points[j])).ToString();
-                                            nodeBoxes[j].Add(nodeBox);
-                                            // set actual beat as handled
-                                            lastTimeStamps[j] = currentTimeStamp;
+                                        }
+                                        else
+                                        {
+                                            if (microphoneInput.nodes[j] != Node.None && HitNode(microphoneInput.nodes[j], songData[i][songDataCurrentIndex[i]].node, GameState.profiles[GameState.currentProfileIndex[j]]))
+                                            {
+                                                // creating new node box
+                                                currentPercent = ((currentTimeStamp - 1 - startBeatLine1[i]) * 100) / beatSumLine1[i];
+                                                nodeBox = new VisualElement();
+                                                nodeBox.AddToClassList("nodeBox");
+                                                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                                nodeBox.style.left = Length.Percent(currentPercent);
+                                                nodeBox.style.width = Length.Percent((((currentTimeStamp - startBeatLine1[i]) * 100) / beatSumLine1[i]) - currentPercent);
+                                                color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
+                                                // updating score and setting node box color
+                                                switch (songData[i][songDataCurrentIndex[i]].kind)
+                                                {
+                                                    case Kind.Normal:
+                                                        points[j] += pointsPerBeat[i];
+                                                        nodeBox.style.unityBackgroundImageTintColor = color;
+                                                        break;
+                                                    case Kind.Golden:
+                                                        points[j] += pointsPerBeat[i] * 2;
+                                                        nodeBox.style.unityBackgroundImageTintColor = new Color(1f - color.r, 1f - color.g, 1f - color.b);
+                                                        break;
+                                                    case Kind.Free:
+                                                        nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f);
+                                                        break;
+                                                }
+                                                // updating ui elements
+                                                pointsTexts[j].text = ((int)System.Math.Ceiling(points[j])).ToString();
+                                                nodeBoxes[j].Add(nodeBox);
+                                                // set actual beat as handled
+                                                lastTimeStamps[j] = currentTimeStamp;
+                                            }
                                         }
                                     }
                                 }
@@ -1151,13 +1190,28 @@ public class GameLogic : MonoBehaviour
                 // Updating player node arrows
                 for (int j = 0; j < GameState.amountPlayer; j++)
                 {
-                    if (microphoneInput.nodes[j] != Node.None)
+                    if (GameState.currentGameMode == GameMode.Together)
                     {
-                        nodeArrows[j].style.top = Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset);
+                        if (microphoneInput.nodes[j] != Node.None && microphoneInput.nodes[j + GameState.amountPlayer] != Node.None)
+                        {
+                            nodeArrows[j].style.top = Length.Percent(((nodeTextureDistance * (int)MiddleNode(microphoneInput.nodes[j], microphoneInput.nodes[j + GameState.amountPlayer])) * 100) / nodeTextureHeight - nodeHeightOffset);
+                        }
+                        else
+                        {
+                            nodeArrows[j].style.top = Length.Percent(((nodeTextureDistance * 13) * 100) / nodeTextureHeight - nodeHeightOffset);
+                        }
                     }
                     else
                     {
-                        nodeArrows[j].style.top = Length.Percent(((nodeTextureDistance * 13) * 100) / nodeTextureHeight - nodeHeightOffset);
+
+                        if (microphoneInput.nodes[j] != Node.None)
+                        {
+                            nodeArrows[j].style.top = Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset);
+                        }
+                        else
+                        {
+                            nodeArrows[j].style.top = Length.Percent(((nodeTextureDistance * 13) * 100) / nodeTextureHeight - nodeHeightOffset);
+                        }
                     }
                 }
             }
@@ -1293,5 +1347,10 @@ public class GameLogic : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    private Node MiddleNode(Node first, Node second)
+    {
+        return middle_nodes[(int)first, (int)second];
     }
 }

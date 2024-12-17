@@ -30,6 +30,9 @@ EditorBuildSettings:
     path: Assets/Scenes/ChoosenSong.unity
     guid: 916d268609fe03d4b8aea96e6fdca38a
   - enabled: 1
+    path: Assets/Scenes/ChoosenSongTogether.unity
+    guid: 8cca35e59674716498aee55d0359d2a3
+  - enabled: 1
     path: Assets/Scenes/TeamScore.unity
     guid: 3cd95f7af916c594dbc5e5aa75f5383a
   - enabled: 1
