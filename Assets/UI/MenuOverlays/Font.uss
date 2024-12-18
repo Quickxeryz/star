@@ -1,4 +1,4 @@
 * {
-    font-size: 18px;
+    font-size: 24px;
     -unity-font-style: bold;
 }
