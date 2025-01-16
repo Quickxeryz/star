@@ -68,14 +68,6 @@ public class GameModeSelect : MonoBehaviour
                     {
                         GameState.currentVoice[i] = 1;
                     }
-                    // adjust amount songs to sing for each person because 2 singers at the same time
-                    for (int i = 0; i < GameState.playersPlayed.Length; i++)
-                    {
-                        for (int j = 0; j < GameState.teams[i].players.Count; j++)
-                        {
-                            GameState.playersPlayed[i][j] *= 2;
-                        }
-                    }
                     SceneManager.LoadScene("ChoosenSong");
                 } 
             } else

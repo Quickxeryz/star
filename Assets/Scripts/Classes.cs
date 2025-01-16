@@ -153,6 +153,7 @@ namespace Classes
         public int points = 0;
         public int amountRerolls = 0;
         public int amountSwitches = 0;
+        public List<PlayerProfile> playersNotSung;
 
         public Team(string name)
         {

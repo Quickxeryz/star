@@ -13,6 +13,7 @@ public class MainMenu : MonoBehaviour
 
     void OnEnable()
     {
+        Random.InitState(System.DateTime.Now.Millisecond);
         // UI
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         // finding all ui elements

@@ -177,19 +177,15 @@ public class GameModeConfig : MonoBehaviour
                 GameState.teams[i].amountSwitches = Int32.Parse(amountSwitches_TextBox.text);
             }
             GameState.amountPlayer = GameState.teams.Count;
-            GameState.playersPlayed = new List<int>[GameState.teams.Count];
-            for(int i = 0; i<GameState.playersPlayed.Length; i++)
-            {
-                GameState.playersPlayed[i] = new List<int>();
-                for (int j = 0; j<GameState.teams[i].players.Count; j++)
-                {
-                    GameState.playersPlayed[i].Add((int)Math.Ceiling(GameState.roundsLeft / (double)GameState.teams[i].players.Count));
-                }
-            }
-            // resetting team points
             for(int i = 0; i<GameState.amountPlayer; i++)
             {
+                // resetting team points
                 GameState.teams[i].points = 0;
+                // init random singer list
+                GameState.teams[i].playersNotSung = new List<PlayerProfile>();
+                foreach (PlayerProfile p in GameState.teams[i].players) {
+                    GameState.teams[i].playersNotSung.Add(p);
+                }
             }
             // loading new scene
             SceneManager.LoadScene("GameModeSelect");

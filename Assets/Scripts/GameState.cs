@@ -19,7 +19,6 @@ public class GameState : MonoBehaviour
     public static List<SongData> partyModeSongs;
     public static int roundsLeft;
     public static List<Team> teams;
-    public static List<int>[] playersPlayed;
     public static bool serverStarted = false;
     public static string ip;
     public static List<PlayerProfile> profiles = new();

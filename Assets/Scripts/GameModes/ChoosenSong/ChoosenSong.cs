@@ -1,5 +1,4 @@
 using Classes;
-using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -116,7 +115,6 @@ public class ChoosenSong : MonoBehaviour
                     if (GameState.teams[i].players[index].name == player[i].text)
                     {
                         found = true;
-                        GameState.playersPlayed[i][index]--;
                     }
                     else
                     {
@@ -136,7 +134,6 @@ public class ChoosenSong : MonoBehaviour
                         if (GameState.teams[i].players[index].name == secondPlayer[i].text)
                         {
                             found = true;
-                            GameState.playersPlayed[i][index]--;
                         }
                         else
                         {
@@ -159,26 +156,20 @@ public class ChoosenSong : MonoBehaviour
         // random song
         RandomSong();
         // random singer
-        int index;
-        int profileIndex;
-        List<int> teamMemberNotSungToOften;
+        int index = 0;
         for (int i = 0; i < GameState.teams.Count; i++)
         {
-            teamMemberNotSungToOften = new List<int>();
-            // get next singer wich hasn't sung to often
-            for (int x = 0; x < GameState.playersPlayed[i].Count; x++)
+            // add singer
+            if (GameState.teams[i].playersNotSung.Count == 0)
             {
-                if (GameState.playersPlayed[i][x] > 0)
+                foreach (PlayerProfile p in GameState.teams[i].players)
                 {
-                    teamMemberNotSungToOften.Add(x);
+                    GameState.teams[i].playersNotSung.Add(p);
                 }
             }
-            // add singer
-            index = Random.Range(0, teamMemberNotSungToOften.Count);
-            index = teamMemberNotSungToOften[index];
-            profileIndex = GameState.profiles.IndexOf(GameState.teams[i].players[index]);
-            player[i].text = GameState.profiles[profileIndex].name;
-            teamMemberNotSungToOften.RemoveAt(index);            
+            index = Random.Range(0, GameState.teams[i].playersNotSung.Count);
+            player[i].text = GameState.teams[i].playersNotSung[index].name;
+            GameState.teams[i].playersNotSung.RemoveAt(index);
         }
         if (GameState.currentPartyMode == PartyMode.Classic)
         {
@@ -195,22 +186,26 @@ public class ChoosenSong : MonoBehaviour
         }
         else
         {
+            bool differentPlayerNotFound = true;
             for (int i = 0; i < GameState.teams.Count; i++)
             {
-                teamMemberNotSungToOften = new List<int>();
-                // get next singer wich hasn't sung to often
-                for (int x = 0; x < GameState.playersPlayed[i].Count; x++)
+                // add second singer
+                if (GameState.teams[i].playersNotSung.Count == 0)
                 {
-                    if (GameState.playersPlayed[i][x] > 0)
+                    foreach (PlayerProfile p in GameState.teams[i].players)
                     {
-                        teamMemberNotSungToOften.Add(x);
+                        GameState.teams[i].playersNotSung.Add(p);
                     }
                 }
-                // add second singer
-                index = Random.Range(0, teamMemberNotSungToOften.Count);
-                index = teamMemberNotSungToOften[index];
-                profileIndex = GameState.profiles.IndexOf(GameState.teams[i].players[index]);
-                secondPlayer[i].text = GameState.profiles[profileIndex].name;
+                while (differentPlayerNotFound)
+                {
+                    index = Random.Range(0, GameState.teams[i].playersNotSung.Count);
+                    if (player[i].text != GameState.teams[i].playersNotSung[index].name) {
+                        differentPlayerNotFound = false;
+                    }
+                }
+                secondPlayer[i].text = GameState.teams[i].playersNotSung[index].name;
+                GameState.teams[i].playersNotSung.RemoveAt(index); 
                 foreach (PlayerProfile p in GameState.teams[i].players)
                 {
                     if (p.name != player[i].text && p.name != secondPlayer[i].text)
@@ -241,14 +236,34 @@ public class ChoosenSong : MonoBehaviour
     {
         if (GameState.teams[i].amountSwitches > 0 && ((isMainSinger && switchPlayer[i].index > -1) || (!isMainSinger && secondSwitchPlayer[i].index > -1)))
         {
+            int index = 0;
             if (isMainSinger)
             {
+                while (index < GameState.teams[i].players.Count)
+                {
+                    if (player[i].text == GameState.teams[i].players[index].name)
+                    {
+                        GameState.teams[i].playersNotSung.Add(GameState.teams[i].players[index]);
+                        index = GameState.teams[i].players.Count;
+                    }
+                    index++;
+                }
                 switchPlayer[i].choices.Add(player[i].text);
                 if (GameState.currentPartyMode == PartyMode.Together)
                 {
                     secondSwitchPlayer[i].choices.Add(player[i].text);
                 }
                 player[i].text = switchPlayer[i].value;
+                index = 0;
+                while (index < GameState.teams[i].playersNotSung.Count)
+                {
+                    if (player[i].text == GameState.teams[i].playersNotSung[index].name)
+                    {
+                        GameState.teams[i].playersNotSung.RemoveAt(index);
+                        index = GameState.teams[i].players.Count;
+                    }
+                    index++;
+                }
                 if (GameState.currentPartyMode == PartyMode.Together)
                 {
                     secondSwitchPlayer[i].choices.RemoveAt(switchPlayer[i].choices.IndexOf(switchPlayer[i].value));
@@ -257,9 +272,28 @@ public class ChoosenSong : MonoBehaviour
             }
             else
             {
+                while (index < GameState.teams[i].players.Count)
+                {
+                    if (secondPlayer[i].text == GameState.teams[i].players[index].name)
+                    {
+                        GameState.teams[i].playersNotSung.Add(GameState.teams[i].players[index]);
+                        index = GameState.teams[i].players.Count;
+                    }
+                    index++;
+                }
                 switchPlayer[i].choices.Add(secondPlayer[i].text);
                 secondSwitchPlayer[i].choices.Add(secondPlayer[i].text);
                 secondPlayer[i].text = secondSwitchPlayer[i].value;
+                index = 0;
+                while (index < GameState.teams[i].playersNotSung.Count)
+                {
+                    if (secondPlayer[i].text == GameState.teams[i].playersNotSung[index].name)
+                    {
+                        GameState.teams[i].playersNotSung.RemoveAt(index);
+                        index = GameState.teams[i].players.Count;
+                    }
+                    index++;
+                }
                 switchPlayer[i].choices.RemoveAt(secondSwitchPlayer[i].choices.IndexOf(secondSwitchPlayer[i].value));
                 secondSwitchPlayer[i].choices.RemoveAt(secondSwitchPlayer[i].choices.IndexOf(secondSwitchPlayer[i].value));
             }
