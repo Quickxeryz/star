@@ -9,17 +9,17 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 8f817fbfe732dc64a91cb60204cd739d
   - enabled: 1
+    path: Assets/Scenes/PlayerProfiles.unity
+    guid: a3bbccd0b69b1dd4281b80662154b775
+  - enabled: 1
+    path: Assets/Scenes/Options.unity
+    guid: 80cc29bd47239004599277fb4d2afbd4
+  - enabled: 1
     path: Assets/Scenes/ChooseSong.unity
     guid: 67a785cdf2388ab4ba062c3959f5f252
   - enabled: 1
     path: Assets/Scenes/ChooseVoice.unity
     guid: a5bcba9a494538343b4ebfb878e44983
-  - enabled: 1
-    path: Assets/Scenes/GameScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
-    path: Assets/Scenes/SongEnd.unity
-    guid: 6f3441c200f9bec4bbfb1b1ed7704efd
   - enabled: 1
     path: Assets/Scenes/GameModeConfig.unity
     guid: 34b54f2888035434aa900bd88f607011
@@ -29,17 +29,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ChoosenSong.unity
     guid: 916d268609fe03d4b8aea96e6fdca38a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/ChoosenSongTogether.unity
     guid: 8cca35e59674716498aee55d0359d2a3
   - enabled: 1
+    path: Assets/Scenes/GameScene.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/SongEnd.unity
+    guid: 6f3441c200f9bec4bbfb1b1ed7704efd
+  - enabled: 1
     path: Assets/Scenes/TeamScore.unity
     guid: 3cd95f7af916c594dbc5e5aa75f5383a
-  - enabled: 1
-    path: Assets/Scenes/PlayerProfiles.unity
-    guid: a3bbccd0b69b1dd4281b80662154b775
-  - enabled: 1
-    path: Assets/Scenes/Options.unity
-    guid: 80cc29bd47239004599277fb4d2afbd4
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

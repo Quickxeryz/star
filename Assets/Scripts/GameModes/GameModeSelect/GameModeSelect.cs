@@ -22,13 +22,14 @@ public class GameModeSelect : MonoBehaviour
         {
             if (GameState.songsLoaded)
             {
+                GameState.currentPartyMode = PartyMode.Classic;
                 GameState.currentGameMode = GameMode.Classic;
-                GameState.gameModeSongs = new List<SongData>();
+                GameState.partyModeSongs = new List<SongData>();
                 foreach (SongData song in GameState.songs) 
                 {
                     if (song.amountVoices == 1)
                     {
-                        GameState.gameModeSongs.Add(song);
+                        GameState.partyModeSongs.Add(song);
                     }
                 }
                 for (int i = 0; i < GameState.amountPlayer; i++)
@@ -51,14 +52,15 @@ public class GameModeSelect : MonoBehaviour
             if (ok) {
                 if (GameState.songsLoaded)
                 {
+                    GameState.currentPartyMode = PartyMode.Together;
                     GameState.currentGameMode = GameMode.Together;
-                    GameState.gameModeSongs = new List<SongData>();
+                    GameState.partyModeSongs = new List<SongData>();
                     // exclude duet 
                     foreach (SongData song in GameState.songs)
                     {
                         if (song.amountVoices == 1)
                         {
-                            GameState.gameModeSongs.Add(song);
+                            GameState.partyModeSongs.Add(song);
                         }
                     }
                     // set voice to first
@@ -74,7 +76,7 @@ public class GameModeSelect : MonoBehaviour
                             GameState.playersPlayed[i][j] *= 2;
                         }
                     }
-                    SceneManager.LoadScene("ChoosenSongTogether");
+                    SceneManager.LoadScene("ChoosenSong");
                 } 
             } else
             {

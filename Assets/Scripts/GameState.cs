@@ -14,8 +14,9 @@ public class GameState : MonoBehaviour
     public static int[] currentSecondProfileIndex = new int[maxPlayer];
     public static int[] currentVoice = new int[maxPlayer];
     public static SongData currentSong;
+    public static PartyMode currentPartyMode = PartyMode.None;
     public static GameMode currentGameMode = GameMode.None;
-    public static List<SongData> gameModeSongs;
+    public static List<SongData> partyModeSongs;
     public static int roundsLeft;
     public static List<Team> teams;
     public static List<int>[] playersPlayed;

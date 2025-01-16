@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour
         // finding all ui elements
         Button play = root.Q<Button>("Play");
         songsLoaded = root.Q<Label>("SongsLoaded");
-        Button gameModes = root.Q<Button>("GameModes");
+        Button playModes = root.Q<Button>("GameModes");
         Button server = root.Q<Button>("Server");
         Label website = root.Q<Label>("Website");
         Button playerprofiles = root.Q<Button>("Playerprofiles");
@@ -68,7 +68,7 @@ public class MainMenu : MonoBehaviour
                 SceneManager.LoadScene("ChooseSong");
             }
         };
-        gameModes.clicked += () =>
+        playModes.clicked += () =>
         {
             SceneManager.LoadScene("GameModeConfig");
         };

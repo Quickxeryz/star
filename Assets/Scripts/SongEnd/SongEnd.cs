@@ -14,12 +14,13 @@ public class SongEnd : MonoBehaviour
         // set button functionality
         continue_.clicked += () =>
         {
-            switch (GameState.currentGameMode)
+            switch (GameState.currentPartyMode)
             {
-                case GameMode.ChooseSong:
+                case PartyMode.ChooseSong:
                     SceneManager.LoadScene("ChooseSong");
                     break;
-                case GameMode.Classic:
+                case PartyMode.Classic:
+                case PartyMode.Together:
                     // calculate team points
                     int x;
                     int y;
@@ -54,15 +55,26 @@ public class SongEnd : MonoBehaviour
                         SceneManager.LoadScene("ChoosenSong");
                         break;
                     }
-                case GameMode.None:
+                case PartyMode.None:
                     SceneManager.LoadScene("MainMenu");
                     break;
             }
         };
-        // sort after points
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
             player[i] = GameState.profiles[GameState.currentProfileIndex[i]];
+        }
+        PlayerProfile[] partner = new PlayerProfile[GameState.amountPlayer];
+        if (GameState.currentGameMode == GameMode.Together) {
+            for (int i = 0; i < GameState.amountPlayer; i++)
+            {
+                partner[i] = GameState.profiles[GameState.currentSecondProfileIndex[i]];
+            }
+        }
+        // sort after points
+        if (GameState.currentGameMode == GameMode.Together)
+        {
+            Array.Sort(player, partner);
         }
         Array.Sort(player);
         // print amount playing people with highest number
@@ -70,7 +82,14 @@ public class SongEnd : MonoBehaviour
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
             currentPlace = root.Q<Label>((i + 1).ToString());
-            currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " with " + player[i].points.ToString() + " Points.";
+            if (GameState.currentGameMode == GameMode.Together)
+            {
+                currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " and " + partner[i].name + " with " + player[i].points.ToString() + " Points.";
+            }
+            else
+            {
+                currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " with " + player[i].points.ToString() + " Points.";
+            }
         }
     }
 }

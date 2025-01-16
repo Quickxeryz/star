@@ -62,20 +62,21 @@ public class GameLogic : MonoBehaviour
     double songLength = 0;
     // timeLine
     bool timeLineSet = false;
+
     // Songfile data extraction
-    readonly List<SyllableData>[] songData = new List<SyllableData>[GameState.currentSong.amountVoices];
+    List<SyllableData>[] songData;    
     // syllables data
     List<SyllableData> syllablesLine1Bottom = new();
     List<SyllableData> syllablesLine2Bottom = new();
     List<SyllableData> syllablesLine1Top = new();
     List<SyllableData> syllablesLine2Top = new();
     // songData index
-    readonly int[] songDataCurrentIndex = new int[GameState.currentSong.amountVoices];
-    readonly int[] songDataNewLineIndex = new int[GameState.currentSong.amountVoices];
+    int[] songDataCurrentIndex;
+    int[] songDataNewLineIndex;
     // beat data
-    readonly int[] startBeatLine1 = new int[GameState.currentSong.amountVoices];
-    readonly int[] endBeatLine1 = new int[GameState.currentSong.amountVoices];
-    readonly int[] beatSumLine1 = new int[GameState.currentSong.amountVoices];
+    int[] startBeatLine1;
+    int[] endBeatLine1;
+    int[] beatSumLine1;
     // colors 
     const string colorSung = "<color=#0000ffff>";
     const string colorGoldenToSing = "<color=#ffff00ff>";
@@ -104,7 +105,7 @@ public class GameLogic : MonoBehaviour
     // width of node arrow in percent
     const int nodeArrowWidth = 2;
     // score calculating variables 
-    readonly float[] pointsPerBeat = new float[GameState.currentSong.amountVoices];
+    float[] pointsPerBeat;
     readonly int[] lastTimeStamps = new int[GameState.amountPlayer];
     readonly float[] points = new float[GameState.amountPlayer];
     // middle values of nodes for together game mode
@@ -112,6 +113,15 @@ public class GameLogic : MonoBehaviour
 
     void Start()
     {
+        // init songData index
+        songDataCurrentIndex = new int[GameState.currentSong.amountVoices];
+        songDataNewLineIndex = new int[GameState.currentSong.amountVoices];
+        // init array sizes
+        startBeatLine1 = new int[GameState.currentSong.amountVoices];
+        endBeatLine1 = new int[GameState.currentSong.amountVoices];
+        beatSumLine1 = new int[GameState.currentSong.amountVoices];
+        pointsPerBeat = new float[GameState.currentSong.amountVoices];
+        songData = new List<SyllableData>[GameState.currentSong.amountVoices];
         // init songData
         for (int i = 0; i < GameState.currentSong.amountVoices; i++)
         {
@@ -315,7 +325,7 @@ public class GameLogic : MonoBehaviour
             color = GameState.profiles[GameState.currentProfileIndex[i]].color;
             if (GameState.currentGameMode == GameMode.Together)
             {
-                name.text = GameState.profiles[GameState.currentProfileIndex[i]].name + " und " + GameState.profiles[GameState.currentSecondProfileIndex[i]].name;
+                name.text = GameState.profiles[GameState.currentProfileIndex[i]].name + " and " + GameState.profiles[GameState.currentSecondProfileIndex[i]].name;
             }
             else
             {

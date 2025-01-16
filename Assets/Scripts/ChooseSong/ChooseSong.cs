@@ -59,7 +59,7 @@ public class ChooseSong : MonoBehaviour
             int iCopy = i;
             root.Q<Button>(iCopy.ToString()).clicked += () =>
             {
-                GameState.currentGameMode = GameMode.ChooseSong;
+                GameState.currentPartyMode = PartyMode.ChooseSong;
                 GameState.currentSong = currentSongs[GameState.lastSongIndex + iCopy - 1];
                 bool found = false;
                 int j = 0;
@@ -79,9 +79,11 @@ public class ChooseSong : MonoBehaviour
                 }
                 if (GameState.currentSong.amountVoices == 1)
                 {
+                    GameState.currentGameMode = GameMode.Classic;
                     SceneManager.LoadScene("GameScene");
                 } else
                 {
+                    GameState.currentGameMode = GameMode.Duett;
                     SceneManager.LoadScene("ChooseVoice");
                 }
             };

@@ -5,11 +5,19 @@ using UnityEngine.Video;
 
 namespace Classes
 {
-    public enum GameMode
+    public enum PartyMode
     {
         None,
         ChooseSong,
         Classic,
+        Together
+    }
+
+    public enum GameMode
+    {
+        None,
+        Classic,
+        Duett,
         Together
     }
 
