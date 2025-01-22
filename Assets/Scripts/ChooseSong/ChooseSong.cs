@@ -29,6 +29,8 @@ public class ChooseSong : MonoBehaviour
         Button playerAmount_Right = playerAmount.Q<Button>("Right");
         TemplateContainer[] playerX = new TemplateContainer[GameState.maxPlayer];
         TextField search = root.Q<TextField>("Search");
+        TemplateContainer gameMode = root.Q<TemplateContainer>("GameMode");
+        GroupBox gameMode_TextBox = gameMode.Q<GroupBox>("TextBox");
         for (int i = 0; i < playerX.Length; i++)
         {
             playerX[i] = root.Q<TemplateContainer>("Player" + (i + 1).ToString());
@@ -59,7 +61,6 @@ public class ChooseSong : MonoBehaviour
             int iCopy = i;
             root.Q<Button>(iCopy.ToString()).clicked += () =>
             {
-                GameState.currentPartyMode = PartyMode.ChooseSong;
                 GameState.currentSong = currentSongs[GameState.lastSongIndex + iCopy - 1];
                 bool found = false;
                 int j = 0;
@@ -77,14 +78,16 @@ public class ChooseSong : MonoBehaviour
                 {
                     GameState.currentVoice[j] = 1;
                 }
-                if (GameState.currentSong.amountVoices == 1)
-                {
-                    GameState.currentGameMode = GameMode.Classic;
-                    SceneManager.LoadScene("GameScene");
-                } else
-                {
-                    GameState.currentGameMode = GameMode.Duett;
-                    SceneManager.LoadScene("ChooseVoice");
+                switch (GameState.currentGameMode) { 
+                    case GameMode.Classic:
+                        SceneManager.LoadScene("GameScene");
+                        break;
+                    case GameMode.Duett:
+                        SceneManager.LoadScene("ChooseVoice");
+                        break;
+                    case GameMode.Together:
+                        SceneManager.LoadScene("ChoosePartner");
+                        break;
                 }
             };
             root.Q<Button>(iCopy.ToString()).RegisterCallback<MouseEnterEvent, int>(PlaySong, iCopy);
@@ -141,13 +144,13 @@ public class ChooseSong : MonoBehaviour
                 if (text == "")
                 {
                     GameState.lastSongIndex = 0;
-                    currentSongs = new List<SongData>(GameState.songs); ;
+                    currentSongs = new List<SongData>(GameState.partyModeSongs); ;
                 }
                 else
                 {
                     GameState.lastSongIndex = 0;
                     currentSongs.Clear();
-                    foreach (SongData song in GameState.songs)
+                    foreach (SongData song in GameState.partyModeSongs)
                     {
                         if (song.artist.ToLower().Contains(text))
                         {
@@ -162,10 +165,31 @@ public class ChooseSong : MonoBehaviour
                 UpdateSongList();
             }
         );
+        gameMode.Q<Button>("Left").clicked += () => {
+            int gameModeNumber = (int)GameState.currentGameMode;
+            if (gameModeNumber > 0)
+            {
+                gameModeNumber -= 1;
+                GameState.currentGameMode = (GameMode)gameModeNumber;
+                gameMode_TextBox.text = GameModeFunctions.GameModeToString(GameState.currentGameMode);
+                SetUpSongList();
+            }            
+        };
+        gameMode.Q<Button>("Right").clicked += () => {
+            int gameModeNumber = (int)GameState.currentGameMode;
+            if (gameModeNumber < 2)
+            {
+                gameModeNumber += 1;
+                GameState.currentGameMode = (GameMode)gameModeNumber;
+                gameMode_TextBox.text = GameModeFunctions.GameModeToString(GameState.currentGameMode);
+                SetUpSongList();
+            }
+        };
         back.clicked += () =>
         {
             SceneManager.LoadScene("MainMenu");
         };
+        GameState.currentPartyMode = PartyMode.ChooseSong;
         // showing song list
         currentSongs = new List<SongData>(GameState.songs); ;
         if (GameState.lastSongIndex > currentSongs.Count - 10)
@@ -204,6 +228,9 @@ public class ChooseSong : MonoBehaviour
             playerX_Label[i].visible = false;
             playerX[i].visible = false;
         }
+        // set up start game mode
+        GameState.currentGameMode = GameMode.Classic;
+        gameMode_TextBox.text = GameModeFunctions.GameModeToString(GameState.currentGameMode);
         // init songpreview
         GameObject player = GameObject.Find("Player");
         audio = player.AddComponent<AudioSource>();
@@ -301,6 +328,34 @@ public class ChooseSong : MonoBehaviour
             songButton.visible = true;
             itemCounter++;
         }
+    }
+
+    void SetUpSongList()
+    {
+        GameState.lastSongIndex = 0;
+        currentSongs = new List<SongData>();
+        switch (GameState.currentGameMode)
+        {
+            case GameMode.Classic:
+            case GameMode.Together:
+                // all songs
+                foreach (SongData song in GameState.songs)
+                {
+                    currentSongs.Add(song);
+                }
+                break;
+            case GameMode.Duett:
+                // exclude only main singer songs
+                foreach (SongData song in GameState.songs)
+                {
+                    if (song.amountVoices > 1)
+                    {
+                        currentSongs.Add(song);
+                    }
+                }
+                break;
+        }
+        UpdateSongList();
     }
 
     void PlaySong(MouseEnterEvent evt, int id)

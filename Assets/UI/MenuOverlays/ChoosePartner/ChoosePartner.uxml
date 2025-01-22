@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Switcher" src="project://database/Assets/UI/Templates/Switcher.uxml?fileID=9197481963319205126&amp;guid=363b3cbb44fb0e940b0606d794ac16cc&amp;type=3#Switcher" />
+    <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
+    <ui:Label text="Partner&#10;" display-tooltip-when-elided="true" name="Partner" style="height: auto; bottom: auto; left: 210px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center; top: 10px;" />
+    <ui:Label text="Player 1" display-tooltip-when-elided="true" name="Player1Text" style="height: auto; bottom: auto; left: 10px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center; top: 60px; visibility: hidden;" />
+    <ui:Instance template="Switcher" name="Partner1" style="position: absolute; left: 210px; bottom: 170px; width: 10%; height: 40px; top: 60px; visibility: hidden;" />
+    <ui:Label text="Player 2" display-tooltip-when-elided="true" name="Player2Text" style="height: auto; bottom: auto; left: 10px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center; top: 110px; visibility: hidden;" />
+    <ui:Instance template="Switcher" name="Partner2" style="position: absolute; left: 210px; bottom: 170px; width: 10%; height: 40px; top: 110px; visibility: hidden;" />
+    <ui:Label text="Player 3" display-tooltip-when-elided="true" name="Player3Text" style="height: auto; bottom: auto; left: 10px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center; top: 160px; visibility: hidden;" />
+    <ui:Instance template="Switcher" name="Partner3" style="position: absolute; left: 210px; bottom: 170px; width: 10%; height: 40px; top: 160px; visibility: hidden;" />
+    <ui:Label text="Player 4" display-tooltip-when-elided="true" name="Player4Text" style="height: auto; bottom: auto; left: 10px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center; top: 210px; visibility: hidden;" />
+    <ui:Instance template="Switcher" name="Partner4" style="position: absolute; left: 210px; bottom: 170px; width: 10%; height: 40px; top: 210px; visibility: hidden;" />
+    <ui:Label text="Player 5" display-tooltip-when-elided="true" name="Player5Text" style="height: auto; bottom: auto; left: 10px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center; top: 260px; visibility: hidden;" />
+    <ui:Instance template="Switcher" name="Partner5" style="position: absolute; left: 210px; bottom: 170px; width: 10%; height: 40px; top: 260px; visibility: hidden;" />
+    <ui:Label text="Player 6" display-tooltip-when-elided="true" name="Player6Text" style="height: auto; bottom: auto; left: 10px; position: absolute; width: 10%; align-items: auto; -unity-text-align: upper-center; top: 310px; visibility: hidden;" />
+    <ui:Instance template="Switcher" name="Partner6" style="position: absolute; left: 210px; bottom: 170px; width: 10%; height: 40px; top: 310px; visibility: hidden;" />
+    <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" style="position: absolute; left: 1%; right: auto; bottom: 1%; width: 10%; height: 10%;" />
+    <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" style="position: absolute; left: auto; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
+</ui:UXML>

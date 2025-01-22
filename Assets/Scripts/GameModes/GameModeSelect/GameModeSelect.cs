@@ -25,12 +25,10 @@ public class GameModeSelect : MonoBehaviour
                 GameState.currentPartyMode = PartyMode.Classic;
                 GameState.currentGameMode = GameMode.Classic;
                 GameState.partyModeSongs = new List<SongData>();
+                // all songs 
                 foreach (SongData song in GameState.songs) 
                 {
-                    if (song.amountVoices == 1)
-                    {
-                        GameState.partyModeSongs.Add(song);
-                    }
+                    GameState.partyModeSongs.Add(song);
                 }
                 for (int i = 0; i < GameState.amountPlayer; i++)
                 {
@@ -55,13 +53,10 @@ public class GameModeSelect : MonoBehaviour
                     GameState.currentPartyMode = PartyMode.Together;
                     GameState.currentGameMode = GameMode.Together;
                     GameState.partyModeSongs = new List<SongData>();
-                    // exclude duet 
+                    // all songs
                     foreach (SongData song in GameState.songs)
                     {
-                        if (song.amountVoices == 1)
-                        {
-                            GameState.partyModeSongs.Add(song);
-                        }
+                        GameState.partyModeSongs.Add(song);
                     }
                     // set voice to first
                     for (int i = 0; i < GameState.amountPlayer; i++)

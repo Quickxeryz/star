@@ -15,12 +15,46 @@ namespace Classes
 
     public enum GameMode
     {
-        None,
-        Classic,
-        Duett,
-        Together
+        None = -1,
+        Classic = 0,
+        Duett = 1,
+        Together = 2
     }
 
+    public static class GameModeFunctions
+    {
+        public static GameMode StringToGameMode(string str)
+        {
+            switch (str)
+            {
+                case "Classic":
+                    return GameMode.Classic;
+                case "Duett":
+                    return GameMode.Duett;
+                case "Together":
+                    return GameMode.Together;
+                default:
+                    return GameMode.None;
+            }
+        }
+
+        public static string GameModeToString(GameMode gm)
+        {
+            switch (gm)
+            {
+                case GameMode.None:
+                    return "None";
+                case GameMode.Classic:
+                    return "Classic";
+                case GameMode.Duett:
+                    return "Duett";
+                case GameMode.Together:
+                    return "Together";
+                default:
+                    return "ERROR";
+            }
+        }
+    }
     public enum Node
     {
         C = 11,
