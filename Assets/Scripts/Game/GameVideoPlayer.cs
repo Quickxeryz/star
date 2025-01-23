@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 [RequireComponent(typeof(UnityEngine.UI.RawImage))]
 public class GameVideoPlayer : MonoBehaviour
@@ -22,5 +23,14 @@ public class GameVideoPlayer : MonoBehaviour
             image = GetComponent<UnityEngine.UI.RawImage>();
             image.texture = renderTexture;
         }
+    }
+
+    public void Pause()
+    {
+        videoPlayer.Pause();
+    }
+    public void Unpause()
+    {
+        videoPlayer.Play();
     }
 }

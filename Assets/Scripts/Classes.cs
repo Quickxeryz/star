@@ -323,6 +323,27 @@ namespace Classes
                 return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time + 1) < 0;
             }
         }
+
+        public void Pause() {
+            if (currentPlayerIsAudioSource)
+            {
+                audioSource.Pause();
+            }
+            else
+            {
+                videoPlayer.Pause();
+            }
+        }
+        public void Unpause() {
+            if (currentPlayerIsAudioSource)
+            {
+                audioSource.UnPause();
+            }
+            else
+            {
+                videoPlayer.Play();
+            }
+        }
     }
 
     [System.Serializable]
