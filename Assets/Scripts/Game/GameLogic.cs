@@ -1268,7 +1268,7 @@ public class GameLogic : MonoBehaviour
         TextMeshProUGUI currentObjectTM = currentObject.AddComponent<TextMeshProUGUI>();
         currentObjectTM.text = text;
         currentObjectTM.rectTransform.sizeDelta = sizeDelta;
-        currentObjectTM.fontSize = 60;
+        currentObjectTM.fontSize = 50;
         currentObjectTM.textWrappingMode = TextWrappingModes.NoWrap;
         currentObjectTM.ForceMeshUpdate();
         return new TextObject(currentObject, currentObjectTM, false);

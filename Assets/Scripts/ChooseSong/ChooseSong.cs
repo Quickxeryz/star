@@ -189,7 +189,13 @@ public class ChooseSong : MonoBehaviour
         {
             SceneManager.LoadScene("MainMenu");
         };
+        if(GameState.currentGameMode == GameMode.None)
+        {
+            GameState.currentGameMode = GameMode.Classic;
+        }
         GameState.currentPartyMode = PartyMode.ChooseSong;
+        SetUpSongList();
+        gameMode_TextBox.text = GameModeFunctions.GameModeToString(GameState.currentGameMode);
         // showing song list
         currentSongs = new List<SongData>(GameState.songs); ;
         if (GameState.lastSongIndex > currentSongs.Count - 10)
@@ -202,7 +208,6 @@ public class ChooseSong : MonoBehaviour
                 GameState.lastSongIndex = 0;
             }
         }
-        UpdateSongList();
         // Load Amount Player 
         playerAmount_TextBox.text = GameState.amountPlayer.ToString();
         for (int i = 0; i < GameState.maxPlayer; i++)
@@ -228,9 +233,6 @@ public class ChooseSong : MonoBehaviour
             playerX_Label[i].visible = false;
             playerX[i].visible = false;
         }
-        // set up start game mode
-        GameState.currentGameMode = GameMode.Classic;
-        gameMode_TextBox.text = GameModeFunctions.GameModeToString(GameState.currentGameMode);
         // init songpreview
         GameObject player = GameObject.Find("Player");
         audio = player.AddComponent<AudioSource>();
