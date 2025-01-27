@@ -2,8 +2,10 @@
     <Style src="project://database/Assets/UI/MenuOverlays/Font.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#Font" />
     <ui:Button text="Play" display-tooltip-when-elided="true" name="Play" selectable="true" style="position: absolute; height: 10%; width: 10%; top: auto; left: 1%; bottom: 1%;" />
     <ui:Button text="Exit" display-tooltip-when-elided="true" name="Exit" selectable="true" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
-    <ui:Label tabindex="-1" text="Next song:" display-tooltip-when-elided="true" name="NextSong" style="position: absolute; top: 10px; left: 10px; right: auto; height: 40px; -unity-text-align: upper-left;" />
-    <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Song" double-click-selects-word="true" style="position: absolute; left: 10px; top: 50px; right: auto; -unity-text-align: upper-left;" />
+    <ui:Label tabindex="-1" text="Rounds left:" display-tooltip-when-elided="true" name="RoundsLeft" style="position: absolute; top: 10px; left: 10px; right: auto; height: 40px; -unity-text-align: upper-left; width: 150px;" />
+    <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Rounds" style="position: absolute; top: 10px; left: 170px; right: auto; height: 40px; -unity-text-align: upper-left; width: 150px;" />
+    <ui:Label tabindex="-1" text="Next song:" display-tooltip-when-elided="true" name="NextSong" style="position: absolute; top: 50px; left: 10px; right: auto; height: 40px; -unity-text-align: upper-left; width: 150px;" />
+    <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Song" double-click-selects-word="true" style="position: absolute; left: 170px; top: 50px; right: auto; -unity-text-align: upper-left; height: 40px;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player" text="Player:" double-click-selects-word="true" style="position: absolute; left: 10px; top: 90px; right: auto; -unity-text-align: upper-left;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player11" double-click-selects-word="true" style="position: absolute; left: 10px; top: 140px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll11" style="width: 200px; height: 40px; position: absolute; top: 140px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />

@@ -36,6 +36,7 @@ public class ChoosenSong : MonoBehaviour
         }
         // UI
         song = root.Q<Label>("Song");
+        root.Q<Label>("Rounds").text = GameState.roundsLeft.ToString();
         if (GameState.currentPartyMode == PartyMode.Together)
         {
             // finding all UI Elements
