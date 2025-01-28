@@ -143,6 +143,11 @@ public class GameModeConfig : MonoBehaviour
             {
                 GameState.teams.Add(new Team((i + 1).ToString()));
             }
+            // rerolls and switches
+            GameState.refillRerolls = root.Q<Toggle>("RefillRerolls").value;
+            GameState.refillSwitches = root.Q<Toggle>("RefillSwitches").value;
+            GameState.amountRerolls = Int32.Parse(amountRerolls_TextBox.text);
+            GameState.amountSwitches = Int32.Parse(amountSwitches_TextBox.text);
             bool found;
             int help = 0;
             for (int i = 0; i < Int32.Parse(amountTeams_TextBox.text); i++)

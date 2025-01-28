@@ -17,6 +17,10 @@ public class GameState : MonoBehaviour
     public static PartyMode currentPartyMode = PartyMode.None;
     public static GameMode currentGameMode = GameMode.None;
     public static List<SongData> partyModeSongs;
+    public static bool refillRerolls;
+    public static bool refillSwitches;
+    public static int amountRerolls;
+    public static int amountSwitches;
     public static int roundsLeft;
     public static List<Team> teams;
     public static bool serverStarted = false;

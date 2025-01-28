@@ -39,11 +39,25 @@ public class ChoosenSong : MonoBehaviour
         root.Q<Label>("Rounds").text = GameState.roundsLeft.ToString();
         if (GameState.currentPartyMode == PartyMode.Together)
         {
-            // finding all UI Elements
             secondPlayer = new Label[GameState.amountPlayer];
             secondReroll = new Button[GameState.amountPlayer];
             secondSwitchPlayer = new DropdownField[GameState.amountPlayer];
             secondSwitchPlayer_Button = new Button[GameState.amountPlayer];
+        }
+        // refill rerolls and switches
+        if (GameState.refillRerolls)
+        {
+            for (int i = 0; i < GameState.teams.Count; i++)
+            {
+                GameState.teams[i].amountRerolls = GameState.amountRerolls;
+            }
+        }
+        if (GameState.refillSwitches)
+        {
+            for (int i = 0; i < GameState.teams.Count; i++)
+            {
+                GameState.teams[i].amountSwitches = GameState.amountSwitches;
+            }
         }
         // finding all UI Elements
         for (int i = 0; i < GameState.amountPlayer; i++)
