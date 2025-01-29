@@ -13,91 +13,7 @@ public class MicrophoneInput : MonoBehaviour
 
     void Start()
     {
-        // init nodes
-        if (GameState.currentGameMode == GameMode.Together)
-        {
-            nodes = new Node[GameState.amountPlayer*2];
-        }
-        else
-        {
-            nodes = new Node[GameState.amountPlayer];
-        }
-        // set microphones
-        bool inMicrophones;
-        bool alredyHasListener;
-        for (int i = 0; i < GameState.amountPlayer; i++)
-        {
-            if (!(GameState.settings.microphoneInput[i].isOnline || GameState.profiles[GameState.currentProfileIndex[i]].useOnlineMic))
-            {
-                samples[i] = new double[2][];
-                int iCopy = i;
-                // check if microphone exists
-                inMicrophones = false;
-                int j = 0;
-                while (j < NAudio.Wave.WaveInEvent.DeviceCount)
-                {
-                    if (GameState.settings.microphoneInput[i].name == NAudio.Wave.WaveInEvent.GetCapabilities(j).ProductName)
-                    {
-                        inMicrophones = true;
-                        j = Microphone.devices.Length;
-                    }
-                    j++;
-                }
-                if (inMicrophones)
-                {
-                    // check if microphone alredy has listener
-                    alredyHasListener = false;
-                    int otherListenerNumber = 0;
-                    j = 0;
-                    while (j < i)
-                    {
-                        if(!(GameState.settings.microphoneInput[i].isOnline || GameState.profiles[GameState.currentProfileIndex[j]].useOnlineMic))
-                        {
-                            if (GameState.settings.microphoneInput[i].name == GameState.settings.microphoneInput[j].name)
-                            {
-                                alredyHasListener = true;
-                                otherListenerNumber = j;
-                                samples[i] = samples[j];
-                                j = i;
-                            }
-                        }
-                        j++;
-                    }
-                    if (!alredyHasListener)
-                    {
-                        // create listeener event
-                        microphoneInputs[i] = new NAudio.Wave.WaveInEvent
-                        {
-                            DeviceNumber = GameState.settings.microphoneInput[i].index,
-                            WaveFormat = new NAudio.Wave.WaveFormat(sampleRate, bitDepth, 2),
-                            BufferMilliseconds = bufferMilliseconds
-                        };
-                        microphoneInputs[i].DataAvailable += (object sender, NAudio.Wave.WaveInEventArgs e) =>
-                        {
-                            samples[iCopy][0] = new double[e.Buffer.Length / 4];
-                            samples[iCopy][1] = new double[e.Buffer.Length / 4];
-                            for (int x = 0; x < e.Buffer.Length / 2; x++)
-                            {
-                                if (x % 2 == 0)
-                                {
-                                    samples[iCopy][0][x / 2] = BitConverter.ToInt16(e.Buffer, x * 2);
-                                }
-                                else
-                                {
-                                    samples[iCopy][1][x / 2] = BitConverter.ToInt16(e.Buffer, x * 2);
-                                }
-                            }
-                        };
-                        microphoneInputs[i].StartRecording();
-                    }
-                    else
-                    {
-                        samples[i][0] = samples[otherListenerNumber][0];
-                        samples[i][1] = samples[otherListenerNumber][1];
-                    }
-                }
-            }
-        }
+        Init();
     }
 
     void Update()
@@ -189,9 +105,99 @@ public class MicrophoneInput : MonoBehaviour
                     {
                         nodes[i] = GameState.onlineMicrophones[index].node;
                     }
-                } else
+                }
+                else
                 {
                     nodes[i] = Node.None;
+                }
+            }
+        }
+    }
+
+    public void Init()
+    {
+        // init nodes
+        if (GameState.currentGameMode == GameMode.Together)
+        {
+            nodes = new Node[GameState.amountPlayer * 2];
+        }
+        else
+        {
+            nodes = new Node[GameState.amountPlayer];
+        }
+        // set microphones
+        bool inMicrophones;
+        bool alredyHasListener;
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            if (!(GameState.settings.microphoneInput[i].isOnline || GameState.profiles[GameState.currentProfileIndex[i]].useOnlineMic))
+            {
+                samples[i] = new double[2][];
+                int iCopy = i;
+                // check if microphone exists
+                inMicrophones = false;
+                int j = 0;
+                while (j < NAudio.Wave.WaveInEvent.DeviceCount)
+                {
+                    if (GameState.settings.microphoneInput[i].name == NAudio.Wave.WaveInEvent.GetCapabilities(j).ProductName)
+                    {
+                        inMicrophones = true;
+                        j = Microphone.devices.Length;
+                    }
+                    j++;
+                }
+                if (inMicrophones)
+                {
+                    // check if microphone alredy has listener
+                    alredyHasListener = false;
+                    int otherListenerNumber = 0;
+                    j = 0;
+                    while (j < i)
+                    {
+                        if (!(GameState.settings.microphoneInput[i].isOnline || GameState.profiles[GameState.currentProfileIndex[j]].useOnlineMic))
+                        {
+                            if (GameState.settings.microphoneInput[i].name == GameState.settings.microphoneInput[j].name)
+                            {
+                                alredyHasListener = true;
+                                otherListenerNumber = j;
+                                samples[i] = samples[j];
+                                j = i;
+                            }
+                        }
+                        j++;
+                    }
+                    if (!alredyHasListener)
+                    {
+                        // create listeener event
+                        microphoneInputs[i] = new NAudio.Wave.WaveInEvent
+                        {
+                            DeviceNumber = GameState.settings.microphoneInput[i].index,
+                            WaveFormat = new NAudio.Wave.WaveFormat(sampleRate, bitDepth, 2),
+                            BufferMilliseconds = bufferMilliseconds
+                        };
+                        microphoneInputs[i].DataAvailable += (object sender, NAudio.Wave.WaveInEventArgs e) =>
+                        {
+                            samples[iCopy][0] = new double[e.Buffer.Length / 4];
+                            samples[iCopy][1] = new double[e.Buffer.Length / 4];
+                            for (int x = 0; x < e.Buffer.Length / 2; x++)
+                            {
+                                if (x % 2 == 0)
+                                {
+                                    samples[iCopy][0][x / 2] = BitConverter.ToInt16(e.Buffer, x * 2);
+                                }
+                                else
+                                {
+                                    samples[iCopy][1][x / 2] = BitConverter.ToInt16(e.Buffer, x * 2);
+                                }
+                            }
+                        };
+                        microphoneInputs[i].StartRecording();
+                    }
+                    else
+                    {
+                        samples[i][0] = samples[otherListenerNumber][0];
+                        samples[i][1] = samples[otherListenerNumber][1];
+                    }
                 }
             }
         }

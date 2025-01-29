@@ -12,14 +12,19 @@ public class ChoosenSong : MonoBehaviour
     Button[] reroll = new Button[GameState.amountPlayer];
     DropdownField[] switchPlayer = new DropdownField[GameState.amountPlayer];
     Button[] switchPlayer_Button = new Button[GameState.amountPlayer];
+    Label[] nodes = new Label[GameState.amountPlayer];
     Label[] secondPlayer;
     Button[] secondReroll;
     DropdownField[] secondSwitchPlayer;
     Button[] secondSwitchPlayer_Button;
+    Label[] secondNodes;
+    string secondSingerAddition = "With ";
     // song attributes
     Label song;
     new AudioSource audio;
     VideoPlayer videoPlayer;
+    // mic
+    public MicrophoneInput microphoneInput;
 
     void Start()
     {
@@ -43,6 +48,7 @@ public class ChoosenSong : MonoBehaviour
             secondReroll = new Button[GameState.amountPlayer];
             secondSwitchPlayer = new DropdownField[GameState.amountPlayer];
             secondSwitchPlayer_Button = new Button[GameState.amountPlayer];
+            secondNodes = new Label[GameState.amountPlayer];
         }
         // refill rerolls and switches
         if (GameState.refillRerolls)
@@ -66,6 +72,7 @@ public class ChoosenSong : MonoBehaviour
             reroll[i] = root.Q<Button>("Reroll" + (i + 1).ToString() + "1");
             switchPlayer[i] = root.Q<DropdownField>("Switch" + (i + 1).ToString() + "1");
             switchPlayer_Button[i] = root.Q<Button>("SwitchButton" + (i + 1).ToString() + "1");
+            nodes[i] = root.Q<Label>("Node" + (i + 1).ToString() + "1");
             reroll[i].text = "Reroll Song " + GameState.teams[i].amountRerolls + "x";
             reroll[i].visible = true;
             switchPlayer[i].visible = true;
@@ -80,6 +87,7 @@ public class ChoosenSong : MonoBehaviour
                 secondReroll[i] = root.Q<Button>("Reroll" + (i + 1).ToString() + "2");
                 secondSwitchPlayer[i] = root.Q<DropdownField>("Switch" + (i + 1).ToString() + "2");
                 secondSwitchPlayer_Button[i] = root.Q<Button>("SwitchButton" + (i + 1).ToString() + "2");
+                secondNodes[i] = root.Q<Label>("Node" + (i + 1).ToString() + "2");
                 secondReroll[i].text = "Reroll Song " + GameState.teams[i].amountRerolls + "x";
                 secondReroll[i].visible = true;
                 secondSwitchPlayer[i].visible = true;
@@ -119,45 +127,6 @@ public class ChoosenSong : MonoBehaviour
         }
         play.clicked += () =>
         {
-            int index;
-            bool found;
-            for (int i = 0; i < GameState.teams.Count; i++)
-            {
-                index = 0;
-                found = false;
-                while (!found && index < GameState.teams[i].players.Count)
-                {
-                    if (GameState.teams[i].players[index].name == player[i].text)
-                    {
-                        found = true;
-                    }
-                    else
-                    {
-                        index++;
-                    }
-                }
-                GameState.currentProfileIndex[i] = GameState.profiles.IndexOf(GameState.teams[i].players[index]);
-            }
-            if (GameState.currentPartyMode == PartyMode.Together)
-            {
-                for (int i = 0; i < GameState.teams.Count; i++)
-                {
-                    index = 0;
-                    found = false;
-                    while (!found && index < GameState.teams[i].players.Count)
-                    {
-                        if (GameState.teams[i].players[index].name == secondPlayer[i].text)
-                        {
-                            found = true;
-                        }
-                        else
-                        {
-                            index++;
-                        }
-                    }
-                    GameState.currentSecondProfileIndex[i] = GameState.profiles.IndexOf(GameState.teams[i].players[index]);
-                }
-            }
             SceneManager.LoadScene("GameScene");
         };
         exit.clicked += () =>
@@ -219,16 +188,34 @@ public class ChoosenSong : MonoBehaviour
                         differentPlayerNotFound = false;
                     }
                 }
-                secondPlayer[i].text = GameState.teams[i].playersNotSung[index].name;
+                secondPlayer[i].text = secondSingerAddition + GameState.teams[i].playersNotSung[index].name;
                 GameState.teams[i].playersNotSung.RemoveAt(index); 
                 foreach (PlayerProfile p in GameState.teams[i].players)
                 {
-                    if (p.name != player[i].text && p.name != secondPlayer[i].text)
+                    if (p.name != player[i].text && secondSingerAddition + p.name != secondPlayer[i].text)
                     {
                         switchPlayer[i].choices.Add(p.name);
                         secondSwitchPlayer[i].choices.Add(p.name);
                     }
                 }
+            }
+        }
+        // set up mic input
+        SetUpMic();
+    }
+
+    void Update()
+    {
+        
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            nodes[i].text = "Node: " + microphoneInput.nodes[i].ToString();
+        }
+        if (GameState.currentPartyMode == PartyMode.Together)
+        {
+            for (int i = GameState.amountPlayer; i < GameState.amountPlayer * 2; i++)
+            {
+                secondNodes[i - GameState.amountPlayer].text = "Node: " + microphoneInput.nodes[i].ToString();
             }
         }
     }
@@ -289,20 +276,20 @@ public class ChoosenSong : MonoBehaviour
             {
                 while (index < GameState.teams[i].players.Count)
                 {
-                    if (secondPlayer[i].text == GameState.teams[i].players[index].name)
+                    if (secondPlayer[i].text == secondSingerAddition + GameState.teams[i].players[index].name)
                     {
                         GameState.teams[i].playersNotSung.Add(GameState.teams[i].players[index]);
                         index = GameState.teams[i].players.Count;
                     }
                     index++;
                 }
-                switchPlayer[i].choices.Add(secondPlayer[i].text);
-                secondSwitchPlayer[i].choices.Add(secondPlayer[i].text);
-                secondPlayer[i].text = secondSwitchPlayer[i].value;
+                switchPlayer[i].choices.Add(secondPlayer[i].text.Remove(0, secondSingerAddition.Length));
+                secondSwitchPlayer[i].choices.Add(secondPlayer[i].text.Remove(0, secondSingerAddition.Length));
+                secondPlayer[i].text = secondSingerAddition + secondSwitchPlayer[i].value;
                 index = 0;
                 while (index < GameState.teams[i].playersNotSung.Count)
                 {
-                    if (secondPlayer[i].text == GameState.teams[i].playersNotSung[index].name)
+                    if (secondPlayer[i].text == secondSingerAddition + GameState.teams[i].playersNotSung[index].name)
                     {
                         GameState.teams[i].playersNotSung.RemoveAt(index);
                         index = GameState.teams[i].players.Count;
@@ -323,6 +310,7 @@ public class ChoosenSong : MonoBehaviour
             {
                 secondSwitchPlayer_Button[i].text = "Switch " + GameState.teams[i].amountSwitches + "x";
             }
+            SetUpMic();
         }
     }
 
@@ -350,5 +338,51 @@ public class ChoosenSong : MonoBehaviour
             videoPlayer.url = GameState.currentSong.pathToVideo;
             videoPlayer.Play();
         }
+    }
+
+    void SetUpMic()
+    {
+        // set mic for main singer
+        int index;
+        bool found;
+        for (int i = 0; i < GameState.teams.Count; i++)
+        {
+            index = 0;
+            found = false;
+            while (!found && index < GameState.teams[i].players.Count)
+            {
+                if (GameState.teams[i].players[index].name == player[i].text)
+                {
+                    found = true;
+                }
+                else
+                {
+                    index++;
+                }
+            }
+            GameState.currentProfileIndex[i] = GameState.profiles.IndexOf(GameState.teams[i].players[index]);
+        }
+        // set mic for second singer
+        if (GameState.currentPartyMode == PartyMode.Together)
+        {
+            for (int i = 0; i < GameState.teams.Count; i++)
+            {
+                index = 0;
+                found = false;
+                while (!found && index < GameState.teams[i].players.Count)
+                {
+                    if (secondSingerAddition + GameState.teams[i].players[index].name == secondPlayer[i].text)
+                    {
+                        found = true;
+                    }
+                    else
+                    {
+                        index++;
+                    }
+                }
+                GameState.currentSecondProfileIndex[i] = GameState.profiles.IndexOf(GameState.teams[i].players[index]);
+            }
+        }
+        microphoneInput.Init();
     }
 }

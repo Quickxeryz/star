@@ -11,48 +11,60 @@
     <ui:Button display-tooltip-when-elided="true" name="Reroll11" style="width: 200px; height: 40px; position: absolute; top: 140px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch11" label="Switch with player:" style="position: absolute; top: 140px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton11" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 140px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node11" style="top: 140px; left: 1260px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player12" double-click-selects-word="true" style="position: absolute; left: 10px; top: 190px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll12" style="width: 200px; height: 40px; position: absolute; top: 190px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch12" label="Switch with player:" style="position: absolute; top: 190px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton12" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 190px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node12" style="left: 1260px; top: 190px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player21" double-click-selects-word="true" style="position: absolute; left: 10px; top: 240px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll21" style="width: 200px; height: 40px; position: absolute; top: 240px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch21" label="Switch with player:" style="position: absolute; top: 240px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton21" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 240px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node21" style="left: 1260px; top: 240px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player22" double-click-selects-word="true" style="position: absolute; left: 10px; top: 290px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll22" style="width: 200px; height: 40px; position: absolute; top: 290px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch22" label="Switch with player:" style="position: absolute; top: 290px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton22" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 290px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node22" style="top: 290px; left: 1260px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player31" double-click-selects-word="true" style="position: absolute; left: 10px; top: 340px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll31" style="width: 200px; height: 40px; position: absolute; top: 340px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch31" label="Switch with player:" style="position: absolute; top: 340px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton31" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 340px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node31" style="left: 1260px; top: 340px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player32" double-click-selects-word="true" style="position: absolute; left: 10px; top: 390px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll32" style="width: 200px; height: 40px; position: absolute; top: 390px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch32" label="Switch with player:" style="position: absolute; top: 390px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton32" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 390px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node32" style="left: 1260px; top: 390px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player41" double-click-selects-word="true" style="position: absolute; left: 10px; top: 440px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll41" style="width: 200px; height: 40px; position: absolute; top: 440px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch41" label="Switch with player:" style="position: absolute; top: 440px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton41" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 440px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node41" style="left: 1260px; top: 440px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player42" double-click-selects-word="true" style="position: absolute; left: 10px; top: 490px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll42" style="width: 200px; height: 40px; position: absolute; top: 490px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch42" label="Switch with player:" style="position: absolute; top: 490px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton42" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 490px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node42" style="left: 1260px; top: 490px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player51" double-click-selects-word="true" style="position: absolute; left: 10px; top: 540px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll51" style="width: 200px; height: 40px; position: absolute; top: 540px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch51" label="Switch with player:" style="position: absolute; top: 540px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton51" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 540px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node51" style="top: 540px; left: 1260px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player52" double-click-selects-word="true" style="position: absolute; left: 10px; top: 590px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll52" style="width: 200px; height: 40px; position: absolute; top: 590px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch52" label="Switch with player:" style="position: absolute; top: 590px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton52" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 590px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node52" style="top: 590px; left: 1260px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player61" double-click-selects-word="true" style="position: absolute; left: 10px; top: 640px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll61" style="width: 200px; height: 40px; position: absolute; top: 640px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch61" label="Switch with player:" style="position: absolute; top: 640px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton61" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 640px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node61" style="top: 640px; left: 1260px; width: 200px; position: absolute;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Player62" double-click-selects-word="true" style="position: absolute; left: 10px; top: 690px; right: auto; -unity-text-align: upper-left; width: 200px;" />
     <ui:Button display-tooltip-when-elided="true" name="Reroll62" style="width: 200px; height: 40px; position: absolute; top: 690px; left: 260px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
     <ui:DropdownField index="-1" name="Switch62" label="Switch with player:" style="position: absolute; top: 690px; left: 510px; display: flex; visibility: hidden; width: 500px;" />
     <ui:Button display-tooltip-when-elided="true" name="SwitchButton62" selectable="true" style="width: 150px; height: 40px; position: absolute; top: 690px; left: 1060px; display: flex; visibility: hidden; -unity-text-align: middle-left;" />
+    <ui:Label name="Node62" style="left: 1260px; top: 690px; width: 200px; position: absolute;" />
 </ui:UXML>
