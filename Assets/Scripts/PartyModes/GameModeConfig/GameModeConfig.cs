@@ -1,8 +1,10 @@
 using UnityEngine;
+using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Classes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class GameModeConfig : MonoBehaviour
@@ -28,6 +30,7 @@ public class GameModeConfig : MonoBehaviour
         GroupBox amountTeams_TextBox = amountTeams.Q<GroupBox>("TextBox");
         Button amountTeams_Left = amountTeams.Q<Button>("Left");
         Button amountTeams_Right = amountTeams.Q<Button>("Right");
+        Button randomizeTeamMember = root.Q<Button>("Randomize");
         DropdownField player = root.Q<DropdownField>("Player");
         Button[] addTeam = new Button[GameState.maxPlayer];
         for (int i = 0; i < addTeam.Length; i++)
@@ -110,6 +113,41 @@ public class GameModeConfig : MonoBehaviour
                 addTeam[teams].visible = true;
                 team[teams].visible = true;
                 removePlayerTeam[teams].visible = true;
+            }
+        };
+        randomizeTeamMember.clicked += () =>
+        {
+            // get all player
+            List<string> player = new List<string>();
+            foreach (DropdownField t in team)
+            {
+                foreach (string p in t.choices) 
+                {
+                    player.Add(p);
+                }
+            }
+            // remove team entrys
+            foreach (DropdownField t in team)
+            {
+                t.choices.Clear();
+            }
+            // split player to teams
+            int amountTeams = Int32.Parse(amountTeams_TextBox.text);            
+            int amountPeopleInTeam = player.Count / amountTeams;
+            int randomIndex;
+            for (int i = 0; i < amountTeams - 1; i++) 
+            {
+                for (int j = 0; j < amountPeopleInTeam; j++)
+                {
+                    randomIndex = Random.Range(0, player.Count);
+                    team[i].choices.Add(player[randomIndex]);
+                    player.RemoveAt(randomIndex);
+                }
+            }
+            while (player.Count > 0)
+            {
+                team[amountTeams - 1].choices.Add(player[0]);
+                player.RemoveAt(0);
             }
         };
         for (int i = 0; i < GameState.maxPlayer; i++)

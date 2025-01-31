@@ -14,6 +14,7 @@
     <ui:Label tabindex="-1" text="Amount teams:" display-tooltip-when-elided="true" name="AmountTeamsLabel" style="position: absolute; left: 10px; top: 100px; height: 33px;" />
     <ui:Instance template="Switcher" name="AmountTeams" style="display: flex; height: 40px; position: absolute; left: 10px; width: 200px; top: 140px;" />
     <ui:DropdownField label="Player" index="0" name="Player" focusable="false" style="display: flex; position: absolute; top: 190px; left: 10px; width: 500px; height: 40px;" />
+    <ui:Button text="Randomize team member" name="Randomize" style="position: absolute; top: 190px; left: 520px; height: 40px;" />
     <ui:Button text="Add to team 1" display-tooltip-when-elided="true" name="AddTeam1" focusable="false" style="height: 40px; position: absolute; left: 10px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
     <ui:Button text="Add to team 2" display-tooltip-when-elided="true" name="AddTeam2" focusable="false" style="height: 40px; position: absolute; left: 260px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
     <ui:Button text="Add to team 3" display-tooltip-when-elided="true" name="AddTeam3" focusable="false" style="height: 40px; position: absolute; left: 510px; top: 240px; width: 200px; display: flex; visibility: hidden;" />
