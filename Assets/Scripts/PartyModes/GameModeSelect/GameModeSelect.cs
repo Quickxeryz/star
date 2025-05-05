@@ -16,6 +16,7 @@ public class GameModeSelect : MonoBehaviour
         songsLoaded = root.Q<Label>("SongsLoaded");
         Button classic = root.Q<Button>("Classic");
         Button together = root.Q<Button>("Together");
+        Button duet = root.Q<Button>("Duet");
         Button back = root.Q<Button>("Back");
         // set up functions
         classic.clicked += () =>
@@ -67,7 +68,58 @@ public class GameModeSelect : MonoBehaviour
                 } 
             } else
             {
-                together.text = "Every Team needs at least 2 people for this Gamemode";
+                together.text = "Together: Every team needs at least 2 people for this gamemode!";
+            }
+        };
+        duet.clicked += () =>
+        {
+            bool ok = true;
+            // check for max amount singer
+            if (GameState.amountPlayer * 2 > GameState.maxPlayer)
+            {
+                ok = false;
+                duet.text = "Duet: The amount of teams must be <= 3!";
+            }
+            if (ok) 
+            {
+                // check for amount team member
+                foreach (Team t in GameState.teams)
+                {
+                    if (t.players.Count < 2)
+                    {
+                        ok = false;
+                        duet.text = "Duet: Every team needs at least 2 people for this gamemode!";
+                    }
+                }
+            }
+            if (ok)
+            {
+                GameState.amountPlayer = GameState.amountPlayer * 2;
+                if (GameState.songsLoaded)
+                {
+                    GameState.currentPartyMode = PartyMode.Duet;
+                    GameState.currentGameMode = GameMode.Duet;
+                    GameState.partyModeSongs = new List<SongData>();
+                    // exclude only main singer songs
+                    foreach (SongData song in GameState.songs)
+                    {
+                        if (song.amountVoices > 1)
+                        {
+                            GameState.partyModeSongs.Add(song);
+                        }
+                    }
+                    // set voice to first
+                    for (int i = 0; i < GameState.amountPlayer; i += 2)
+                    {
+                        GameState.currentVoice[i] = 1;
+                    }
+                    // set voice to second
+                    for (int i = 1; i < GameState.amountPlayer; i += 2)
+                    {
+                        GameState.currentVoice[i] = 2;
+                    }
+                    SceneManager.LoadScene("ChoosenSong");
+                }
             }
         };
         back.clicked += () =>

@@ -10,6 +10,7 @@ public class SongEnd : MonoBehaviour
     {
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         PlayerProfile[] player = new PlayerProfile[GameState.amountPlayer];
+        PlayerProfile[] partner;
         Button continue_ = root.Q<Button>("Continue");
         // set button functionality
         continue_.clicked += () =>
@@ -21,11 +22,13 @@ public class SongEnd : MonoBehaviour
                     break;
                 case PartyMode.Classic:
                 case PartyMode.Together:
+                case PartyMode.Duet:
                     // calculate team points
                     int x;
                     int y;
                     bool found;
-                    for (int i = 0; i < GameState.amountPlayer; i++)
+                    int last_points = 0;
+                    for (int i = 0; i < player.Length; i++)
                     {
                         found = false;
                         x = 0;
@@ -36,7 +39,16 @@ public class SongEnd : MonoBehaviour
                             {
                                 if (GameState.teams[x].players[y] == player[i])
                                 {
-                                    GameState.teams[x].points += GameState.amountPlayer - i - 1;
+                                    // handle draw
+                                    if (i > 0 && player[i - 1].points == player[i].points)
+                                    {
+                                        GameState.teams[x].points += last_points;
+                                    }
+                                    else
+                                    {
+                                        GameState.teams[x].points += player.Length - i - 1;
+                                        last_points = player.Length - i - 1;
+                                    }
                                     found = true;
                                 }
                                 y++;
@@ -60,35 +72,68 @@ public class SongEnd : MonoBehaviour
                     break;
             }
         };
-        for (int i = 0; i < GameState.amountPlayer; i++)
+        if (GameState.currentPartyMode == PartyMode.Duet)
         {
-            player[i] = GameState.profiles[GameState.currentProfileIndex[i]];
-        }
-        PlayerProfile[] partner = new PlayerProfile[GameState.amountPlayer];
-        if (GameState.currentGameMode == GameMode.Together) {
+            player = new PlayerProfile[GameState.amountPlayer / 2];
+            for (int i = 0; i < GameState.amountPlayer; i += 2)
+            {
+                player[i / 2] = GameState.profiles[GameState.currentProfileIndex[i]];
+            }
+            partner = new PlayerProfile[GameState.amountPlayer / 2];
+            for (int i = 1; i < GameState.amountPlayer; i += 2)
+            {
+                partner[i / 2] = GameState.profiles[GameState.currentProfileIndex[i]];
+            }
+            // add points together
+            for (int i = 0; i < player.Length; i++)
+            {
+                player[i].points += partner[i].points;
+            }
+        } else
+        {
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
-                partner[i] = GameState.profiles[GameState.currentSecondProfileIndex[i]];
+                player[i] = GameState.profiles[GameState.currentProfileIndex[i]];
+            }
+            partner = new PlayerProfile[GameState.amountPlayer];
+            if (GameState.currentGameMode == GameMode.Together)
+            {
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    partner[i] = GameState.profiles[GameState.currentSecondProfileIndex[i]];
+                }
             }
         }
         // sort after points
-        if (GameState.currentGameMode == GameMode.Together)
+        if (GameState.currentGameMode == GameMode.Together
+        || GameState.currentGameMode == GameMode.Duet)
         {
             Array.Sort(player, partner);
         }
         Array.Sort(player);
         // print amount playing people with highest number
-        Label currentPlace;
-        for (int i = 0; i < GameState.amountPlayer; i++)
+        Label currentPlace;        
+        if (GameState.currentPartyMode == PartyMode.Duet)
         {
-            currentPlace = root.Q<Label>((i + 1).ToString());
-            if (GameState.currentGameMode == GameMode.Together)
+            for (int i = 0; i < player.Length; i++)
             {
+                currentPlace = root.Q<Label>((i + 1).ToString());
                 currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " and " + partner[i].name + " with " + player[i].points.ToString() + " Points.";
-            }
-            else
+            }            
+        } else
+        {
+            for (int i = 0; i < GameState.amountPlayer; i++)
             {
-                currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " with " + player[i].points.ToString() + " Points.";
+                currentPlace = root.Q<Label>((i + 1).ToString());
+                switch (GameState.currentPartyMode)
+                {
+                    case PartyMode.Classic:
+                        currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " with " + player[i].points.ToString() + " Points.";
+                        break;
+                    case PartyMode.Together:
+                        currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " and " + partner[i].name + " with " + player[i].points.ToString() + " Points.";
+                        break;
+                }
             }
         }
     }

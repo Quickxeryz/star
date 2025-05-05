@@ -10,14 +10,15 @@ namespace Classes
         None,
         ChooseSong,
         Classic,
-        Together
+        Together,
+        Duet
     }
 
     public enum GameMode
     {
         None = -1,
         Classic = 0,
-        Duett = 1,
+        Duet = 1,
         Together = 2
     }
 
@@ -29,8 +30,8 @@ namespace Classes
             {
                 case "Classic":
                     return GameMode.Classic;
-                case "Duett":
-                    return GameMode.Duett;
+                case "Duet":
+                    return GameMode.Duet;
                 case "Together":
                     return GameMode.Together;
                 default:
@@ -46,8 +47,8 @@ namespace Classes
                     return "None";
                 case GameMode.Classic:
                     return "Classic";
-                case GameMode.Duett:
-                    return "Duett";
+                case GameMode.Duet:
+                    return "Duet";
                 case GameMode.Together:
                     return "Together";
                 default:

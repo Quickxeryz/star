@@ -82,7 +82,7 @@ public class ChooseSong : MonoBehaviour
                     case GameMode.Classic:
                         SceneManager.LoadScene("GameScene");
                         break;
-                    case GameMode.Duett:
+                    case GameMode.Duet:
                         SceneManager.LoadScene("ChooseVoice");
                         break;
                     case GameMode.Together:
@@ -346,7 +346,7 @@ public class ChooseSong : MonoBehaviour
                     currentSongs.Add(song);
                 }
                 break;
-            case GameMode.Duett:
+            case GameMode.Duet:
                 // exclude only main singer songs
                 foreach (SongData song in GameState.songs)
                 {
