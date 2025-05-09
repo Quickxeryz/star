@@ -23,6 +23,7 @@ public class SongEnd : MonoBehaviour
                 case PartyMode.Classic:
                 case PartyMode.Together:
                 case PartyMode.Duet:
+                case PartyMode.Miau:
                     // calculate team points
                     int x;
                     int y;
@@ -125,12 +126,14 @@ public class SongEnd : MonoBehaviour
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
                 currentPlace = root.Q<Label>((i + 1).ToString());
-                switch (GameState.currentPartyMode)
+                switch (GameState.currentGameMode)
                 {
-                    case PartyMode.Classic:
+                    case GameMode.Classic:
+                    case GameMode.Duet:
+                    case GameMode.Miau:
                         currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " with " + player[i].points.ToString() + " Points.";
                         break;
-                    case PartyMode.Together:
+                    case GameMode.Together:
                         currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " and " + partner[i].name + " with " + player[i].points.ToString() + " Points.";
                         break;
                 }

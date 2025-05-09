@@ -269,6 +269,84 @@ public class GameLogic : MonoBehaviour
                 }
             }
         }
+        // swap text
+        if (GameState.currentGameMode == GameMode.Miau)
+        {
+            bool start_syllable = true;
+            for (int i = 0; i < songData.Length; i++)
+            {
+                for (int j = 0; j < songData[i].Count; j++)
+                {
+                    if (songData[i][j].kind != Kind.LineBreak && songData[i][j].kind != Kind.LineBreakExcact)
+                    {
+                        if (songData[i][j].syllable.StartsWith(' '))
+                        {
+                            if (songData[i][j].syllable.EndsWith(' '))
+                            {
+                                songData[i][j].syllable = " Miau ";
+                                start_syllable = true;
+                            }
+                            else
+                            {
+                                if (j + 1 == songData[i].Count || (j + 1 < songData[i].Count && (songData[i][j + 1].syllable.StartsWith(' ') || songData[i][j + 1].kind == Kind.LineBreak || songData[i][j + 1].kind == Kind.LineBreakExcact)))
+                                {
+                                    songData[i][j].syllable = " Miau";
+                                    start_syllable = true;
+                                }
+                                else
+                                {
+                                    songData[i][j].syllable = " Mi";
+                                    start_syllable = false;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (songData[i][j].syllable.EndsWith(' '))
+                            {
+                                if (start_syllable)
+                                {
+                                    songData[i][j].syllable = " Miau ";
+                                }
+                                else
+                                {
+                                    songData[i][j].syllable = "au ";
+                                    start_syllable = true;
+                                }
+                            }
+                            else
+                            {
+                                if (j + 1 == songData[i].Count || (j + 1 < songData[i].Count && (songData[i][j + 1].syllable.StartsWith(' ') || songData[i][j + 1].kind == Kind.LineBreak || songData[i][j + 1].kind == Kind.LineBreakExcact)))
+                                {
+                                    if (start_syllable)
+                                    {
+                                        songData[i][j].syllable = " Miau";
+                                    }
+                                    else
+                                    {
+                                        songData[i][j].syllable = "au";
+                                        start_syllable = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if (start_syllable)
+                                    {
+                                        songData[i][j].syllable = " Mi";
+                                        start_syllable = false;
+                                    }
+                                    else
+                                    {
+                                        songData[i][j].syllable = "au";
+                                        start_syllable = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         // set ui screen
         VisualElement r = GetComponent<UIDocument>().rootVisualElement;
         TemplateContainer root = new();

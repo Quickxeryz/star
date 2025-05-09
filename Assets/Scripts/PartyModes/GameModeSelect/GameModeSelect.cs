@@ -17,6 +17,7 @@ public class GameModeSelect : MonoBehaviour
         Button classic = root.Q<Button>("Classic");
         Button together = root.Q<Button>("Together");
         Button duet = root.Q<Button>("Duet");
+        Button miau = root.Q<Button>("Miau");
         Button back = root.Q<Button>("Back");
         // set up functions
         classic.clicked += () =>
@@ -120,6 +121,25 @@ public class GameModeSelect : MonoBehaviour
                     }
                     SceneManager.LoadScene("ChoosenSong");
                 }
+            }
+        };
+        miau.clicked += () =>
+        {
+            if (GameState.songsLoaded)
+            {
+                GameState.currentPartyMode = PartyMode.Miau;
+                GameState.currentGameMode = GameMode.Miau;
+                GameState.partyModeSongs = new List<SongData>();
+                // all songs 
+                foreach (SongData song in GameState.songs)
+                {
+                    GameState.partyModeSongs.Add(song);
+                }
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    GameState.currentVoice[i] = 1;
+                }
+                SceneManager.LoadScene("ChoosenSong");
             }
         };
         back.clicked += () =>

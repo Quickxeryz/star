@@ -80,6 +80,7 @@ public class ChooseSong : MonoBehaviour
                 }
                 switch (GameState.currentGameMode) { 
                     case GameMode.Classic:
+                    case GameMode.Miau:
                         SceneManager.LoadScene("GameScene");
                         break;
                     case GameMode.Duet:
@@ -177,7 +178,7 @@ public class ChooseSong : MonoBehaviour
         };
         gameMode.Q<Button>("Right").clicked += () => {
             int gameModeNumber = (int)GameState.currentGameMode;
-            if (gameModeNumber < 2)
+            if (gameModeNumber < Enum.GetNames(typeof(GameMode)).Length - 2)
             {
                 gameModeNumber += 1;
                 GameState.currentGameMode = (GameMode)gameModeNumber;
@@ -340,6 +341,7 @@ public class ChooseSong : MonoBehaviour
         {
             case GameMode.Classic:
             case GameMode.Together:
+            case GameMode.Miau:
                 // all songs
                 foreach (SongData song in GameState.songs)
                 {

@@ -11,7 +11,8 @@ namespace Classes
         ChooseSong,
         Classic,
         Together,
-        Duet
+        Duet,
+        Miau
     }
 
     public enum GameMode
@@ -19,7 +20,8 @@ namespace Classes
         None = -1,
         Classic = 0,
         Duet = 1,
-        Together = 2
+        Together = 2,
+        Miau = 3
     }
 
     public static class GameModeFunctions
@@ -34,6 +36,8 @@ namespace Classes
                     return GameMode.Duet;
                 case "Together":
                     return GameMode.Together;
+                case "Miau":
+                    return GameMode.Miau;
                 default:
                     return GameMode.None;
             }
@@ -51,6 +55,8 @@ namespace Classes
                     return "Duet";
                 case GameMode.Together:
                     return "Together";
+                case GameMode.Miau:
+                    return "Miau";
                 default:
                     return "ERROR";
             }

@@ -32,6 +32,7 @@ public class ChoosenSong : MonoBehaviour
         switch (GameState.currentPartyMode)
         {
             case PartyMode.Classic:
+            case PartyMode.Miau:
                 Destroy(GameObject.Find("Together"));
                 root = GameObject.Find("Classic").GetComponent<UIDocument>().rootVisualElement;
                 break;
@@ -245,6 +246,7 @@ public class ChoosenSong : MonoBehaviour
         }
         switch (GameState.currentPartyMode) {
             case PartyMode.Classic:
+            case PartyMode.Miau:
                 for (int i = 0; i < GameState.teams.Count; i++)
                 {
                     foreach (PlayerProfile p in GameState.teams[i].players)
