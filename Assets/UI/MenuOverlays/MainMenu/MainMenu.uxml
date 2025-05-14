@@ -6,6 +6,6 @@
     <ui:Button text="Start Server" display-tooltip-when-elided="true" name="Server" style="position: absolute; height: 10%; width: 10%; top: auto; left: 31%; bottom: 1%;" />
     <ui:Button text="Player Profiles" display-tooltip-when-elided="true" name="Playerprofiles" style="position: absolute; height: 10%; width: 10%; top: auto; left: auto; bottom: 1%; right: 31%;" />
     <ui:Button text="Party Modes" display-tooltip-when-elided="true" name="GameModes" selectable="false" style="position: absolute; height: 10%; width: 10%; top: auto; left: 16%; bottom: 1%;" />
-    <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Website" style="position: absolute; left: 31%; -unity-text-align: upper-left; bottom: 15%;" />
+    <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="Website" style="position: absolute; left: 31%; -unity-text-align: upper-left; bottom: 15%; font-size: 28px;" />
     <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="SongsLoaded" style="position: absolute; left: 1%; -unity-text-align: upper-left; bottom: 15%;" />
 </ui:UXML>

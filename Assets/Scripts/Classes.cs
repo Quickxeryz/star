@@ -12,7 +12,7 @@ namespace Classes
         Classic,
         Together,
         Duet,
-        Miau
+        Meow
     }
 
     public enum GameMode
@@ -21,7 +21,7 @@ namespace Classes
         Classic = 0,
         Duet = 1,
         Together = 2,
-        Miau = 3
+        Meow = 3
     }
 
     public static class GameModeFunctions
@@ -36,8 +36,8 @@ namespace Classes
                     return GameMode.Duet;
                 case "Together":
                     return GameMode.Together;
-                case "Miau":
-                    return GameMode.Miau;
+                case "Meow":
+                    return GameMode.Meow;
                 default:
                     return GameMode.None;
             }
@@ -55,8 +55,8 @@ namespace Classes
                     return "Duet";
                 case GameMode.Together:
                     return "Together";
-                case GameMode.Miau:
-                    return "Miau";
+                case GameMode.Meow:
+                    return "Meow";
                 default:
                     return "ERROR";
             }
@@ -323,11 +323,11 @@ namespace Classes
             // + 1 because of timer jumping back when last frames skips end time
             if (currentPlayerIsAudioSource)
             {
-                return audioSource.clip.length - (audioSource.time + 1) < 0;
+                return audioSource.clip.length - (audioSource.time) < 0;
             }
             else
             {
-                return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time + 1) < 0;
+                return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time) < 0;
             }
         }
 

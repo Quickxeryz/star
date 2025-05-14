@@ -17,7 +17,7 @@ public class GameModeSelect : MonoBehaviour
         Button classic = root.Q<Button>("Classic");
         Button together = root.Q<Button>("Together");
         Button duet = root.Q<Button>("Duet");
-        Button miau = root.Q<Button>("Miau");
+        Button miau = root.Q<Button>("Meow");
         Button back = root.Q<Button>("Back");
         // set up functions
         classic.clicked += () =>
@@ -127,8 +127,8 @@ public class GameModeSelect : MonoBehaviour
         {
             if (GameState.songsLoaded)
             {
-                GameState.currentPartyMode = PartyMode.Miau;
-                GameState.currentGameMode = GameMode.Miau;
+                GameState.currentPartyMode = PartyMode.Meow;
+                GameState.currentGameMode = GameMode.Meow;
                 GameState.partyModeSongs = new List<SongData>();
                 // all songs 
                 foreach (SongData song in GameState.songs)

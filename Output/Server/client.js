@@ -43,7 +43,7 @@ class Microphone {
 }
 
 function autoCorrelate(buffer, sampleRate) {
-    // Perform a quick root-mean-square to see if we have enough signal
+    // root-mean-square
     var SIZE = buffer.length;
     var sumOfSquares = 0;
     for (var i = 0; i < SIZE; i++) {
@@ -51,7 +51,7 @@ function autoCorrelate(buffer, sampleRate) {
         sumOfSquares += val * val;
     }
     var rootMeanSquare = Math.sqrt(sumOfSquares / SIZE)
-    if (rootMeanSquare < 0.025) {
+    if (rootMeanSquare < 0.02) {
         return -1;
     }
     // Find a range in the buffer where the values are below a given threshold.

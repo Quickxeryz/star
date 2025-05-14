@@ -37,6 +37,11 @@ public class GameLogic : MonoBehaviour
             node = Node.C;
             syllable = "";
         }
+
+        public string to_string()
+        {
+            return "kind: " + this.kind.ToString() + "; appearing: " + this.appearing.ToString() + "; length: " + this.length.ToString() + "; node" + this.node.ToString() + "; syllable: " + this.syllable.ToString();
+        }
     }
 
     class TextObject 
@@ -270,7 +275,7 @@ public class GameLogic : MonoBehaviour
             }
         }
         // swap text
-        if (GameState.currentGameMode == GameMode.Miau)
+        if (GameState.currentGameMode == GameMode.Meow)
         {
             bool start_syllable = true;
             for (int i = 0; i < songData.Length; i++)
@@ -283,19 +288,19 @@ public class GameLogic : MonoBehaviour
                         {
                             if (songData[i][j].syllable.EndsWith(' '))
                             {
-                                songData[i][j].syllable = " Miau ";
+                                songData[i][j].syllable = " Meow ";
                                 start_syllable = true;
                             }
                             else
                             {
                                 if (j + 1 == songData[i].Count || (j + 1 < songData[i].Count && (songData[i][j + 1].syllable.StartsWith(' ') || songData[i][j + 1].kind == Kind.LineBreak || songData[i][j + 1].kind == Kind.LineBreakExcact)))
                                 {
-                                    songData[i][j].syllable = " Miau";
+                                    songData[i][j].syllable = " Meow";
                                     start_syllable = true;
                                 }
                                 else
                                 {
-                                    songData[i][j].syllable = " Mi";
+                                    songData[i][j].syllable = " Me";
                                     start_syllable = false;
                                 }
                             }
@@ -306,11 +311,11 @@ public class GameLogic : MonoBehaviour
                             {
                                 if (start_syllable)
                                 {
-                                    songData[i][j].syllable = " Miau ";
+                                    songData[i][j].syllable = " Meow ";
                                 }
                                 else
                                 {
-                                    songData[i][j].syllable = "au ";
+                                    songData[i][j].syllable = "-ow ";
                                     start_syllable = true;
                                 }
                             }
@@ -320,11 +325,11 @@ public class GameLogic : MonoBehaviour
                                 {
                                     if (start_syllable)
                                     {
-                                        songData[i][j].syllable = " Miau";
+                                        songData[i][j].syllable = " Meow";
                                     }
                                     else
                                     {
-                                        songData[i][j].syllable = "au";
+                                        songData[i][j].syllable = "-ow";
                                         start_syllable = true;
                                     }
                                 }
@@ -332,12 +337,12 @@ public class GameLogic : MonoBehaviour
                                 {
                                     if (start_syllable)
                                     {
-                                        songData[i][j].syllable = " Mi";
+                                        songData[i][j].syllable = " Me";
                                         start_syllable = false;
                                     }
                                     else
                                     {
-                                        songData[i][j].syllable = "au";
+                                        songData[i][j].syllable = "-ow";
                                         start_syllable = true;
                                     }
                                 }

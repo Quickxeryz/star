@@ -80,7 +80,7 @@ public class ChooseSong : MonoBehaviour
                 }
                 switch (GameState.currentGameMode) { 
                     case GameMode.Classic:
-                    case GameMode.Miau:
+                    case GameMode.Meow:
                         SceneManager.LoadScene("GameScene");
                         break;
                     case GameMode.Duet:
@@ -341,7 +341,7 @@ public class ChooseSong : MonoBehaviour
         {
             case GameMode.Classic:
             case GameMode.Together:
-            case GameMode.Miau:
+            case GameMode.Meow:
                 // all songs
                 foreach (SongData song in GameState.songs)
                 {
