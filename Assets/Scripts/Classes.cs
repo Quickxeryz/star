@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Video;
 
 namespace Classes
@@ -254,6 +255,7 @@ namespace Classes
         public AudioSource audioSource;
         public VideoPlayer videoPlayer;
         public bool currentPlayerIsAudioSource;
+        public bool started = false;
 
         public SongPlayer(AudioSource audioSource)
         {
@@ -320,14 +322,13 @@ namespace Classes
 
         public bool HasFinished()
         {
-            // + 1 because of timer jumping back when last frames skips end time
             if (currentPlayerIsAudioSource)
             {
-                return audioSource.clip.length - (audioSource.time) < 0;
+                return (audioSource.clip.length - audioSource.time < 0) || (started && audioSource.time == 0);
             }
             else
             {
-                return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time) < 0;
+                return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time) < 0 || (started && videoPlayer.time == 0);
             }
         }
 

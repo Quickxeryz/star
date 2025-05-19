@@ -44,7 +44,7 @@ public class ChooseVoice : MonoBehaviour
             playerX_Left[iCopy].clicked += () =>
             {
                 int voice = Int32.Parse(playerX_TextBox[iCopy].text);
-                if (voice > 1)
+                if (voice > 0)
                 {
                     playerX_TextBox[iCopy].text = (voice - 1).ToString();
                 }
@@ -52,7 +52,7 @@ public class ChooseVoice : MonoBehaviour
             playerX_Right[iCopy].clicked += () =>
             {
                 int voice = Int32.Parse(playerX_TextBox[iCopy].text);
-                if (voice < GameState.currentSong.amountVoices)
+                if (voice < GameState.currentSong.amountVoices - 1)
                 {
                     playerX_TextBox[iCopy].text = (voice + 1).ToString();
                 }
@@ -64,6 +64,10 @@ public class ChooseVoice : MonoBehaviour
             {
                 GameState.currentVoice[i] = Int32.Parse(playerX_TextBox[i].text);
             }
+            for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+            {
+                GameState.currentVoice[i] = -1;
+            }
             SceneManager.LoadScene("GameScene");
         };
         back.clicked += () =>
@@ -74,7 +78,7 @@ public class ChooseVoice : MonoBehaviour
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
             playerX_Label[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
-            playerX_TextBox[i].text = "1";
+            playerX_TextBox[i].text = "0";
         }
         // set visibility of player settings
         for (int i = 0; i < GameState.amountPlayer; i++)

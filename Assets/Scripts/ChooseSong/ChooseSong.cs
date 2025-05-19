@@ -74,9 +74,13 @@ public class ChooseSong : MonoBehaviour
                     }
                     j++;
                 }
-                for (j = 0; j < GameState.currentVoice.Length; j++)
+                for (j = 0; j < GameState.amountPlayer; j++)
                 {
-                    GameState.currentVoice[j] = 1;
+                    GameState.currentVoice[j] = 0;
+                }
+                for (j = GameState.amountPlayer; j < GameState.currentVoice.Length; j++)
+                {
+                    GameState.currentVoice[j] = -1;
                 }
                 switch (GameState.currentGameMode) { 
                     case GameMode.Classic:

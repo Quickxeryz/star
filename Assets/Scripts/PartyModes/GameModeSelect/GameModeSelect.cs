@@ -32,9 +32,14 @@ public class GameModeSelect : MonoBehaviour
                 {
                     GameState.partyModeSongs.Add(song);
                 }
+                // update voices
                 for (int i = 0; i < GameState.amountPlayer; i++)
                 {
-                    GameState.currentVoice[i] = 1;
+                    GameState.currentVoice[i] = 0;
+                }
+                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+                {
+                    GameState.currentVoice[i] = -1;
                 }
                 SceneManager.LoadScene("ChoosenSong");
             }
@@ -60,10 +65,14 @@ public class GameModeSelect : MonoBehaviour
                     {
                         GameState.partyModeSongs.Add(song);
                     }
-                    // set voice to first
+                    // update voices
                     for (int i = 0; i < GameState.amountPlayer; i++)
                     {
-                        GameState.currentVoice[i] = 1;
+                        GameState.currentVoice[i] = 0;
+                    }
+                    for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+                    {
+                        GameState.currentVoice[i] = -1;
                     }
                     SceneManager.LoadScene("ChoosenSong");
                 } 
@@ -109,15 +118,18 @@ public class GameModeSelect : MonoBehaviour
                             GameState.partyModeSongs.Add(song);
                         }
                     }
-                    // set voice to first
+                    // update voices
                     for (int i = 0; i < GameState.amountPlayer; i += 2)
+                    {
+                        GameState.currentVoice[i] = 0;
+                    }
+                    for (int i = 1; i < GameState.amountPlayer; i += 2)
                     {
                         GameState.currentVoice[i] = 1;
                     }
-                    // set voice to second
-                    for (int i = 1; i < GameState.amountPlayer; i += 2)
+                    for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
                     {
-                        GameState.currentVoice[i] = 2;
+                        GameState.currentVoice[i] = -1;
                     }
                     SceneManager.LoadScene("ChoosenSong");
                 }
@@ -135,9 +147,14 @@ public class GameModeSelect : MonoBehaviour
                 {
                     GameState.partyModeSongs.Add(song);
                 }
+                // update voices
                 for (int i = 0; i < GameState.amountPlayer; i++)
                 {
-                    GameState.currentVoice[i] = 1;
+                    GameState.currentVoice[i] = 0;
+                }
+                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+                {
+                    GameState.currentVoice[i] = -1;
                 }
                 SceneManager.LoadScene("ChoosenSong");
             }

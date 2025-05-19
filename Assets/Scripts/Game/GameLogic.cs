@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using Classes;
 using System.Threading;
+using System.Collections;
 
 public class GameLogic : MonoBehaviour
 {
@@ -431,51 +432,67 @@ public class GameLogic : MonoBehaviour
             }
             nodeArrows[i] = roots[i].Q<VisualElement>("Node");
         }
-        //Getting first song lines
+        // Getting first song lines
         int textCounter;
         string text;
-        for (int i = 0; i < GameState.currentSong.amountVoices; i++)
+        ArrayList voices = new ArrayList();
+        // Collect used voices
+        foreach (int v in GameState.currentVoice)
+        {
+            if (v != -1 && voices.IndexOf(v) == -1)
+            {
+                voices.Add(v);
+            }            
+        }
+        // Set first lines
+        foreach (int v in  voices)
         {
             textCounter = 1;
             text = "";
             while (textCounter < 3)
             {
-                if (songData[i][songDataNewLineIndex[i]].kind != Kind.LineBreak && songData[i][songDataNewLineIndex[i]].kind != Kind.LineBreakExcact)
+                if (songData[v][songDataNewLineIndex[v]].kind != Kind.LineBreak && songData[v][songDataNewLineIndex[v]].kind != Kind.LineBreakExcact)
                 {
                     // Combininig text based on kind of syllable
-                    switch (songData[i][songDataNewLineIndex[i]].kind)
+                    switch (songData[v][songDataNewLineIndex[v]].kind)
                     {
                         case Kind.Normal:
-                            text += songData[i][songDataNewLineIndex[i]].syllable;
+                            text += songData[v][songDataNewLineIndex[v]].syllable;
                             break;
                         case Kind.Free:
-                            text += "<i>" + songData[i][songDataNewLineIndex[i]].syllable + "</i>";
+                            text += "<i>" + songData[v][songDataNewLineIndex[v]].syllable + "</i>";
                             break;
                         case Kind.Golden:
-                            text += colorGoldenToSing + songData[i][songDataNewLineIndex[i]].syllable + "</color>";
+                            text += colorGoldenToSing + songData[v][songDataNewLineIndex[v]].syllable + "</color>";
                             break;
                     }
                     // Setting syllables of first line
                     if (textCounter == 1)
                     {
-                        if (i == 0)
+                        if (v == 0)
                         {
-                            syllablesLine1Bottom.Add(songData[i][songDataNewLineIndex[i]]);
+                            syllablesLine1Bottom.Add(songData[v][songDataNewLineIndex[v]]);
                         } else
                         {
-                            syllablesLine1Top.Add(songData[i][songDataNewLineIndex[i]]);
+                            if (v == 1)
+                            {
+                                syllablesLine1Top.Add(songData[v][songDataNewLineIndex[v]]);
+                            }                                
                         }
                     }
                     // Setting syllables of second line
                     else if (textCounter == 2)
                     {
-                        if (i == 0)
+                        if (v == 0)
                         {
-                            syllablesLine2Bottom.Add(songData[0][songDataNewLineIndex[i]]);
+                            syllablesLine2Bottom.Add(songData[v][songDataNewLineIndex[v]]);
                         }
                         else
                         {
-                            syllablesLine2Top.Add(songData[1][songDataNewLineIndex[i]]);
+                            if (v == 1)
+                            {
+                                syllablesLine2Top.Add(songData[v][songDataNewLineIndex[v]]);
+                            }
                         }
                     }
                 }
@@ -484,11 +501,11 @@ public class GameLogic : MonoBehaviour
                     if (textCounter == 1)
                     {
                         // Setting beatEnd for node shower
-                        endBeatLine1[i] = songData[i][songDataNewLineIndex[i]].appearing;                        
+                        endBeatLine1[v] = songData[v][songDataNewLineIndex[v]].appearing;                        
                     }
                     else
                     {
-                        if (i == 0)
+                        if (v == 0)
                         {
                             textLine2Bottom = CreateSyllabel(text);
                             textLine2Bottom.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, -700f, 0f);
@@ -496,19 +513,22 @@ public class GameLogic : MonoBehaviour
                         }
                         else
                         {
-                            textLine2Top = CreateSyllabel(text);
-                            textLine2Top.gameObject.transform.localPosition = new Vector3(500f - textLine2Top.textMesh.preferredWidth / 2, 275f, 0f);
-                            textLine2Top.textMesh.ForceMeshUpdate();
+                            if (v == 1)
+                            {
+                                textLine2Top = CreateSyllabel(text);
+                                textLine2Top.gameObject.transform.localPosition = new Vector3(500f - textLine2Top.textMesh.preferredWidth / 2, 275f, 0f);
+                                textLine2Top.textMesh.ForceMeshUpdate();
+                            }
                         }
                     }
                     text = "";
                     textCounter++;
                 }
-                songDataNewLineIndex[i]++;
+                songDataNewLineIndex[v]++;
             }
-            beatSumLine1[i] = endBeatLine1[i] - startBeatLine1[i];
+            beatSumLine1[v] = endBeatLine1[v] - startBeatLine1[v];
         }
-        if (GameState.amountPlayer > 1 && GameState.currentSong.amountVoices == 1)
+        if (GameState.amountPlayer > 1 && voices.Count == 1)
         {
             textLine2Top = CreateSyllabel(textLine2Bottom.textMesh.text);
             textLine2Top.gameObject.transform.localPosition = new Vector3(500f - textLine2Bottom.textMesh.preferredWidth / 2, 275f, 0f);
@@ -518,22 +538,22 @@ public class GameLogic : MonoBehaviour
         float currentPercent;
         int beatSum;
         VisualElement nodeBox;
-        for (int i = 0; i < GameState.currentSong.amountVoices; i++)
+        foreach (int v in voices)
         {
             index = 0;
-            while (songData[i][index].kind != Kind.LineBreak && songData[i][index].kind != Kind.LineBreakExcact)
+            while (songData[v][index].kind != Kind.LineBreak && songData[v][index].kind != Kind.LineBreakExcact)
             {
-                currentPercent = (songData[i][index].appearing * 100) / beatSumLine1[i];
+                currentPercent = (songData[v][index].appearing * 100) / beatSumLine1[v];
                 for (int j = 0; j < GameState.amountPlayer; j++)
                 {
-                    if (GameState.currentVoice[j] == i + 1)
+                    if (GameState.currentVoice[j] == v)
                     {
                         nodeBox = new VisualElement();
                         nodeBox.AddToClassList("nodeBox");
-                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[i][index].node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[v][index].node) * 100) / nodeTextureHeight - nodeHeightOffset);
                         // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
                         nodeBox.style.left = Length.Percent(currentPercent);
-                        nodeBox.style.width = Length.Percent((songData[i][index].appearing + songData[i][index].length) * 100 / beatSumLine1[i] - currentPercent);
+                        nodeBox.style.width = Length.Percent((songData[v][index].appearing + songData[v][index].length) * 100 / beatSumLine1[v] - currentPercent);
                         nodeBoxes[j].Add(nodeBox);
                     } 
                 }
@@ -542,25 +562,25 @@ public class GameLogic : MonoBehaviour
             // calculating points per beat
             beatSum = 0;
             // getting sum of beats (golden notes double)
-            for (index = 0; index < songData[i].Count; index++)
+            for (index = 0; index < songData[v].Count; index++)
             {
-                if (songData[i][index].kind != Kind.LineBreak && songData[i][index].kind != Kind.LineBreakExcact)
+                if (songData[v][index].kind != Kind.LineBreak && songData[v][index].kind != Kind.LineBreakExcact)
                 {
                     // handling different nodes 
-                    switch (songData[i][index].kind)
+                    switch (songData[v][index].kind)
                     {
                         case Kind.Normal:
-                            beatSum += songData[i][index].length;
+                            beatSum += songData[v][index].length;
                             break;
                         case Kind.Golden:
-                            beatSum += songData[i][index].length * 2;
+                            beatSum += songData[v][index].length * 2;
                             break;
                         default:
                             break;
                     }
                 }
             }
-            pointsPerBeat[i] = 10000f / beatSum;
+            pointsPerBeat[v] = 10000f / beatSum;
         }
         // set song player
         if (GameState.currentSong.pathToMusic != "" && GameState.currentSong.pathToMusic != GameState.currentSong.pathToVideo)
@@ -686,6 +706,7 @@ public class GameLogic : MonoBehaviour
             // if song not ended
             if (!songPlayer.HasFinished())
             {
+                songPlayer.started = true;
                 double songPercent = (songPlayer.GetTime() * 100.0) / songLength;
                 // update timeline
                 currentTimePointer.anchoredPosition = new Vector3((float)(10.0 + (1895.0 * songPercent) / 100.0), -317.0f, 0f);
@@ -706,7 +727,7 @@ public class GameLogic : MonoBehaviour
                         Length leftArrowPercent = Length.Percent(((currentTimeStamp - startBeatLine1[i]) * 100) / beatSumLine1[i] - nodeArrowWidth);
                         for (int j = 0; j < GameState.amountPlayer; j++)
                         {
-                            if (GameState.currentVoice[j] == i + 1)
+                            if (GameState.currentVoice[j] == i)
                             {
                                 if (leftArrowPercent.value < 0)
                                 {
@@ -992,7 +1013,7 @@ public class GameLogic : MonoBehaviour
                                 // calculating score and updating UI
                                 for (int j = 0; j < GameState.amountPlayer; j++)
                                 {
-                                    if (GameState.currentVoice[j] == i + 1)
+                                    if (GameState.currentVoice[j] == i)
                                     {
                                         if (currentTimeStamp != lastTimeStamps[j])
                                         {
@@ -1266,7 +1287,7 @@ public class GameLogic : MonoBehaviour
                             // calculating node line data
                             for (int j = 0; j < GameState.amountPlayer; j++)
                             {
-                                if (GameState.currentVoice[j] == i + 1)
+                                if (GameState.currentVoice[j] == i)
                                 {
                                     nodeBoxes[j].Clear();
                                 }
@@ -1276,7 +1297,7 @@ public class GameLogic : MonoBehaviour
                                 currentPercent = ((songData[i][nodesNewLineIndex].appearing - startBeatLine1[i]) * 100) / beatSumLine1[i];
                                 for (int j = 0; j < GameState.amountPlayer; j++)
                                 {
-                                    if (GameState.currentVoice[j] == i + 1)
+                                    if (GameState.currentVoice[j] == i)
                                     {
                                         nodeBox = new VisualElement();
                                         nodeBox.AddToClassList("nodeBox");
@@ -1296,7 +1317,7 @@ public class GameLogic : MonoBehaviour
                         // reset player node arrow to start
                         for (int j = 0; j < GameState.amountPlayer; j++)
                         {
-                            if (GameState.currentVoice[j] == i + 1)
+                            if (GameState.currentVoice[j] == i)
                             {
                                 nodeArrows[j].style.left = 0;
                             }
