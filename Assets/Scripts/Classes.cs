@@ -324,11 +324,11 @@ namespace Classes
         {
             if (currentPlayerIsAudioSource)
             {
-                return (audioSource.clip.length - audioSource.time < 0) || (started && audioSource.time == 0);
+                return audioSource.clip.length - (audioSource.time + 0.1) <= 0 || (started && audioSource.time == 0);
             }
             else
             {
-                return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time) < 0 || (started && videoPlayer.time == 0);
+                return (videoPlayer.frameCount / videoPlayer.frameRate) - (videoPlayer.time + 0.1) <= 0 || (started && videoPlayer.time == 0);
             }
         }
 

@@ -83,12 +83,19 @@ public class ChooseSong : MonoBehaviour
                     GameState.currentVoice[j] = -1;
                 }
                 switch (GameState.currentGameMode) { 
-                    case GameMode.Classic:
                     case GameMode.Meow:
                         SceneManager.LoadScene("GameScene");
                         break;
                     case GameMode.Duet:
-                        SceneManager.LoadScene("ChooseVoice");
+                    case GameMode.Classic:
+                        if (GameState.currentSong.amountVoices > 1)
+                        {
+                            SceneManager.LoadScene("ChooseVoice");
+                        }
+                        else 
+                        {
+                            SceneManager.LoadScene("GameScene");
+                        }
                         break;
                     case GameMode.Together:
                         SceneManager.LoadScene("ChoosePartner");
