@@ -1,7 +1,7 @@
 # Star
-Star is a game for singing songs against other players locally. You can use a normal microphone or play it with youre smartphone or other devices with browser support.
+Star is Sing-Star like game for singing songs with youre friends locally. You can use a normal microphone or play it with your smartphone or any other device with browser support and a microphone.
 
 ## Other Files To Inform
-- Informations about the song file format: [Song file info](SongFile.md)
-- Informations about the server and the setup for the server: [Server info](Server.md)
-- Informations of the programm for developers: [Developer info](Developer.md)
+- Information about the song file format: [Song file info](SongFile.md)
+- Information about the server and the setup for the server: [Server info](Server.md)
+- Information of the program for developers: [Developer info](Developer.md)
