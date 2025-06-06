@@ -285,7 +285,7 @@ public class GameLogic : MonoBehaviour
         {
             if (v != -1 && voices.IndexOf(v) == -1)
             {
-                voices.Add(v);
+                voices.Insert(0, v);
             }
         }
         // Swap text
