@@ -206,7 +206,6 @@ public class ChooseSong : MonoBehaviour
             GameState.currentGameMode = GameMode.Classic;
         }
         GameState.currentPartyMode = PartyMode.ChooseSong;
-        SetUpSongList();
         gameMode_TextBox.text = GameModeFunctions.GameModeToString(GameState.currentGameMode);
         // showing song list
         currentSongs = new List<SongData>(GameState.songs); ;
@@ -220,6 +219,7 @@ public class ChooseSong : MonoBehaviour
                 GameState.lastSongIndex = 0;
             }
         }
+        SetUpSongList();
         // Load Amount Player 
         playerAmount_TextBox.text = GameState.amountPlayer.ToString();
         for (int i = 0; i < GameState.maxPlayer; i++)

@@ -10,9 +10,6 @@ using System.IO;
 using System.Linq;
 using Classes;
 using System.Threading;
-using System.Web;
-using NUnit.Framework.Internal;
-using Unity.VisualScripting;
 
 public class GameLogic : MonoBehaviour
 {
@@ -773,7 +770,6 @@ public class GameLogic : MonoBehaviour
                                 {
                                     test += t.syllable;
                                 }
-                                Debug.Log(test);
                                 // Making syllable colored
                                 foreach (SyllableData s in syllablesLine1Bottom)
                                 {
