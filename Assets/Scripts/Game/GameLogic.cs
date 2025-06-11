@@ -522,6 +522,7 @@ public class GameLogic : MonoBehaviour
                 }
                 songDataNewLineIndex[voices[i]]++;
             }
+            startBeatLine[voices[i]] = songData[voices[i]][0].appearing;
             beatSumLine[voices[i]] = endBeatLine[voices[i]] - startBeatLine[voices[i]];
         }
         int index;
@@ -533,7 +534,7 @@ public class GameLogic : MonoBehaviour
             index = 0;
             while (songData[v][index].kind != Kind.LineBreak && songData[v][index].kind != Kind.LineBreakExcact)
             {
-                currentPercent = (songData[v][index].appearing * 100) / beatSumLine[v];
+                currentPercent = ((songData[v][index].appearing - startBeatLine[v]) * 100) / beatSumLine[v];
                 for (int j = 0; j < GameState.amountPlayer; j++)
                 {
                     if (GameState.currentVoice[j] == v)
@@ -543,7 +544,7 @@ public class GameLogic : MonoBehaviour
                         nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[v][index].node) * 100) / nodeTextureHeight - nodeHeightOffset);
                         // beatNumber/100 % = startbeat/x -> x in % = (startbeat*100)/beatNumber
                         nodeBox.style.left = Length.Percent(currentPercent);
-                        nodeBox.style.width = Length.Percent((songData[v][index].appearing + songData[v][index].length) * 100 / beatSumLine[v] - currentPercent);
+                        nodeBox.style.width = Length.Percent(((songData[v][index].appearing + songData[v][index].length - startBeatLine[v]) * 100) / beatSumLine[v] - currentPercent);
                         nodeBoxes[j].Add(nodeBox);
                     } 
                 }
@@ -1110,7 +1111,7 @@ public class GameLogic : MonoBehaviour
                             }
                             // set up time to start node shower
                             if (currentTimeStamp < startBeatLine[voices[i]])
-                            {
+                            {   
                                 if (i == 0)
                                 {
                                     if (textLine1Bottom.Count > 0)
