@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UnityEngine.Video;
+using Random = UnityEngine.Random;
 
 public class ChoosenSong : MonoBehaviour
 {
@@ -427,7 +428,7 @@ public class ChoosenSong : MonoBehaviour
 
     void RandomSong()
     {
-        int index = UnityEngine.Random.Range(0, GameState.partyModeSongs.Count);
+        int index = Random.Range(0, GameState.partyModeSongs.Count);
         GameState.currentSong = GameState.partyModeSongs[index];
         song.text = GameState.currentSong.artist + ": " + GameState.currentSong.title;
         // using audio for sound

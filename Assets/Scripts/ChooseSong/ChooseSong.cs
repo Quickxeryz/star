@@ -86,19 +86,24 @@ public class ChooseSong : MonoBehaviour
                     case GameMode.Meow:
                         SceneManager.LoadScene("GameScene");
                         break;
-                    case GameMode.Duet:
                     case GameMode.Classic:
                         if (GameState.currentSong.amountVoices > 1)
                         {
                             SceneManager.LoadScene("ChooseVoice");
                         }
-                        else 
+                        else
                         {
                             SceneManager.LoadScene("GameScene");
                         }
                         break;
+                    case GameMode.Duet:
+                        SceneManager.LoadScene("ChooseVoice");
+                        break;
                     case GameMode.Together:
                         SceneManager.LoadScene("ChoosePartner");
+                        break;
+                    case GameMode.Team:
+                        SceneManager.LoadScene("ChooseTeam");
                         break;
                 }
             };
@@ -156,23 +161,41 @@ public class ChooseSong : MonoBehaviour
                 if (text == "")
                 {
                     GameState.lastSongIndex = 0;
-                    currentSongs = new List<SongData>(GameState.partyModeSongs); ;
+                    SetUpSongList();
                 }
                 else
                 {
                     GameState.lastSongIndex = 0;
-                    currentSongs.Clear();
-                    foreach (SongData song in GameState.partyModeSongs)
+                    currentSongs = new List<SongData>();
+                    switch (GameState.currentGameMode)
                     {
-                        if (song.artist.ToLower().Contains(text))
-                        {
-                            currentSongs.Add(song);
-                        }
-                        else if (song.title.ToLower().Contains(text))
-                        {
-                            currentSongs.Add(song);
-                        }
-                    }
+                        case GameMode.Classic:
+                        case GameMode.Together:
+                        case GameMode.Meow:
+                        case GameMode.Team:
+                            // all songs
+                            foreach (SongData song in GameState.songs)
+                            {
+                                if (song.artist.ToLower().Contains(text) || song.title.ToLower().Contains(text))
+                                {
+                                    currentSongs.Add(song);
+                                }
+                            }
+                            break;
+                        case GameMode.Duet:
+                            // exclude only main singer songs
+                            foreach (SongData song in GameState.songs)
+                            {
+                                if (song.amountVoices > 1)
+                                {
+                                    if (song.artist.ToLower().Contains(text) || song.title.ToLower().Contains(text))
+                                    {
+                                        currentSongs.Add(song);
+                                    }
+                                }
+                            }
+                            break;
+                    }                    
                 }
                 UpdateSongList();
             }
@@ -353,6 +376,7 @@ public class ChooseSong : MonoBehaviour
             case GameMode.Classic:
             case GameMode.Together:
             case GameMode.Meow:
+            case GameMode.Team:
                 // all songs
                 foreach (SongData song in GameState.songs)
                 {

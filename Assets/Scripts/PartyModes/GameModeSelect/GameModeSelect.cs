@@ -53,6 +53,13 @@ public class GameModeSelect : MonoBehaviour
                 {
                     ok = false;
                 }
+                foreach (PlayerProfile p in t.players)
+                {
+                    if (p.useOnlineMic == false)
+                    {
+                        ok = false;
+                    }
+                }
             }
             if (ok) {
                 if (GameState.songsLoaded)
@@ -78,7 +85,7 @@ public class GameModeSelect : MonoBehaviour
                 } 
             } else
             {
-                together.text = "Together: Every team needs at least 2 people for this gamemode!";
+                together.text = "Together: Every team needs at least 2 people for this gamemode and every microphone needs to be online!";
             }
         };
         duet.clicked += () =>

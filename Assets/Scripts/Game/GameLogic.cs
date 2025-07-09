@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
+using Random = UnityEngine.Random;
 using TMPro;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.IO;
 using System.Linq;
 using Classes;
 using System.Threading;
+using UnityEditor;
 
 public class GameLogic : MonoBehaviour
 {
@@ -93,6 +95,7 @@ public class GameLogic : MonoBehaviour
     // UI data
     Vector2 sizeDelta = new(1000f, 500f);
     // UI pointer
+    Label[] playerLabels;
     readonly List<TextObject> textLine1Bottom = new();
     TextObject textLine2Bottom;
     readonly List<TextObject> textLine1Top = new();
@@ -119,7 +122,13 @@ public class GameLogic : MonoBehaviour
     readonly int[] lastTimeStamps = new int[GameState.amountPlayer];
     readonly float[] points = new float[GameState.amountPlayer];
     // middle values of nodes for together game mode
-    readonly Node[,] middle_nodes = { { Node.C, Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.A, Node.AH, Node.AH, Node.B, Node.B }, { Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.AH, Node.B, Node.B, Node.C }, { Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.B, Node.C, Node.C }, { Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.C, Node.C, Node.CH }, { Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.CH, Node.CH }, { Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.D }, { Node.A, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH }, { Node.A, Node.AH, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A }, { Node.AH, Node.AH, Node.B, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A }, { Node.AH, Node.B, Node.B, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH }, { Node.B, Node.B, Node.C, Node.C, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH }, { Node.B, Node.C, Node.C, Node.CH, Node.CH, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH, Node.B } };
+    readonly Node[,] middleNodes = { { Node.C, Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.A, Node.AH, Node.AH, Node.B, Node.B }, { Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.AH, Node.B, Node.B, Node.C }, { Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.B, Node.C, Node.C }, { Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.C, Node.C, Node.CH }, { Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.CH, Node.CH }, { Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.D }, { Node.A, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH }, { Node.A, Node.AH, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A }, { Node.AH, Node.AH, Node.B, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A }, { Node.AH, Node.B, Node.B, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH }, { Node.B, Node.B, Node.C, Node.C, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH }, { Node.B, Node.C, Node.C, Node.CH, Node.CH, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH, Node.B } };
+    // amount of player changes for team game mode
+    int amountPlayerChanges = 0;
+    // percent at which singer swaped in team game mode
+    int swapPercent = 34;
+    // player not sung for team game mode
+    List<int>[] playerNotSung = new List<int>[GameState.amountPlayer];
 
     void Start()
     {
@@ -417,18 +426,18 @@ public class GameLogic : MonoBehaviour
         }
         // Setting player name and get node arrows
         Color color;
-        Label name;
+        playerLabels = new Label[GameState.amountPlayer];
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
-            name = roots[i].Q<Label>("Name");
+            playerLabels[i] = roots[i].Q<Label>("Name");
             color = GameState.profiles[GameState.currentProfileIndex[i]].color;
             if (GameState.currentGameMode == GameMode.Together)
             {
-                name.text = GameState.profiles[GameState.currentProfileIndex[i]].name + " and " + GameState.profiles[GameState.currentSecondProfileIndex[i]].name;
+                playerLabels[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name + " and " + GameState.profiles[GameState.currentSecondProfileIndex[i]].name;
             }
             else
             {
-                name.text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+                playerLabels[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
 
             }
             roots[i].Q<VisualElement>("NameBox").style.unityBackgroundImageTintColor = new Color(color.r/255, color.g/255, color.b/255);
@@ -436,14 +445,31 @@ public class GameLogic : MonoBehaviour
             // change name and points color depending on player color
             if (color.r * 0.299 + color.g * 0.587 + color.b * 0.114 > 186) 
             {
-                name.style.color = new Color(0f, 0f, 0f);
+                playerLabels[i].style.color = new Color(0f, 0f, 0f);
                 pointsTexts[i].style.color = new Color(0f, 0f, 0f);
             } else
             {
-                name.style.color = new Color(1f, 1f, 1f);
+                playerLabels[i].style.color = new Color(1f, 1f, 1f);
                 pointsTexts[i].style.color = new Color(1f, 1f, 1f);
             }
             nodeArrows[i] = roots[i].Q<VisualElement>("Node");
+        }
+        if (GameState.currentGameMode == GameMode.Team)
+        {
+            int randomIndex;
+            for (int i = 0; i < GameState.teams.Count; i++)
+            {
+                playerNotSung[i] = new();
+                for (int j = 0; j < GameState.teams[i].players.Count; j++)
+                {
+                    playerNotSung[i].Add(j);
+                }
+                randomIndex = Random.Range(0, playerNotSung[i].Count);
+                GameState.currentProfileIndex[i] = GameState.profiles.IndexOf(GameState.teams[i].players[playerNotSung[i][randomIndex]]);
+                playerLabels[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
+                playerNotSung[i].RemoveAt(randomIndex);
+            }
+            microphoneInput.Init();
         }
         // Getting first song lines
         int textCounter;
@@ -1329,6 +1355,30 @@ public class GameLogic : MonoBehaviour
                                 nodesNewLineIndex++;
                             }
                             songDataCurrentIndex[voices[i]]++;
+                            // changing singer
+                            if (GameState.currentGameMode == GameMode.Team)
+                            {
+                                if (songPercent > swapPercent * (amountPlayerChanges + 1))
+                                {
+                                    int randomIndex;
+                                    for (int j = 0; j < GameState.teams.Count; j++)
+                                    {
+                                        if (playerNotSung[j].Count == 0)
+                                        {
+                                            for (int p = 0; p < GameState.teams[j].players.Count; p++)
+                                            {
+                                                playerNotSung[j].Add(p);
+                                            }
+                                        }
+                                        randomIndex = Random.Range(0, playerNotSung[j].Count);
+                                        GameState.currentProfileIndex[j] = GameState.profiles.IndexOf(GameState.teams[j].players[playerNotSung[j][randomIndex]]);
+                                        playerLabels[j].text = GameState.profiles[GameState.currentProfileIndex[j]].name;
+                                        playerNotSung[j].RemoveAt(randomIndex);
+                                    }
+                                    amountPlayerChanges++;
+                                    microphoneInput.Init();
+                                }
+                            }
                         }
                     }
                     else
@@ -1483,6 +1533,6 @@ public class GameLogic : MonoBehaviour
 
     private Node MiddleNode(Node first, Node second)
     {
-        return middle_nodes[(int)first, (int)second];
+        return middleNodes[(int)first, (int)second];
     }
 }

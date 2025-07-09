@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.Video;
 
 namespace Classes
@@ -13,7 +12,8 @@ namespace Classes
         Classic,
         Together,
         Duet,
-        Meow
+        Meow,
+        Team
     }
 
     public enum GameMode
@@ -22,7 +22,8 @@ namespace Classes
         Classic = 0,
         Duet = 1,
         Together = 2,
-        Meow = 3
+        Meow = 3,
+        Team = 4
     }
 
     public static class GameModeFunctions
@@ -39,6 +40,8 @@ namespace Classes
                     return GameMode.Together;
                 case "Meow":
                     return GameMode.Meow;
+                case "Team":
+                    return GameMode.Team;
                 default:
                     return GameMode.None;
             }
@@ -58,6 +61,8 @@ namespace Classes
                     return "Together";
                 case GameMode.Meow:
                     return "Meow";
+                case GameMode.Team:
+                    return "Team";
                 default:
                     return "ERROR";
             }
@@ -190,17 +195,16 @@ namespace Classes
 
     public class Team : IComparable
     {
-        public List<PlayerProfile> players;
+        public List<PlayerProfile> players = new();
         public string name = "";
         public int points = 0;
         public int amountRerolls = 0;
         public int amountSwitches = 0;
-        public List<PlayerProfile> playersNotSung;
+        public List<PlayerProfile> playersNotSung = new();
 
         public Team(string name)
         {
-            this.name = name;
-            players = new();
+            this.name = name;            
         }
         public int CompareTo(object obj)
         {
@@ -211,6 +215,27 @@ namespace Classes
                 return -1;
             else
                 return 0;
+        }
+        
+        public string TeamToString()
+        {
+            string res = "";
+            res += "Name: " + this.name + "\n";
+            res += "Player: ";
+            foreach (PlayerProfile p in this.players)
+            {
+                res += p.name + " ";
+            }
+            res += "\n";
+            res += "Points: " + this.points.ToString() + "\n";
+            res += "Amount rerolls: " + this.amountRerolls.ToString() + "\n";
+            res += "Amount switches: " + this.amountSwitches.ToString() + "\n";
+            res += "Players not sung: ";
+            foreach (PlayerProfile p in this.playersNotSung)
+            {
+                res += p.name + " ";
+            }
+            return res;
         }
     }
 

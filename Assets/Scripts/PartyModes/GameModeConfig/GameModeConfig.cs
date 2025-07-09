@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Classes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 public class GameModeConfig : MonoBehaviour
@@ -118,7 +117,7 @@ public class GameModeConfig : MonoBehaviour
         randomizeTeamMember.clicked += () =>
         {
             // get all player
-            List<string> player = new List<string>();
+            List<string> player = new();
             foreach (DropdownField t in team)
             {
                 foreach (string p in t.choices) 

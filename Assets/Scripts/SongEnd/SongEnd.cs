@@ -24,6 +24,7 @@ public class SongEnd : MonoBehaviour
                 case PartyMode.Together:
                 case PartyMode.Duet:
                 case PartyMode.Meow:
+                case PartyMode.Team:
                     // calculate team points
                     int x;
                     int y;
@@ -123,6 +124,9 @@ public class SongEnd : MonoBehaviour
             }            
         } else
         {
+            string text;
+            int team = 0;
+            bool found;
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
                 currentPlace = root.Q<Label>((i + 1).ToString());
@@ -135,6 +139,23 @@ public class SongEnd : MonoBehaviour
                         break;
                     case GameMode.Together:
                         currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " and " + partner[i].name + " with " + player[i].points.ToString() + " Points.";
+                        break;
+                    case GameMode.Team:
+                        text = "Place " + (i + 1).ToString() + ": ";
+                        found = false;
+                        while (!found && team < GameState.teams.Count)
+                        {
+                            foreach (PlayerProfile p in GameState.teams[team].players) 
+                            {
+                                if (p.name == player[i].name)
+                                {
+                                    text += GameState.teams[team].name + " with " + player[i].points.ToString() + " Points.";
+                                    found = true;
+                                }
+                            }
+                            team++;
+                        }
+                        currentPlace.text = text;
                         break;
                 }
             }
