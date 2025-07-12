@@ -1,17 +1,17 @@
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using UnityEngine.SceneManagement;
-using UnityEngine.Networking;
-using Random = UnityEngine.Random;
-using TMPro;
+using Classes;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Classes;
 using System.Threading;
+using TMPro;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public class GameLogic : MonoBehaviour
 {
@@ -95,7 +95,11 @@ public class GameLogic : MonoBehaviour
     // UI data
     Vector2 sizeDelta = new(1000f, 500f);
     // UI pointer
+    VisualElement[] nameBoxes;
     Label[] playerLabels;
+    VisualElement[] swapBoxes;
+    VisualElement[] swapBoxesAnimation;
+    Label[] swapLabels;
     readonly List<TextObject> textLine1Bottom = new();
     TextObject textLine2Bottom;
     readonly List<TextObject> textLine1Top = new();
@@ -123,12 +127,12 @@ public class GameLogic : MonoBehaviour
     readonly float[] points = new float[GameState.amountPlayer];
     // middle values of nodes for together game mode
     readonly Node[,] middleNodes = { { Node.C, Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.A, Node.AH, Node.AH, Node.B, Node.B }, { Node.C, Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.AH, Node.B, Node.B, Node.C }, { Node.CH, Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.B, Node.C, Node.C }, { Node.CH, Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.C, Node.C, Node.CH }, { Node.D, Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.CH, Node.CH }, { Node.D, Node.DH, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.D }, { Node.A, Node.DH, Node.E, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH }, { Node.A, Node.AH, Node.E, Node.F, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A }, { Node.AH, Node.AH, Node.B, Node.F, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A }, { Node.AH, Node.B, Node.B, Node.FH, Node.FH, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH }, { Node.B, Node.B, Node.C, Node.C, Node.G, Node.G, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH }, { Node.B, Node.C, Node.C, Node.CH, Node.CH, Node.GH, Node.GH, Node.A, Node.A, Node.AH, Node.AH, Node.B } };
-    // amount of player changes for team game mode
+    // team game mode variables
     int amountPlayerChanges = 0;
-    // percent at which singer swaped in team game mode
-    int swapPercent = 34;
-    // player not sung for team game mode
+    int swapTime = 30;
     List<int>[] playerNotSung = new List<int>[GameState.amountPlayer];
+    PlayerProfile[] singerProfiles;
+    PlayerProfile[] nextProfiles;
 
     void Start()
     {
@@ -426,10 +430,24 @@ public class GameLogic : MonoBehaviour
         }
         // Setting player name and get node arrows
         Color color;
+        singerProfiles = new PlayerProfile[GameState.amountPlayer];
+        nameBoxes = new VisualElement[GameState.amountPlayer];
         playerLabels = new Label[GameState.amountPlayer];
+        swapBoxes = new VisualElement[GameState.amountPlayer];
+        swapBoxesAnimation = new VisualElement[GameState.amountPlayer];
+        swapLabels = new Label[GameState.amountPlayer];
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
             playerLabels[i] = roots[i].Q<Label>("Name");
+            nameBoxes[i] = roots[i].Q<VisualElement>("NameBox");
+            if (GameState.currentGameMode == GameMode.Team)
+            {
+                swapBoxes[i] = roots[i].Q<VisualElement>("SwapBox");
+                swapBoxesAnimation[i] = roots[i].Q<VisualElement>("Animation");
+                swapLabels[i] = roots[i].Q<Label>("Swap");
+                swapBoxes[i].visible = true;
+            }
+            singerProfiles[i] = GameState.profiles[GameState.currentProfileIndex[i]];
             color = GameState.profiles[GameState.currentProfileIndex[i]].color;
             if (GameState.currentGameMode == GameMode.Together)
             {
@@ -440,8 +458,7 @@ public class GameLogic : MonoBehaviour
                 playerLabels[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
 
             }
-            roots[i].Q<VisualElement>("NameBox").style.unityBackgroundImageTintColor = new Color(color.r/255, color.g/255, color.b/255);
-            roots[i].Q<VisualElement>("PointsBox").style.unityBackgroundImageTintColor = new Color(color.r / 255, color.g / 255, color.b / 255);
+            nameBoxes[i].style.unityBackgroundImageTintColor = new Color(color.r / 255, color.g / 255, color.b / 255);
             // change name and points color depending on player color
             if (color.r * 0.299 + color.g * 0.587 + color.b * 0.114 > 186) 
             {
@@ -453,23 +470,6 @@ public class GameLogic : MonoBehaviour
                 pointsTexts[i].style.color = new Color(1f, 1f, 1f);
             }
             nodeArrows[i] = roots[i].Q<VisualElement>("Node");
-        }
-        if (GameState.currentGameMode == GameMode.Team)
-        {
-            int randomIndex;
-            for (int i = 0; i < GameState.teams.Count; i++)
-            {
-                playerNotSung[i] = new();
-                for (int j = 0; j < GameState.teams[i].players.Count; j++)
-                {
-                    playerNotSung[i].Add(j);
-                }
-                randomIndex = Random.Range(0, playerNotSung[i].Count);
-                GameState.currentProfileIndex[i] = GameState.profiles.IndexOf(GameState.teams[i].players[playerNotSung[i][randomIndex]]);
-                playerLabels[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
-                playerNotSung[i].RemoveAt(randomIndex);
-            }
-            microphoneInput.Init();
         }
         // Getting first song lines
         int textCounter;
@@ -645,6 +645,39 @@ public class GameLogic : MonoBehaviour
                 };
             }
         }
+        if (GameState.currentGameMode == GameMode.Team)
+        {
+            // set singer
+            int randomIndex;
+            for (int i = 0; i < GameState.teams.Count; i++)
+            {
+                // first singer
+                playerNotSung[i] = new();
+                for (int j = 0; j < GameState.teams[i].players.Count; j++)
+                {
+                    playerNotSung[i].Add(j);
+                }
+                randomIndex = Random.Range(0, playerNotSung[i].Count);
+                singerProfiles[i] = GameState.profiles[GameState.profiles.IndexOf(GameState.teams[i].players[playerNotSung[i][randomIndex]])];
+                playerLabels[i].text = singerProfiles[i].name;
+                // change colors depending on player color
+                nameBoxes[i].style.unityBackgroundImageTintColor = new Color(singerProfiles[i].color.r / 255, singerProfiles[i].color.g / 255, singerProfiles[i].color.b / 255);
+                if (singerProfiles[i].color.r * 0.299 + singerProfiles[i].color.g * 0.587 + singerProfiles[i].color.b * 0.114 > 186)
+                {
+                    playerLabels[i].style.color = new Color(0f, 0f, 0f);
+                    pointsTexts[i].style.color = new Color(0f, 0f, 0f);
+                }
+                else
+                {
+                    playerLabels[i].style.color = new Color(1f, 1f, 1f);
+                    pointsTexts[i].style.color = new Color(1f, 1f, 1f);
+                }
+                playerNotSung[i].RemoveAt(randomIndex);
+            }
+            nextProfiles = new PlayerProfile[GameState.amountPlayer];
+            NextSinger();
+            microphoneInput.Init();                        
+        }
     }
 
     void Update()
@@ -730,6 +763,23 @@ public class GameLogic : MonoBehaviour
                 currentTimePointerBottom.SetAsLastSibling();
                 currentTimePointerTop.SetAsLastSibling();
                 timeLineSet = true;
+                if (GameState.currentGameMode == GameMode.Team)
+                {
+                    // init swap time
+                    if (songLength < 90.0)
+                    {
+                        swapTime = (int)(songLength / 3.0);
+                    }
+                    // init swap boxes
+                    for (int j = 0; j < GameState.teams.Count; j++)
+                    {
+                        int jCopy = j;
+                        EditorApplication.delayCall += () =>
+                        {
+                            swapBoxes[jCopy].style.left = nameBoxes[jCopy].resolvedStyle.left + nameBoxes[jCopy].resolvedStyle.width;
+                        };
+                    }
+                }
             } else
             {
                 return;
@@ -740,16 +790,17 @@ public class GameLogic : MonoBehaviour
             // if song not ended
             if (!songPlayer.HasFinished())
             {
-                if (songPlayer.GetTime() > 0)
+                double playerTime = songPlayer.GetTime();
+                if (playerTime > 0)
                 {
                     songPlayer.started = true;
                 }
-                double songPercent = (songPlayer.GetTime() * 100.0) / songLength;
+                double songPercent = (playerTime * 100.0) / songLength;
                 // update timeline
                 currentTimePointerBottom.anchoredPosition = new Vector3((float)(10.0 + (1895.0 * songPercent) / 100.0), -317.0f, 0f);
                 currentTimePointerTop.anchoredPosition = new Vector3((float)(10.0 + (1895.0 * songPercent) / 100.0), 317.0f, 0f);
                 // calculate sing time
-                double currentTime = songPlayer.GetTime() - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
+                double currentTime = playerTime - GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap;
                 // calculating current beat: Beatnumber = (Time in sec / 60 sec) * 4 * BPM
                 int currentTimeStamp = (int)Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
                 // updating nodes, songtext and calculating score
@@ -764,10 +815,15 @@ public class GameLogic : MonoBehaviour
                 {
                     if (songDataCurrentIndex[voices[i]] < songData[voices[i]].Count)
                     {
-                        // Updating player node arrow:
+                        BackgroundSize backgroundSize = new()
+                        {
+                            x = new Length(Math.Min((float)((playerTime - swapTime * amountPlayerChanges) * 100) / swapTime, 100f), LengthUnit.Percent),
+                            y = new Length(100f, LengthUnit.Percent)
+                        };
                         Length leftArrowPercent = Length.Percent(((currentTimeStamp - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]] - nodeArrowWidth);
                         for (int j = 0; j < GameState.amountPlayer; j++)
                         {
+                            // update player node arrow:
                             if (GameState.currentVoice[j] == voices[i])
                             {
                                 if (leftArrowPercent.value < 0)
@@ -775,6 +831,14 @@ public class GameLogic : MonoBehaviour
                                     leftArrowPercent = Length.Percent(0);
                                 }
                                 nodeArrows[j].style.left = leftArrowPercent;
+                            }
+                            if (i  == 0)
+                            {
+                                if (GameState.currentGameMode == GameMode.Team)
+                                {
+                                    // update animation for player swaps 
+                                    swapBoxesAnimation[j].style.backgroundSize = backgroundSize;
+                                }
                             }
                         }
                         if (songData[voices[i]][songDataCurrentIndex[voices[i]]].kind != Kind.LineBreak && songData[voices[i]][songDataCurrentIndex[voices[i]]].kind != Kind.LineBreakExcact)
@@ -1066,7 +1130,7 @@ public class GameLogic : MonoBehaviour
                                                     nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)MiddleNode(microphoneInput.nodes[j], microphoneInput.nodes[j + GameState.amountPlayer])) * 100) / nodeTextureHeight - nodeHeightOffset);
                                                     nodeBox.style.left = Length.Percent(currentPercent);
                                                     nodeBox.style.width = Length.Percent((((currentTimeStamp - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]]) - currentPercent);
-                                                    color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
+                                                    color = new Color(singerProfiles[j].color.r / 255f, singerProfiles[j].color.g / 255f, singerProfiles[j].color.b / 255f);
                                                     // updating score and setting node box color
                                                     switch (songData[voices[i]][songDataCurrentIndex[voices[i]]].kind)
                                                     {
@@ -1100,7 +1164,7 @@ public class GameLogic : MonoBehaviour
                                                     nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset);
                                                     nodeBox.style.left = Length.Percent(currentPercent);
                                                     nodeBox.style.width = Length.Percent((((currentTimeStamp - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]]) - currentPercent);
-                                                    color = new Color(GameState.profiles[GameState.currentProfileIndex[j]].color.r / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.g / 255f, GameState.profiles[GameState.currentProfileIndex[j]].color.b / 255f);
+                                                    color = new Color(singerProfiles[j].color.r / 255f, singerProfiles[j].color.g / 255f, singerProfiles[j].color.b / 255f);
                                                     // updating score and setting node box color
                                                     switch (songData[voices[i]][songDataCurrentIndex[voices[i]]].kind)
                                                     {
@@ -1354,29 +1418,43 @@ public class GameLogic : MonoBehaviour
                                 }
                                 nodesNewLineIndex++;
                             }
-                            songDataCurrentIndex[voices[i]]++;
-                            // changing singer
+                            songDataCurrentIndex[voices[i]]++;                            
                             if (GameState.currentGameMode == GameMode.Team)
                             {
-                                if (songPercent > swapPercent * (amountPlayerChanges + 1))
+                                if (playerTime > swapTime * (amountPlayerChanges + 1))
                                 {
-                                    int randomIndex;
+                                    // changing singer
+                                    singerProfiles = nextProfiles;
                                     for (int j = 0; j < GameState.teams.Count; j++)
                                     {
-                                        if (playerNotSung[j].Count == 0)
+                                        playerLabels[j].text = singerProfiles[j].name;
+                                        // change colors depending on player color
+                                        nameBoxes[j].style.unityBackgroundImageTintColor = new Color(singerProfiles[j].color.r / 255, singerProfiles[j].color.g / 255, singerProfiles[j].color.b / 255);
+                                        if (nextProfiles[j].color.r * 0.299 + singerProfiles[j].color.g * 0.587 + singerProfiles[j].color.b * 0.114 > 186)
                                         {
-                                            for (int p = 0; p < GameState.teams[j].players.Count; p++)
-                                            {
-                                                playerNotSung[j].Add(p);
-                                            }
+                                            playerLabels[j].style.color = new Color(0f, 0f, 0f);
+                                            pointsTexts[j].style.color = new Color(0f, 0f, 0f);
                                         }
-                                        randomIndex = Random.Range(0, playerNotSung[j].Count);
-                                        GameState.currentProfileIndex[j] = GameState.profiles.IndexOf(GameState.teams[j].players[playerNotSung[j][randomIndex]]);
-                                        playerLabels[j].text = GameState.profiles[GameState.currentProfileIndex[j]].name;
-                                        playerNotSung[j].RemoveAt(randomIndex);
+                                        else
+                                        {
+                                            playerLabels[j].style.color = new Color(1f, 1f, 1f);
+                                            pointsTexts[j].style.color = new Color(1f, 1f, 1f);
+                                        }
+                                        int jCopy = j;
+                                        EditorApplication.delayCall += () =>
+                                        {
+                                            swapBoxes[jCopy].style.left = nameBoxes[jCopy].resolvedStyle.left + nameBoxes[jCopy].resolvedStyle.width;  
+                                        };
+                                        if (swapTime * (amountPlayerChanges + 2) < songLength)
+                                        {
+                                            NextSinger();
+                                        } else 
+                                        {
+                                            swapBoxes[j].visible = false;
+                                        }
                                     }
                                     amountPlayerChanges++;
-                                    microphoneInput.Init();
+                                    microphoneInput.Init();                                    
                                 }
                             }
                         }
@@ -1392,9 +1470,9 @@ public class GameLogic : MonoBehaviour
                             }
                         }
                     }
-                    // Updating player node arrows
                     for (int j = 0; j < GameState.amountPlayer; j++)
                     {
+                        // update player node arrows
                         if (GameState.currentGameMode == GameMode.Together)
                         {
                             if (microphoneInput.nodes[j] != Node.None && microphoneInput.nodes[j + GameState.amountPlayer] != Node.None)
@@ -1534,5 +1612,34 @@ public class GameLogic : MonoBehaviour
     private Node MiddleNode(Node first, Node second)
     {
         return middleNodes[(int)first, (int)second];
+    }
+
+    private void NextSinger()
+    {
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        { 
+            if (playerNotSung[i].Count == 0)
+            {
+                for (int p = 0; p < GameState.teams[i].players.Count; p++)
+                {
+                    playerNotSung[i].Add(p);
+                }
+            }
+            int randomIndex = Random.Range(0, playerNotSung[i].Count);
+            nextProfiles[i] = GameState.profiles[GameState.profiles.IndexOf(GameState.teams[i].players[playerNotSung[i][randomIndex]])];
+            swapLabels[i].text = " next: " + nextProfiles[i].name;
+            swapBoxesAnimation[i].style.unityBackgroundImageTintColor = new Color(nextProfiles[i].color.r / 255, nextProfiles[i].color.g / 255, nextProfiles[i].color.b / 255);
+            if (nextProfiles[i].color.r * 0.299 + nextProfiles[i].color.g * 0.587 + nextProfiles[i].color.b * 0.114 > 186)
+            {
+                swapLabels[i].style.color = new Color(0f, 0f, 0f);
+                swapBoxes[i].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f);
+            }
+            else
+            {
+                swapLabels[i].style.color = new Color(1f, 1f, 1f);
+                swapBoxes[i].style.unityBackgroundImageTintColor = new Color(0f, 0f, 0f);
+            }
+            playerNotSung[i].RemoveAt(randomIndex);
+        }
     }
 }
