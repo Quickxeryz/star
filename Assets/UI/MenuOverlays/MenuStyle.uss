@@ -1,0 +1,9 @@
+* {
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: #000000;
+}
+
+.unity-button {
+    background-color: #ff9700;
+}

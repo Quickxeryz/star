@@ -18,6 +18,16 @@ public class SongEnd : MonoBehaviour
             switch (GameState.currentPartyMode)
             {
                 case PartyMode.ChooseSong:
+                    if (GameState.currentGameMode == GameMode.Team)
+                    {
+                        // change amount player back
+                        int amountPlayer = 0;
+                        foreach (Team team in GameState.teams)
+                        {
+                            amountPlayer += team.players.Count;
+                        }
+                        GameState.amountPlayer = amountPlayer;
+                    }
                     SceneManager.LoadScene("ChooseSong");
                     break;
                 case PartyMode.Classic:
