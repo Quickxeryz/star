@@ -1,15 +1,18 @@
+using Classes;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using System.IO;
-using System.Net.Sockets;
-using System.Net;
-using Classes;
+using QRCoder;
+using QRCoder.Unity;
 
 public class MainMenu : MonoBehaviour
 {
     // global vars for song loading
     Label songsLoaded;
+    VisualElement website;
 
     void OnEnable()
     {
@@ -21,7 +24,7 @@ public class MainMenu : MonoBehaviour
         songsLoaded = root.Q<Label>("SongsLoaded");
         Button playModes = root.Q<Button>("GameModes");
         Button server = root.Q<Button>("Server");
-        Label website = root.Q<Label>("Website");
+        website = root.Q<VisualElement>("Website");
         Button playerprofiles = root.Q<Button>("Playerprofiles");
         Button options = root.Q<Button>("Options");
         Button exit = root.Q<Button>("Exit");
@@ -50,7 +53,7 @@ public class MainMenu : MonoBehaviour
             File.WriteAllLines("Server/server.js", text);
         } else
         {
-            website.text = "Server available under: https://" + GameState.ip + ":8085";
+            CreateQRCode();
         }
         // parallel loading songs 
         if (GameState.songsLoaded)
@@ -78,8 +81,8 @@ public class MainMenu : MonoBehaviour
             // start online microphone server if not running
             if (!GameState.serverStarted)
             {
+                CreateQRCode();
                 GameState.serverStarted = true;
-                website.text = "Server available under: https://" + GameState.ip + ":8085";
                 System.Threading.Tasks.Task.Run(() => StartServer());
             }
         };
@@ -272,5 +275,14 @@ public class MainMenu : MonoBehaviour
             // Updating Nodes
             GameState.onlineMicrophones[index] = (GameState.onlineMicrophones[index].id, NodeFunctions.GetNodeFromString(outLine.Data[(outLine.Data.IndexOf(':') + 1)..]));
         }
+    }
+
+    void CreateQRCode()
+    {
+        QRCodeGenerator qrGenerator = new();
+        QRCodeData qrCodeData = qrGenerator.CreateQrCode("Server available under: https://" + GameState.ip + ":8085", QRCodeGenerator.ECCLevel.L);
+        UnityQRCode qrCode = new(qrCodeData);
+        Texture2D qrCodeAsTexture2D = qrCode.GetGraphic(20);
+        website.style.backgroundImage = qrCodeAsTexture2D;
     }
 }

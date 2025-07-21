@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MenuOverlays/MenuStyle.uss?fileID=7433441132597879392&amp;guid=6a704bd04779e0944a165126415785b4&amp;type=3#MenuStyle" />
+    <ui:VisualElement name="Box" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/UI/Textures/White.png?fileID=2800000&amp;guid=0279b84e14445e04ba6cd36f80576a15&amp;type=3#White&quot;); position: absolute;">
+        <ui:Label text="Text" />
+    </ui:VisualElement>
+</ui:UXML>
