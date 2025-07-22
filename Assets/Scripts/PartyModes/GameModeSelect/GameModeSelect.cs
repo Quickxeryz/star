@@ -18,6 +18,7 @@ public class GameModeSelect : MonoBehaviour
         Button together = root.Q<Button>("Together");
         Button duet = root.Q<Button>("Duet");
         Button miau = root.Q<Button>("Meow");
+        Button team = root.Q<Button>("Team");
         Button back = root.Q<Button>("Back");
         // set up functions
         classic.clicked += () =>
@@ -166,6 +167,30 @@ public class GameModeSelect : MonoBehaviour
                 SceneManager.LoadScene("ChoosenSong");
             }
         };
+        team.clicked += () =>
+        {
+            if (GameState.songsLoaded)
+            {
+                GameState.currentPartyMode = PartyMode.Team;
+                GameState.currentGameMode = GameMode.Team;
+                GameState.partyModeSongs = new List<SongData>();
+                // all songs 
+                foreach (SongData song in GameState.songs)
+                {
+                    GameState.partyModeSongs.Add(song);
+                }
+                // update voices
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    GameState.currentVoice[i] = 0;
+                }
+                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+                {
+                    GameState.currentVoice[i] = -1;
+                }
+                SceneManager.LoadScene("ChoosenSong");
+            }
+        };
         back.clicked += () =>
         {
             SceneManager.LoadScene("GameModeConfig");
@@ -179,6 +204,11 @@ public class GameModeSelect : MonoBehaviour
         {
             songsLoaded.text = "Loading songs ...";
         }
+    }
+
+    private void Team_clicked()
+    {
+        throw new System.NotImplementedException();
     }
 
     private void Update()

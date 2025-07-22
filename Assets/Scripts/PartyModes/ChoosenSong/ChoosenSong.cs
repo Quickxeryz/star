@@ -34,6 +34,7 @@ public class ChoosenSong : MonoBehaviour
         {
             case PartyMode.Classic:
             case PartyMode.Meow:
+            case PartyMode.Team:
                 Destroy(GameObject.Find("Together"));
                 root = GameObject.Find("Classic").GetComponent<UIDocument>().rootVisualElement;
                 break;
@@ -170,7 +171,8 @@ public class ChoosenSong : MonoBehaviour
                     SwitchPlayer(iCopy, true);
                 };
             }
-        } else
+        }
+        else
         {
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
@@ -227,70 +229,85 @@ public class ChoosenSong : MonoBehaviour
         GameObject music = GameObject.Find("Player");
         audio = music.AddComponent<AudioSource>();
         videoPlayer = music.AddComponent<VideoPlayer>();
-        // random song
         RandomSong();
-        // random singer
-        int index = 0;
-        for (int i = 0; i < GameState.teams.Count; i++)
+        // change ui for team mode
+        if (GameState.currentPartyMode == PartyMode.Team)
         {
-            // add singer
-            if (GameState.teams[i].playersNotSung.Count == 0)
+            root.Q<Label>("Player").text = "Team";
+            for (int i = 0; i < GameState.amountPlayer; i++)
             {
-                foreach (PlayerProfile p in GameState.teams[i].players)
-                {
-                    GameState.teams[i].playersNotSung.Add(p);
-                }
+                player[i].text = i.ToString();
+                switchPlayer[i].visible = false;
+                switchPlayer_Button[i].visible = false;
             }
-            index = UnityEngine.Random.Range(0, GameState.teams[i].playersNotSung.Count);
-            player[i].text = GameState.teams[i].playersNotSung[index].name;
-            GameState.teams[i].playersNotSung.RemoveAt(index);
-        }
-        switch (GameState.currentPartyMode) {
-            case PartyMode.Classic:
-            case PartyMode.Meow:
-                for (int i = 0; i < GameState.teams.Count; i++)
+
+        } else 
+        {
+            // random singer
+            int index = 0;
+            for (int i = 0; i < GameState.teams.Count; i++)
+            {
+                // add singer
+                if (GameState.teams[i].playersNotSung.Count == 0)
                 {
                     foreach (PlayerProfile p in GameState.teams[i].players)
                     {
-                        if (p.name != player[i].text)
-                        {
-                            switchPlayer[i].choices.Add(p.name);
-                        }
+                        GameState.teams[i].playersNotSung.Add(p);
                     }
                 }
-                break;
-            case PartyMode.Together:
-            case PartyMode.Duet:
-                bool differentPlayerNotFound = true;
-                for (int i = 0; i < GameState.teams.Count; i++)
-                {
-                    // add second singer
-                    if (GameState.teams[i].playersNotSung.Count == 0)
+                index = Random.Range(0, GameState.teams[i].playersNotSung.Count);
+                player[i].text = GameState.teams[i].playersNotSung[index].name;
+                GameState.teams[i].playersNotSung.RemoveAt(index);
+            }
+            switch (GameState.currentPartyMode)
+            {
+                case PartyMode.Classic:
+                case PartyMode.Meow:
+                    for (int i = 0; i < GameState.teams.Count; i++)
                     {
                         foreach (PlayerProfile p in GameState.teams[i].players)
                         {
-                            GameState.teams[i].playersNotSung.Add(p);
+                            if (p.name != player[i].text)
+                            {
+                                switchPlayer[i].choices.Add(p.name);
+                            }
                         }
                     }
-                    while (differentPlayerNotFound)
+                    break;
+                case PartyMode.Together:
+                case PartyMode.Duet:
+                    bool differentPlayerNotFound = true;
+                    for (int i = 0; i < GameState.teams.Count; i++)
                     {
-                        index = UnityEngine.Random.Range(0, GameState.teams[i].playersNotSung.Count);
-                        if (player[i].text != GameState.teams[i].playersNotSung[index].name) {
-                            differentPlayerNotFound = false;
-                        }
-                    }
-                    secondPlayer[i].text = secondSingerAddition + GameState.teams[i].playersNotSung[index].name;
-                    GameState.teams[i].playersNotSung.RemoveAt(index); 
-                    foreach (PlayerProfile p in GameState.teams[i].players)
-                    {
-                        if (p.name != player[i].text && secondSingerAddition + p.name != secondPlayer[i].text)
+                        // add second singer
+                        if (GameState.teams[i].playersNotSung.Count == 0)
                         {
-                            switchPlayer[i].choices.Add(p.name);
-                            secondSwitchPlayer[i].choices.Add(p.name);
+                            foreach (PlayerProfile p in GameState.teams[i].players)
+                            {
+                                GameState.teams[i].playersNotSung.Add(p);
+                            }
+                        }
+                        while (differentPlayerNotFound)
+                        {
+                            index = Random.Range(0, GameState.teams[i].playersNotSung.Count);
+                            if (player[i].text != GameState.teams[i].playersNotSung[index].name)
+                            {
+                                differentPlayerNotFound = false;
+                            }
+                        }
+                        secondPlayer[i].text = secondSingerAddition + GameState.teams[i].playersNotSung[index].name;
+                        GameState.teams[i].playersNotSung.RemoveAt(index);
+                        foreach (PlayerProfile p in GameState.teams[i].players)
+                        {
+                            if (p.name != player[i].text && secondSingerAddition + p.name != secondPlayer[i].text)
+                            {
+                                switchPlayer[i].choices.Add(p.name);
+                                secondSwitchPlayer[i].choices.Add(p.name);
+                            }
                         }
                     }
-                }
-                break;
+                    break;
+            }
         }
         // set up mic input
         SetUpMic();
@@ -298,6 +315,9 @@ public class ChoosenSong : MonoBehaviour
 
     void Update()
     {
+        if (GameState.currentPartyMode == PartyMode.Team) {
+            return;
+        }
         if (GameState.currentPartyMode == PartyMode.Duet)
         {
             for (int i = 0; i < GameState.amountPlayer / 2; i++)
@@ -454,6 +474,10 @@ public class ChoosenSong : MonoBehaviour
 
     void SetUpMic()
     {
+        if (GameState.currentPartyMode == PartyMode.Team)
+        {
+            return;
+        }
         int index;
         bool found;
         if (GameState.currentPartyMode == PartyMode.Duet)

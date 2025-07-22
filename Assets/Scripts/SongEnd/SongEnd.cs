@@ -105,7 +105,15 @@ public class SongEnd : MonoBehaviour
         {
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
-                player[i] = GameState.profiles[GameState.currentProfileIndex[i]];
+                if (GameState.currentGameMode == GameMode.Team)
+                {
+                    player[i] = GameState.teams[i].players[0];
+                    player[i].points = GameState.profiles[GameState.currentProfileIndex[i]].points;
+                }
+                else
+                {
+                    player[i] = GameState.profiles[GameState.currentProfileIndex[i]];
+                }
             }
             partner = new PlayerProfile[GameState.amountPlayer];
             if (GameState.currentGameMode == GameMode.Together)
@@ -134,9 +142,9 @@ public class SongEnd : MonoBehaviour
             }            
         } else
         {
-            string text;
-            int team = 0;
             bool found;
+            int x;
+            int y;
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
                 currentPlace = root.Q<Label>((i + 1).ToString());
@@ -151,21 +159,22 @@ public class SongEnd : MonoBehaviour
                         currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " and " + partner[i].name + " with " + player[i].points.ToString() + " Points.";
                         break;
                     case GameMode.Team:
-                        text = "Place " + (i + 1).ToString() + ": ";
                         found = false;
-                        while (!found && team < GameState.teams.Count)
+                        x = 0;
+                        while ((!found) && x < GameState.teams.Count)
                         {
-                            foreach (PlayerProfile p in GameState.teams[team].players) 
+                            y = 0;
+                            while ((!found) && y < GameState.teams[x].players.Count)
                             {
-                                if (p.name == player[i].name)
+                                if (GameState.teams[x].players[y] == player[i])
                                 {
-                                    text += GameState.teams[team].name + " with " + player[i].points.ToString() + " Points.";
+                                    currentPlace.text = "Place " + (i + 1).ToString() + ": " + GameState.teams[x].name + " with " + player[i].points.ToString() + " Points.";
                                     found = true;
                                 }
+                                y++;
                             }
-                            team++;
+                            x++;
                         }
-                        currentPlace.text = text;
                         break;
                 }
             }
