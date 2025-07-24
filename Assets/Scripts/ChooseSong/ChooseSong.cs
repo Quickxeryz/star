@@ -83,10 +83,9 @@ public class ChooseSong : MonoBehaviour
                     GameState.currentVoice[j] = -1;
                 }
                 switch (GameState.currentGameMode) { 
-                    case GameMode.Meow:
-                        SceneManager.LoadScene("GameScene");
-                        break;
                     case GameMode.Classic:
+                    case GameMode.Meow:
+                    case GameMode.Item:
                         if (GameState.currentSong.amountVoices > 1)
                         {
                             SceneManager.LoadScene("ChooseVoice");
@@ -173,6 +172,7 @@ public class ChooseSong : MonoBehaviour
                         case GameMode.Together:
                         case GameMode.Meow:
                         case GameMode.Team:
+                        case GameMode.Item:
                             // all songs
                             foreach (SongData song in GameState.songs)
                             {
@@ -377,6 +377,7 @@ public class ChooseSong : MonoBehaviour
             case GameMode.Together:
             case GameMode.Meow:
             case GameMode.Team:
+            case GameMode.Item:
                 // all songs
                 foreach (SongData song in GameState.songs)
                 {

@@ -159,9 +159,24 @@ public class GameLogic : MonoBehaviour
     int[] nextProfileIndex;
     PlayerProfile[] nextProfiles;
     int[] oldProfiles;
+    // item game mode variables
+    List<(int, Node)> itemBeats;
+    (int, Node) itemNodeToHit = (-1, Node.None);
+    readonly int[] itemLastTimeStamps = new int[GameState.amountPlayer];
+    int itemNodeLength = 1;
+    int nodeDif = 3;
+    bool[] canSeeNodes = new bool[GameState.amountPlayer];
+    bool[] canSeeArrow = new bool[GameState.amountPlayer];
+    double[] effectEndTime = new double[GameState.amountPlayer];
+
 
     void Start()
     {
+        for (int i = 0; i < GameState.amountPlayer; i++)
+        {
+            canSeeArrow[i] = true;
+            canSeeNodes[i] = true;
+        }
         // init songData index
         songDataCurrentIndex = new int[GameState.currentSong.amountVoices];
         songDataNewLineIndex = new int[GameState.currentSong.amountVoices];
@@ -814,6 +829,17 @@ public class GameLogic : MonoBehaviour
                         };
                     }
                 }
+                if (GameState.currentGameMode == GameMode.Item) 
+                {
+                    // init item times
+                    int itemSpawnrate = 30;
+                    itemBeats = new();
+                    Node randomNode = (Node)Random.Range(0, 12);
+                    for (int i = 0;i < (int)(songLength / itemSpawnrate); i ++) 
+                    {
+                        itemBeats.Add(((int)Math.Ceiling(((Random.Range(0, itemSpawnrate + 1) + itemSpawnrate * i) / 60.0) * 4.0 * GameState.currentSong.bpm), randomNode));
+                    }
+                }
             } else
             {
                 return;
@@ -839,7 +865,7 @@ public class GameLogic : MonoBehaviour
                 int currentTimeStamp = (int)Math.Ceiling((currentTime / 60.0) * 4.0 * GameState.currentSong.bpm);
                 // updating nodes, songtext and calculating score
                 VisualElement nodeBox;
-                float currentPercent;
+                float percent;
                 for (int i = 0; i < voices.Count; i++)
                 {
                     if (songDataCurrentIndex[voices[i]] < songData[voices[i]].Count)
@@ -914,16 +940,20 @@ public class GameLogic : MonoBehaviour
                                             {
                                                 if (microphoneInput.nodes[j] != Node.None && microphoneInput.nodes[j + GameState.amountPlayer] != Node.None && HitNode(MiddleNode(microphoneInput.nodes[j], microphoneInput.nodes[j + GameState.amountPlayer]), songData[voices[i]][songDataCurrentIndex[voices[i]]].node, GameState.profiles[GameState.currentSecondProfileIndex[j]]))
                                                 {
-                                                    CreateNodeHitBox(currentTimeStamp, voices[i], j, Length.Percent(((nodeTextureDistance * (int)MiddleNode(microphoneInput.nodes[j], microphoneInput.nodes[j + GameState.amountPlayer])) * 100) / nodeTextureHeight - nodeHeightOffset));
+                                                    CreateNodeHitBox(currentTimeStamp, voices[i], j, Length.Percent(((nodeTextureDistance * (int)MiddleNode(microphoneInput.nodes[j], microphoneInput.nodes[j + GameState.amountPlayer])) * 100) / nodeTextureHeight - nodeHeightOffset), false);
                                                 }
                                             }
                                             else
                                             {
                                                 if (microphoneInput.nodes[j] != Node.None && HitNode(microphoneInput.nodes[j], songData[voices[i]][songDataCurrentIndex[voices[i]]].node, GameState.profiles[GameState.currentProfileIndex[j]]))
                                                 {
-                                                    CreateNodeHitBox(currentTimeStamp, voices[i], j, Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset));
+                                                    CreateNodeHitBox(currentTimeStamp, voices[i], j, Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset), false);
                                                 }
                                             }
+                                            // updating ui elements
+                                            pointsTexts[j].text = ((int)Math.Ceiling(points[j])).ToString();
+                                            // set actual beat as handled
+                                            lastTimeStamps[j] = currentTimeStamp;
                                         }
                                     }
                                 }
@@ -967,6 +997,56 @@ public class GameLogic : MonoBehaviour
                                 if (i > 0 || (voices.Count == 1 && GameState.amountPlayer > 1))
                                 {
                                     whenToStartTopRectTransform.sizeDelta = new Vector2(0f, 100f);
+                                }
+                            }
+                            if (GameState.currentGameMode == GameMode.Item)
+                            {
+                                List<int> playerHit = new();
+                                // check for item hit
+                                for (int j = 0; j < GameState.amountPlayer; j++)
+                                {
+                                    if (GameState.currentVoice[j] == voices[i])
+                                    {
+                                        if (currentTimeStamp != itemLastTimeStamps[j])
+                                        {
+                                            if (currentTimeStamp - 1 >= itemNodeToHit.Item1 && currentTimeStamp - 1 < itemNodeToHit.Item1 + itemNodeLength)
+                                            {
+                                                if (microphoneInput.nodes[j] != Node.None && HitNode(microphoneInput.nodes[j], itemNodeToHit.Item2, GameState.profiles[GameState.currentProfileIndex[j]]))
+                                                {
+                                                    playerHit.Add(j);
+                                                    CreateNodeHitBox(currentTimeStamp, voices[i], j, Length.Percent(((nodeTextureDistance * (int)microphoneInput.nodes[j]) * 100) / nodeTextureHeight - nodeHeightOffset), true);                                                    
+                                                    // set actual beat as handled
+                                                    itemLastTimeStamps[j] = currentTimeStamp;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (playerHit.Count > 0)
+                                {
+                                    int randomChange = Random.Range(0, 2);
+                                    int randomNodeHight = Random.Range(1, nodeDif + 1);
+                                    if (Random.Range(0,2) == 1)
+                                    {
+                                        randomNodeHight = randomNodeHight * (-1);
+                                    }
+                                    if (playerHit.Count > 1)
+                                    {
+                                        for (int j = 0; j < GameState.amountPlayer; j++)
+                                        {
+                                            setNegativeEffect(j, playerTime, randomChange, randomNodeHight);
+                                        }
+                                    } else
+                                    {
+                                        for (int j = 0; j < playerHit[0]; j++)
+                                        {
+                                            setNegativeEffect(j, playerTime, randomChange, randomNodeHight);
+                                        }
+                                        for (int j = playerHit[0] + 1; j < GameState.amountPlayer; j++)
+                                        {
+                                            setNegativeEffect(j, playerTime, randomChange, randomNodeHight);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1015,7 +1095,7 @@ public class GameLogic : MonoBehaviour
                             }
                             beatSumLine[voices[i]] = endBeatLine[voices[i]] - startBeatLine[voices[i]];
                             nodesNewLineIndex = songDataCurrentIndex[voices[i]] + 1;
-                            // calculating node line data
+                            // calculating node line data and creating node boxes
                             for (int j = 0; j < GameState.amountPlayer; j++)
                             {
                                 if (GameState.currentVoice[j] == voices[i])
@@ -1025,17 +1105,20 @@ public class GameLogic : MonoBehaviour
                             }
                             while (nodesNewLineIndex < songData[voices[i]].Count && songData[voices[i]][nodesNewLineIndex].kind != Kind.LineBreak && songData[voices[i]][nodesNewLineIndex].kind != Kind.LineBreakExcact)
                             {
-                                currentPercent = ((songData[voices[i]][nodesNewLineIndex].appearing - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]];
+                                percent = ((songData[voices[i]][nodesNewLineIndex].appearing - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]];
                                 for (int j = 0; j < GameState.amountPlayer; j++)
                                 {
                                     if (GameState.currentVoice[j] == voices[i])
                                     {
-                                        nodeBox = new VisualElement();
-                                        nodeBox.AddToClassList("nodeBox");
-                                        nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[voices[i]][nodesNewLineIndex].node) * 100) / nodeTextureHeight - nodeHeightOffset);
-                                        nodeBox.style.left = Length.Percent(currentPercent);
-                                        nodeBox.style.width = Length.Percent(((songData[voices[i]][nodesNewLineIndex].appearing + songData[voices[i]][nodesNewLineIndex].length - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]] - currentPercent);
-                                        nodeBoxes[j].Add(nodeBox);
+                                        if (canSeeNodes[j])
+                                        {
+                                            nodeBox = new VisualElement();
+                                            nodeBox.AddToClassList("nodeBox");
+                                            nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[voices[i]][nodesNewLineIndex].node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                            nodeBox.style.left = Length.Percent(percent);
+                                            nodeBox.style.width = Length.Percent(((songData[voices[i]][nodesNewLineIndex].appearing + songData[voices[i]][nodesNewLineIndex].length - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]] - percent);
+                                            nodeBoxes[j].Add(nodeBox);
+                                        }
                                     }
                                 }
                                 nodesNewLineIndex++;
@@ -1078,6 +1161,50 @@ public class GameLogic : MonoBehaviour
                                     }
                                     amountPlayerChanges++;
                                     microphoneInput.Init();                                    
+                                }
+                            }
+                            if (GameState.currentGameMode == GameMode.Item)
+                            {
+                                // add items
+                                if (itemBeats.Count > 0)
+                                {
+                                    if (startBeatLine[voices[i]] - itemBeats[0].Item1 >= 0 || itemBeats[0].Item1 - (startBeatLine[voices[i]] + beatSumLine[voices[i]]) <= 0)
+                                    {
+                                        percent = ((itemBeats[0].Item1 - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]];
+                                        for (int j = 0; j < GameState.amountPlayer; j++)
+                                        {
+                                            Color color = new(1f - singerProfiles[j].color.r / 255f, 1f - singerProfiles[j].color.g / 255f, 1f - singerProfiles[j].color.b / 255f);
+                                            if (GameState.currentVoice[j] == voices[i])
+                                            {
+                                                nodeBox = new VisualElement();
+                                                nodeBox.AddToClassList("nodeBox");
+                                                nodeBox.style.top = Length.Percent(((nodeTextureDistance * (int)songData[voices[i]][nodesNewLineIndex].node) * 100) / nodeTextureHeight - nodeHeightOffset);
+                                                nodeBox.style.left = Length.Percent(percent);
+                                                nodeBox.style.width = Length.Percent(((itemBeats[0].Item1 + itemNodeLength - startBeatLine[voices[i]]) * 100) / beatSumLine[voices[i]] - percent);
+                                                nodeBox.style.unityBackgroundImageTintColor = color;
+                                                nodeBoxes[j].Add(nodeBox);
+                                            }
+                                        }
+                                        itemNodeToHit = itemBeats[0];
+                                        itemBeats.RemoveAt(0);
+                                    }
+                                }
+                                // manage negative effects
+                                for (int j = 0; j < GameState.amountPlayer; j++)
+                                {
+                                    if (effectEndTime[j] < playerTime)
+                                    {
+                                        canSeeNodes[j] = true;
+                                        canSeeArrow[j] = true;
+                                    }
+                                    if (canSeeArrow[j])
+                                    {
+                                        nodeArrows[j].visible = true;
+                                    }
+                                    else
+                                    {
+                                        nodeArrows[j].visible = false;
+                                    }
                                 }
                             }
                         }
@@ -1244,20 +1371,28 @@ public class GameLogic : MonoBehaviour
             to.textMesh.ForceMeshUpdate();
             beforeObject = to;
         }
-    }  
+    }
 
-    private void CreateNodeHitBox(int currentTimeStamp, int voiceNumber, int playerNumber, Length nodeBoxTop)
+    private void CreateNodeHitBox(int timeStamp, int voiceNumber, int playerNumber, Length nodeBoxTop, bool isItemMode)
     {
         // creating new node box
-        float currentPercent = ((currentTimeStamp - 1 - startBeatLine[voiceNumber]) * 100) / beatSumLine[voiceNumber];
+        float currentPercent = ((timeStamp - 1 - startBeatLine[voiceNumber]) * 100) / beatSumLine[voiceNumber];
         VisualElement nodeBox = new();
         nodeBox.AddToClassList("nodeBox");
         nodeBox.style.top = nodeBoxTop;
         nodeBox.style.left = Length.Percent(currentPercent);
-        nodeBox.style.width = Length.Percent((((currentTimeStamp - startBeatLine[voiceNumber]) * 100) / beatSumLine[voiceNumber]) - currentPercent);
+        nodeBox.style.width = Length.Percent((((timeStamp - startBeatLine[voiceNumber]) * 100) / beatSumLine[voiceNumber]) - currentPercent);
         Color color = new(singerProfiles[playerNumber].color.r / 255f, singerProfiles[playerNumber].color.g / 255f, singerProfiles[playerNumber].color.b / 255f);
-        // updating score and setting node box color
-        switch (songData[voiceNumber][songDataCurrentIndex[voiceNumber]].kind)
+        // setting node box color
+        Kind toHit;
+        if (isItemMode)
+        {
+            toHit = Kind.Normal;
+        } else
+        {
+            toHit = songData[voiceNumber][songDataCurrentIndex[voiceNumber]].kind;
+        }
+        switch (toHit)
         {
             case Kind.Normal:
                 points[playerNumber] += pointsPerBeat[voiceNumber];
@@ -1271,11 +1406,7 @@ public class GameLogic : MonoBehaviour
                 nodeBox.style.unityBackgroundImageTintColor = new Color(color.r, color.g, color.b, 0.5f);
                 break;
         }
-        // updating ui elements
-        pointsTexts[playerNumber].text = ((int)Math.Ceiling(points[playerNumber])).ToString();
         nodeBoxes[playerNumber].Add(nodeBox);
-        // set actual beat as handled
-        lastTimeStamps[playerNumber] = currentTimeStamp;
     }
 
     private void UpdateWhenToStartRect(int currentTimeStamp, int voiceNumber, List<TextObject> textLine, GameObject rect, RectTransform rectTransform, float posY)
@@ -1481,5 +1612,19 @@ public class GameLogic : MonoBehaviour
                 swapBoxes[iCopy].style.left = nameBoxes[iCopy].resolvedStyle.left + nameBoxes[iCopy].resolvedStyle.width;
             };
         }
+    }
+
+    private void setNegativeEffect(int playernumber, double currentTime, int change, int nodeHeight)
+    {
+        switch (change)
+        {
+            case 0:
+                canSeeNodes[playernumber] = false;
+                break;
+            case 1:
+                canSeeArrow[playernumber] = false;
+                break;
+        }
+        effectEndTime[playernumber] = currentTime + 10;
     }
 }

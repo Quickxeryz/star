@@ -40,17 +40,24 @@ public class MainMenu : MonoBehaviour
         // get ip for server
         if (!GameState.serverStarted)
         {
-            Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, 0);
-            socket.Connect("8.8.8.8", 65530);
-            IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
-            GameState.ip = endPoint.Address.ToString();
-            // set ip address in server and client file
-            string[] text = File.ReadAllLines("Server/client.js");
-            text[0] = "const ip = \"" + GameState.ip + "\";";
-            File.WriteAllLines("Server/client.js", text);
-            text = File.ReadAllLines("Server/server.js");
-            text[0] = "const hostname = \"" + GameState.ip + "\";";
-            File.WriteAllLines("Server/server.js", text);
+            try
+            {
+                Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, 0);
+                socket.Connect("8.8.8.8", 65530);
+                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                GameState.ip = endPoint.Address.ToString();
+                // set ip address in server and client file
+                string[] text = File.ReadAllLines("Server/client.js");
+                text[0] = "const ip = \"" + GameState.ip + "\";";
+                File.WriteAllLines("Server/client.js", text);
+                text = File.ReadAllLines("Server/server.js");
+                text[0] = "const hostname = \"" + GameState.ip + "\";";
+                File.WriteAllLines("Server/server.js", text);
+            } catch (SocketException e)
+            {
+                Debug.Log(e);
+            }
+            
         } else
         {
             CreateQRCode();
