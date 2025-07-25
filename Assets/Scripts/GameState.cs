@@ -27,4 +27,8 @@ public class GameState : MonoBehaviour
     public static string ip;
     public static List<PlayerProfile> profiles = new();
     public static Settings settings;
+    // random game mode
+    public static bool showNodes = true;
+    public static bool showText = true;
+    public static bool useAudio = true;
 }

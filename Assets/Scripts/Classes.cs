@@ -14,7 +14,8 @@ namespace Classes
         Duet,
         Meow,
         Team,
-        Item
+        Item,
+        Random,
     }
 
     public enum GameMode
@@ -26,6 +27,7 @@ namespace Classes
         Meow = 3,
         Team = 4,
         Item = 5,
+        Random = 6,
     }
 
     public static class GameModeFunctions
@@ -46,6 +48,8 @@ namespace Classes
                     return GameMode.Team;
                 case "Item":
                     return GameMode.Team;
+                case "Random":
+                    return GameMode.Random;
                 default:
                     return GameMode.None;
             }
@@ -69,6 +73,8 @@ namespace Classes
                     return "Team";
                 case GameMode.Item:
                     return "Item";
+                case GameMode.Random:
+                    return "Random";
                 default:
                     return "ERROR";
             }

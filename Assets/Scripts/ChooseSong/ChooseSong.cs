@@ -82,28 +82,48 @@ public class ChooseSong : MonoBehaviour
                 {
                     GameState.currentVoice[j] = -1;
                 }
+                GameState.showNodes = true;
+                GameState.showText = true;
+                GameState.useAudio = true;
                 switch (GameState.currentGameMode) { 
-                    case GameMode.Classic:
-                    case GameMode.Meow:
-                    case GameMode.Item:
-                        if (GameState.currentSong.amountVoices > 1)
+                case GameMode.Classic:
+                case GameMode.Meow:
+                case GameMode.Item:
+                case GameMode.Random:
+                    if (GameState.currentGameMode == GameMode.Random)
+                    {
+                        // choose setting change (case 3: no change)
+                        switch (UnityEngine.Random.Range(0, 4))
                         {
-                            SceneManager.LoadScene("ChooseVoice");
+                            case 0:
+                                GameState.showNodes = false;
+                                break;
+                            case 1:
+                                GameState.showText = false;
+                                break;
+                            case 2:
+                                GameState.useAudio = false;
+                                break;
                         }
-                        else
-                        {
-                            SceneManager.LoadScene("GameScene");
-                        }
-                        break;
-                    case GameMode.Duet:
+                    }
+                    if (GameState.currentSong.amountVoices > 1)
+                    {
                         SceneManager.LoadScene("ChooseVoice");
-                        break;
-                    case GameMode.Together:
-                        SceneManager.LoadScene("ChoosePartner");
-                        break;
-                    case GameMode.Team:
-                        SceneManager.LoadScene("ChooseTeam");
-                        break;
+                    }
+                    else
+                    {
+                        SceneManager.LoadScene("GameScene");
+                    }
+                    break;
+                case GameMode.Duet:
+                    SceneManager.LoadScene("ChooseVoice");
+                    break;
+                case GameMode.Together:
+                    SceneManager.LoadScene("ChoosePartner");
+                    break;
+                case GameMode.Team:
+                    SceneManager.LoadScene("ChooseTeam");
+                    break;
                 }
             };
             root.Q<Button>(iCopy.ToString()).RegisterCallback<MouseEnterEvent, int>(PlaySong, iCopy);
@@ -173,6 +193,7 @@ public class ChooseSong : MonoBehaviour
                         case GameMode.Meow:
                         case GameMode.Team:
                         case GameMode.Item:
+                        case GameMode.Random:
                             // all songs
                             foreach (SongData song in GameState.songs)
                             {
@@ -378,6 +399,7 @@ public class ChooseSong : MonoBehaviour
             case GameMode.Meow:
             case GameMode.Team:
             case GameMode.Item:
+            case GameMode.Random:
                 // all songs
                 foreach (SongData song in GameState.songs)
                 {

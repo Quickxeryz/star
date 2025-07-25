@@ -36,6 +36,7 @@ public class SongEnd : MonoBehaviour
                 case PartyMode.Meow:
                 case PartyMode.Team:
                 case PartyMode.Item:
+                case PartyMode.Random:
                     // calculate team points
                     int x;
                     int y;
@@ -155,6 +156,7 @@ public class SongEnd : MonoBehaviour
                     case GameMode.Duet:
                     case GameMode.Meow:
                     case GameMode.Item:
+                    case GameMode.Random:
                         currentPlace.text = "Place " + (i + 1).ToString() + ": " + player[i].name + " with " + player[i].points.ToString() + " Points.";
                         break;
                     case GameMode.Together:
