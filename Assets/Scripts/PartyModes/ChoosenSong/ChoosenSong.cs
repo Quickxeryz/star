@@ -35,6 +35,8 @@ public class ChoosenSong : MonoBehaviour
             case PartyMode.Classic:
             case PartyMode.Meow:
             case PartyMode.Team:
+            case PartyMode.Item:
+            case PartyMode.Random:
                 Destroy(GameObject.Find("Together"));
                 root = GameObject.Find("Classic").GetComponent<UIDocument>().rootVisualElement;
                 break;
@@ -219,6 +221,22 @@ public class ChoosenSong : MonoBehaviour
         }
         play.clicked += () =>
         {
+            if (GameState.currentPartyMode == PartyMode.Random)
+            {
+                // choose setting change (case 3: no change)
+                switch (UnityEngine.Random.Range(0, 4))
+                {
+                    case 0:
+                        GameState.showNodes = false;
+                        break;
+                    case 1:
+                        GameState.showText = false;
+                        break;
+                    case 2:
+                        GameState.useAudio = false;
+                        break;
+                }
+            }
             SceneManager.LoadScene("GameScene");
         };
         exit.clicked += () =>
@@ -263,6 +281,8 @@ public class ChoosenSong : MonoBehaviour
             {
                 case PartyMode.Classic:
                 case PartyMode.Meow:
+                case PartyMode.Item:
+                case PartyMode.Random:
                     for (int i = 0; i < GameState.teams.Count; i++)
                     {
                         foreach (PlayerProfile p in GameState.teams[i].players)

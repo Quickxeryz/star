@@ -19,6 +19,8 @@ public class GameModeSelect : MonoBehaviour
         Button duet = root.Q<Button>("Duet");
         Button miau = root.Q<Button>("Meow");
         Button team = root.Q<Button>("Team");
+        Button item = root.Q<Button>("Item");
+        Button random = root.Q<Button>("Random");
         Button back = root.Q<Button>("Back");
         // set up functions
         classic.clicked += () =>
@@ -191,6 +193,54 @@ public class GameModeSelect : MonoBehaviour
                 SceneManager.LoadScene("ChoosenSong");
             }
         };
+        item.clicked += () =>
+        {
+            if (GameState.songsLoaded)
+            {
+                GameState.currentPartyMode = PartyMode.Item;
+                GameState.currentGameMode = GameMode.Item;
+                GameState.partyModeSongs = new List<SongData>();
+                // all songs 
+                foreach (SongData song in GameState.songs)
+                {
+                    GameState.partyModeSongs.Add(song);
+                }
+                // update voices
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    GameState.currentVoice[i] = 0;
+                }
+                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+                {
+                    GameState.currentVoice[i] = -1;
+                }
+                SceneManager.LoadScene("ChoosenSong");
+            }
+        };
+        random.clicked += () =>
+        {
+            if (GameState.songsLoaded)
+            {
+                GameState.currentPartyMode = PartyMode.Random;
+                GameState.currentGameMode = GameMode.Random;
+                GameState.partyModeSongs = new List<SongData>();
+                // all songs 
+                foreach (SongData song in GameState.songs)
+                {
+                    GameState.partyModeSongs.Add(song);
+                }
+                // update voices
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    GameState.currentVoice[i] = 0;
+                }
+                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+                {
+                    GameState.currentVoice[i] = -1;
+                }
+                SceneManager.LoadScene("ChoosenSong");
+            }
+        };
         back.clicked += () =>
         {
             SceneManager.LoadScene("GameModeConfig");
@@ -204,11 +254,6 @@ public class GameModeSelect : MonoBehaviour
         {
             songsLoaded.text = "Loading songs ...";
         }
-    }
-
-    private void Team_clicked()
-    {
-        throw new System.NotImplementedException();
     }
 
     private void Update()
