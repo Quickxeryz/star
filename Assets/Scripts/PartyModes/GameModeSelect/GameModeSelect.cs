@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Classes;
-using System.Collections.Generic;
 
 public class GameModeSelect : MonoBehaviour
 {
@@ -21,6 +20,7 @@ public class GameModeSelect : MonoBehaviour
         Button team = root.Q<Button>("Team");
         Button item = root.Q<Button>("Item");
         Button random = root.Q<Button>("Random");
+        Button randomGameMode = root.Q<Button>("RandomGameMode");
         Button back = root.Q<Button>("Back");
         // set up functions
         classic.clicked += () =>
@@ -29,21 +29,7 @@ public class GameModeSelect : MonoBehaviour
             {
                 GameState.currentPartyMode = PartyMode.Classic;
                 GameState.currentGameMode = GameMode.Classic;
-                GameState.partyModeSongs = new List<SongData>();
-                // all songs 
-                foreach (SongData song in GameState.songs) 
-                {
-                    GameState.partyModeSongs.Add(song);
-                }
-                // update voices
-                for (int i = 0; i < GameState.amountPlayer; i++)
-                {
-                    GameState.currentVoice[i] = 0;
-                }
-                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
-                {
-                    GameState.currentVoice[i] = -1;
-                }
+                GameModeFunctions.SetUpGameMode();
                 SceneManager.LoadScene("ChoosenSong");
             }
         };
@@ -69,21 +55,7 @@ public class GameModeSelect : MonoBehaviour
                 {
                     GameState.currentPartyMode = PartyMode.Together;
                     GameState.currentGameMode = GameMode.Together;
-                    GameState.partyModeSongs = new List<SongData>();
-                    // all songs
-                    foreach (SongData song in GameState.songs)
-                    {
-                        GameState.partyModeSongs.Add(song);
-                    }
-                    // update voices
-                    for (int i = 0; i < GameState.amountPlayer; i++)
-                    {
-                        GameState.currentVoice[i] = 0;
-                    }
-                    for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
-                    {
-                        GameState.currentVoice[i] = -1;
-                    }
+                    GameModeFunctions.SetUpGameMode();
                     SceneManager.LoadScene("ChoosenSong");
                 } 
             } else
@@ -114,33 +86,11 @@ public class GameModeSelect : MonoBehaviour
             }
             if (ok)
             {
-                GameState.amountPlayer = GameState.amountPlayer * 2;
                 if (GameState.songsLoaded)
                 {
                     GameState.currentPartyMode = PartyMode.Duet;
                     GameState.currentGameMode = GameMode.Duet;
-                    GameState.partyModeSongs = new List<SongData>();
-                    // exclude only main singer songs
-                    foreach (SongData song in GameState.songs)
-                    {
-                        if (song.amountVoices > 1)
-                        {
-                            GameState.partyModeSongs.Add(song);
-                        }
-                    }
-                    // update voices
-                    for (int i = 0; i < GameState.amountPlayer; i += 2)
-                    {
-                        GameState.currentVoice[i] = 0;
-                    }
-                    for (int i = 1; i < GameState.amountPlayer; i += 2)
-                    {
-                        GameState.currentVoice[i] = 1;
-                    }
-                    for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
-                    {
-                        GameState.currentVoice[i] = -1;
-                    }
+                    GameModeFunctions.SetUpGameMode();
                     SceneManager.LoadScene("ChoosenSong");
                 }
             }
@@ -151,21 +101,7 @@ public class GameModeSelect : MonoBehaviour
             {
                 GameState.currentPartyMode = PartyMode.Meow;
                 GameState.currentGameMode = GameMode.Meow;
-                GameState.partyModeSongs = new List<SongData>();
-                // all songs 
-                foreach (SongData song in GameState.songs)
-                {
-                    GameState.partyModeSongs.Add(song);
-                }
-                // update voices
-                for (int i = 0; i < GameState.amountPlayer; i++)
-                {
-                    GameState.currentVoice[i] = 0;
-                }
-                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
-                {
-                    GameState.currentVoice[i] = -1;
-                }
+                GameModeFunctions.SetUpGameMode();
                 SceneManager.LoadScene("ChoosenSong");
             }
         };
@@ -175,21 +111,7 @@ public class GameModeSelect : MonoBehaviour
             {
                 GameState.currentPartyMode = PartyMode.Team;
                 GameState.currentGameMode = GameMode.Team;
-                GameState.partyModeSongs = new List<SongData>();
-                // all songs 
-                foreach (SongData song in GameState.songs)
-                {
-                    GameState.partyModeSongs.Add(song);
-                }
-                // update voices
-                for (int i = 0; i < GameState.amountPlayer; i++)
-                {
-                    GameState.currentVoice[i] = 0;
-                }
-                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
-                {
-                    GameState.currentVoice[i] = -1;
-                }
+                GameModeFunctions.SetUpGameMode();
                 SceneManager.LoadScene("ChoosenSong");
             }
         };
@@ -199,21 +121,7 @@ public class GameModeSelect : MonoBehaviour
             {
                 GameState.currentPartyMode = PartyMode.Item;
                 GameState.currentGameMode = GameMode.Item;
-                GameState.partyModeSongs = new List<SongData>();
-                // all songs 
-                foreach (SongData song in GameState.songs)
-                {
-                    GameState.partyModeSongs.Add(song);
-                }
-                // update voices
-                for (int i = 0; i < GameState.amountPlayer; i++)
-                {
-                    GameState.currentVoice[i] = 0;
-                }
-                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
-                {
-                    GameState.currentVoice[i] = -1;
-                }
+                GameModeFunctions.SetUpGameMode();
                 SceneManager.LoadScene("ChoosenSong");
             }
         };
@@ -223,21 +131,17 @@ public class GameModeSelect : MonoBehaviour
             {
                 GameState.currentPartyMode = PartyMode.Random;
                 GameState.currentGameMode = GameMode.Random;
-                GameState.partyModeSongs = new List<SongData>();
-                // all songs 
-                foreach (SongData song in GameState.songs)
-                {
-                    GameState.partyModeSongs.Add(song);
-                }
-                // update voices
-                for (int i = 0; i < GameState.amountPlayer; i++)
-                {
-                    GameState.currentVoice[i] = 0;
-                }
-                for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
-                {
-                    GameState.currentVoice[i] = -1;
-                }
+                GameModeFunctions.SetUpGameMode();
+                SceneManager.LoadScene("ChoosenSong");
+            }
+        };
+        randomGameMode.clicked += () =>
+        {
+            if (GameState.songsLoaded)
+            {
+                GameState.currentPartyMode = PartyMode.RandomGameMode;
+                GameState.currentGameMode = GameMode.None;
+                PartyModeFunctions.SetUpNextGameMode();
                 SceneManager.LoadScene("ChoosenSong");
             }
         };

@@ -7,15 +7,72 @@ namespace Classes
 {
     public enum PartyMode
     {
-        None,
-        ChooseSong,
-        Classic,
-        Together,
-        Duet,
-        Meow,
-        Team,
-        Item,
-        Random,
+        None = -1,
+        RandomGameMode = 0,
+        Duet = 1,
+        ChooseSong = 2,
+        Classic = 3,       
+        Meow = 4,
+        Team = 5,
+        Item = 6,
+        Random = 7,
+        Together = 8,
+    }
+
+    public static class PartyModeFunctions
+    {
+        public static void SetUpNextGameMode()
+        {
+            if (GameState.currentGameMode == GameMode.Duet)
+            {
+                GameState.amountPlayer /= 2;
+            }
+            bool ok = true;
+            // check if duet is playable
+            if (GameState.amountPlayer * 2 > GameState.maxPlayer)
+            {
+                ok = false;
+            }
+            if (ok)
+            {
+                // check for amount team member
+                foreach (Team t in GameState.teams)
+                {
+                    if (t.players.Count < 2)
+                    {
+                        ok = false;
+                    }
+                }
+            }
+            int min = 1;
+            if (!ok)
+            {
+                min = 2;
+            }
+            ok = true;
+            // check if together is playable
+            foreach (Team t in GameState.teams)
+            {
+                if (t.players.Count < 2)
+                {
+                    ok = false;
+                }
+                foreach (PlayerProfile p in t.players)
+                {
+                    if (p.useOnlineMic == false)
+                    {
+                        ok = false;
+                    }
+                }
+            }
+            int max = 9;
+            if (!ok)
+            {
+                max = 8;
+            }
+            GameState.currentGameMode = (GameMode)UnityEngine.Random.Range(min, max);
+            GameModeFunctions.SetUpGameMode();
+        }
     }
 
     public enum GameMode
@@ -77,6 +134,55 @@ namespace Classes
                     return "Random";
                 default:
                     return "ERROR";
+            }
+        }
+
+        public static void SetUpGameMode()
+        {
+            GameState.partyModeSongs = new List<SongData>();
+            switch (GameState.currentGameMode)
+            {
+                case GameMode.Classic:
+                case GameMode.Together:
+                case GameMode.Meow:
+                case GameMode.Team:
+                case GameMode.Item:
+                case GameMode.Random:
+                    // all songs 
+                    foreach (SongData song in GameState.songs)
+                    {
+                        GameState.partyModeSongs.Add(song);
+                    }
+                    // update voices
+                    for (int i = 0; i < GameState.amountPlayer; i++)
+                    {
+                        GameState.currentVoice[i] = 0;
+                    }
+                    break;
+                case GameMode.Duet:
+                    GameState.amountPlayer *= 2;
+                    // exclude only main singer songs
+                    foreach (SongData song in GameState.songs)
+                    {
+                        if (song.amountVoices > 1)
+                        {
+                            GameState.partyModeSongs.Add(song);
+                        }
+                    }
+                    // update voices
+                    for (int i = 0; i < GameState.amountPlayer; i += 2)
+                    {
+                        GameState.currentVoice[i] = 0;
+                    }
+                    for (int i = 1; i < GameState.amountPlayer; i += 2)
+                    {
+                        GameState.currentVoice[i] = 1;
+                    }
+                    break;
+            }
+            for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
+            {
+                GameState.currentVoice[i] = -1;
             }
         }
     }

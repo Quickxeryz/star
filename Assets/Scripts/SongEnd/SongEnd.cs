@@ -37,6 +37,7 @@ public class SongEnd : MonoBehaviour
                 case PartyMode.Team:
                 case PartyMode.Item:
                 case PartyMode.Random:
+                case PartyMode.RandomGameMode:
                     // calculate team points
                     int x;
                     int y;
@@ -70,6 +71,10 @@ public class SongEnd : MonoBehaviour
                             x++;
                         }
                     }
+                    if (GameState.currentPartyMode == PartyMode.RandomGameMode)
+                    {
+                        PartyModeFunctions.SetUpNextGameMode();
+                    }
                     // choose next screen
                     GameState.roundsLeft--;
                     if (GameState.roundsLeft == 0)
@@ -86,7 +91,7 @@ public class SongEnd : MonoBehaviour
                     break;
             }
         };
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentPartyMode == PartyMode.Duet || (GameState.currentPartyMode == PartyMode.RandomGameMode && GameState.currentGameMode == GameMode.Duet))
         {
             player = new PlayerProfile[GameState.amountPlayer / 2];
             for (int i = 0; i < GameState.amountPlayer; i += 2)
@@ -135,7 +140,7 @@ public class SongEnd : MonoBehaviour
         Array.Sort(player);
         // print amount playing people with highest number
         Label currentPlace;        
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentPartyMode == PartyMode.Duet || (GameState.currentPartyMode == PartyMode.RandomGameMode && GameState.currentGameMode == GameMode.Duet))
         {
             for (int i = 0; i < player.Length; i++)
             {

@@ -30,18 +30,18 @@ public class ChoosenSong : MonoBehaviour
     void Start()
     {
         VisualElement root;
-        switch (GameState.currentPartyMode)
+        switch (GameState.currentGameMode)
         {
-            case PartyMode.Classic:
-            case PartyMode.Meow:
-            case PartyMode.Team:
-            case PartyMode.Item:
-            case PartyMode.Random:
+            case GameMode.Classic:
+            case GameMode.Meow:
+            case GameMode.Team:
+            case GameMode.Item:
+            case GameMode.Random:
                 Destroy(GameObject.Find("Together"));
                 root = GameObject.Find("Classic").GetComponent<UIDocument>().rootVisualElement;
                 break;
-            case PartyMode.Together:
-            case PartyMode.Duet:
+            case GameMode.Together:
+            case GameMode.Duet:
                 Destroy(GameObject.Find("Classic"));
                 root = GameObject.Find("Together").GetComponent<UIDocument>().rootVisualElement;
                 break;
@@ -50,7 +50,7 @@ public class ChoosenSong : MonoBehaviour
                 break;
         }
         // UI
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             Label[] player = new Label[GameState.amountPlayer / 2];
             Button[] reroll = new Button[GameState.amountPlayer / 2];
@@ -60,7 +60,7 @@ public class ChoosenSong : MonoBehaviour
         }
         song = root.Q<Label>("Song");
         root.Q<Label>("Rounds").text = GameState.roundsLeft.ToString();
-        if (GameState.currentPartyMode == PartyMode.Together)
+        if (GameState.currentGameMode == GameMode.Together)
         {
             secondPlayer = new Label[GameState.amountPlayer];
             secondReroll = new Button[GameState.amountPlayer];
@@ -68,7 +68,7 @@ public class ChoosenSong : MonoBehaviour
             secondSwitchPlayer_Button = new Button[GameState.amountPlayer];
             secondNodes = new Label[GameState.amountPlayer];
         }
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             secondPlayer = new Label[GameState.amountPlayer / 2];
             secondReroll = new Button[GameState.amountPlayer / 2];
@@ -92,7 +92,7 @@ public class ChoosenSong : MonoBehaviour
             }
         }
         // finding all UI Elements
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             for (int i = 0; i < GameState.amountPlayer / 2; i++)
             {
@@ -124,7 +124,7 @@ public class ChoosenSong : MonoBehaviour
                 switchPlayer_Button[i].visible = true;
             }
         }
-        if (GameState.currentPartyMode == PartyMode.Together)
+        if (GameState.currentGameMode == GameMode.Together)
         {
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
@@ -140,7 +140,7 @@ public class ChoosenSong : MonoBehaviour
                 secondSwitchPlayer_Button[i].visible = true;
             }
         }
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             for (int i = 0; i < GameState.amountPlayer / 2; i++)
             {
@@ -159,7 +159,7 @@ public class ChoosenSong : MonoBehaviour
         Button play = root.Q<Button>("Play");
         Button exit = root.Q<Button>("Exit");
         // set up functions
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             for (int i = 0; i < GameState.amountPlayer / 2; i++)
             {
@@ -189,7 +189,7 @@ public class ChoosenSong : MonoBehaviour
                 };
             }
         }
-        if (GameState.currentPartyMode == PartyMode.Together)
+        if (GameState.currentGameMode == GameMode.Together)
         {
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
@@ -204,7 +204,7 @@ public class ChoosenSong : MonoBehaviour
                 };
             }
         }
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             for (int i = 0; i < GameState.amountPlayer / 2; i++)
             {
@@ -221,7 +221,7 @@ public class ChoosenSong : MonoBehaviour
         }
         play.clicked += () =>
         {
-            if (GameState.currentPartyMode == PartyMode.Random)
+            if (GameState.currentGameMode == GameMode.Random)
             {
                 // choose setting change (case 3: no change)
                 switch (UnityEngine.Random.Range(0, 4))
@@ -249,7 +249,7 @@ public class ChoosenSong : MonoBehaviour
         videoPlayer = music.AddComponent<VideoPlayer>();
         RandomSong();
         // change ui for team mode
-        if (GameState.currentPartyMode == PartyMode.Team)
+        if (GameState.currentGameMode == GameMode.Team)
         {
             root.Q<Label>("Player").text = "Team";
             for (int i = 0; i < GameState.amountPlayer; i++)
@@ -277,12 +277,12 @@ public class ChoosenSong : MonoBehaviour
                 player[i].text = GameState.teams[i].playersNotSung[index].name;
                 GameState.teams[i].playersNotSung.RemoveAt(index);
             }
-            switch (GameState.currentPartyMode)
+            switch (GameState.currentGameMode)
             {
-                case PartyMode.Classic:
-                case PartyMode.Meow:
-                case PartyMode.Item:
-                case PartyMode.Random:
+                case GameMode.Classic:
+                case GameMode.Meow:
+                case GameMode.Item:
+                case GameMode.Random:
                     for (int i = 0; i < GameState.teams.Count; i++)
                     {
                         foreach (PlayerProfile p in GameState.teams[i].players)
@@ -294,8 +294,8 @@ public class ChoosenSong : MonoBehaviour
                         }
                     }
                     break;
-                case PartyMode.Together:
-                case PartyMode.Duet:
+                case GameMode.Together:
+                case GameMode.Duet:
                     bool differentPlayerNotFound = true;
                     for (int i = 0; i < GameState.teams.Count; i++)
                     {
@@ -335,10 +335,10 @@ public class ChoosenSong : MonoBehaviour
 
     void Update()
     {
-        if (GameState.currentPartyMode == PartyMode.Team) {
+        if (GameState.currentGameMode == GameMode.Team) {
             return;
         }
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             for (int i = 0; i < GameState.amountPlayer / 2; i++)
             {
@@ -351,14 +351,14 @@ public class ChoosenSong : MonoBehaviour
                 nodes[i].text = "Node: " + microphoneInput.nodes[i].ToString();
             }
         }
-        if (GameState.currentPartyMode == PartyMode.Together)
+        if (GameState.currentGameMode == GameMode.Together)
         {
             for (int i = GameState.amountPlayer; i < GameState.amountPlayer * 2; i++)
             {
                 secondNodes[i - GameState.amountPlayer].text = "Node: " + microphoneInput.nodes[i].ToString();
             }
         }
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             for (int i = 0; i < GameState.amountPlayer / 2; i++)
             {
@@ -374,8 +374,8 @@ public class ChoosenSong : MonoBehaviour
             RandomSong();
             GameState.teams[i].amountRerolls--;
             reroll[i].text = "Reroll Song " + GameState.teams[i].amountRerolls + "x";
-            if (GameState.currentPartyMode == PartyMode.Together 
-                || GameState.currentPartyMode == PartyMode.Duet)
+            if (GameState.currentGameMode == GameMode.Together 
+                || GameState.currentGameMode == GameMode.Duet)
             {
                 secondReroll[i].text = "Reroll Song " + GameState.teams[i].amountRerolls + "x";
             }
@@ -399,8 +399,8 @@ public class ChoosenSong : MonoBehaviour
                     index++;
                 }
                 switchPlayer[i].choices.Add(player[i].text);
-                if (GameState.currentPartyMode == PartyMode.Together 
-                    || GameState.currentPartyMode == PartyMode.Duet)
+                if (GameState.currentGameMode == GameMode.Together 
+                    || GameState.currentGameMode == GameMode.Duet)
                 {
                     secondSwitchPlayer[i].choices.Add(player[i].text);
                 }
@@ -415,8 +415,8 @@ public class ChoosenSong : MonoBehaviour
                     }
                     index++;
                 }
-                if (GameState.currentPartyMode == PartyMode.Together 
-                    || GameState.currentPartyMode == PartyMode.Duet)
+                if (GameState.currentGameMode == GameMode.Together 
+                    || GameState.currentGameMode == GameMode.Duet)
                 {
                     secondSwitchPlayer[i].choices.RemoveAt(switchPlayer[i].choices.IndexOf(switchPlayer[i].value));
                 }
@@ -450,15 +450,15 @@ public class ChoosenSong : MonoBehaviour
                 secondSwitchPlayer[i].choices.RemoveAt(secondSwitchPlayer[i].choices.IndexOf(secondSwitchPlayer[i].value));
             }
             switchPlayer[i].index = -1;
-            if (GameState.currentPartyMode == PartyMode.Together 
-                || GameState.currentPartyMode == PartyMode.Duet)
+            if (GameState.currentGameMode == GameMode.Together 
+                || GameState.currentGameMode == GameMode.Duet)
             {
                 secondSwitchPlayer[i].index = -1;
             }
             GameState.teams[i].amountSwitches--;
             switchPlayer_Button[i].text = "Switch " + GameState.teams[i].amountSwitches + "x";
-            if (GameState.currentPartyMode == PartyMode.Together 
-                || GameState.currentPartyMode == PartyMode.Duet)
+            if (GameState.currentGameMode == GameMode.Together 
+                || GameState.currentGameMode == GameMode.Duet)
             {
                 secondSwitchPlayer_Button[i].text = "Switch " + GameState.teams[i].amountSwitches + "x";
             }
@@ -494,13 +494,13 @@ public class ChoosenSong : MonoBehaviour
 
     void SetUpMic()
     {
-        if (GameState.currentPartyMode == PartyMode.Team)
+        if (GameState.currentGameMode == GameMode.Team)
         {
             return;
         }
         int index;
         bool found;
-        if (GameState.currentPartyMode == PartyMode.Duet)
+        if (GameState.currentGameMode == GameMode.Duet)
         {
             // set mic for main singer
             for (int i = 0; i < GameState.amountPlayer; i += 2)
@@ -561,7 +561,7 @@ public class ChoosenSong : MonoBehaviour
             }
         }
         // set mic for second singer
-        if (GameState.currentPartyMode == PartyMode.Together)
+        if (GameState.currentGameMode == GameMode.Together)
         {
             for (int i = 0; i < GameState.teams.Count; i++)
             {

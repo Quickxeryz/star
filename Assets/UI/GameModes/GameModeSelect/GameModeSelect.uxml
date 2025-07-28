@@ -8,5 +8,6 @@
     <ui:Button text="Team" display-tooltip-when-elided="true" name="Team" selectable="true" style="position: absolute; height: 40px; width: auto; top: 30%; left: 1%; bottom: 1%; right: 1%;" />
     <ui:Button text="Item" display-tooltip-when-elided="true" name="Item" selectable="true" style="position: absolute; height: 40px; width: auto; top: 35%; left: 1%; bottom: 1%; right: 1%;" />
     <ui:Button text="Random" display-tooltip-when-elided="true" name="Random" selectable="true" style="position: absolute; height: 40px; width: auto; top: 40%; left: 1%; bottom: 1%; right: 1%;" />
+    <ui:Button text="Random Game Mode" display-tooltip-when-elided="true" name="RandomGameMode" selectable="true" style="position: absolute; height: 40px; width: auto; top: 45%; left: 1%; bottom: 1%; right: 1%;" />
     <ui:Button text="Back" display-tooltip-when-elided="true" name="Back" selectable="true" style="position: absolute; right: 1%; bottom: 1%; width: 10%; height: 10%;" />
 </ui:UXML>
