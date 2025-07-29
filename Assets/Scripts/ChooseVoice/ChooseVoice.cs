@@ -5,7 +5,8 @@ using UnityEngine.UIElements;
 
 public class ChooseVoice : MonoBehaviour
 {
-    // Start is called before the first frame update
+    GroupBox[] playerX_TextBox;
+
     void Start()
     {
         // get UI elements
@@ -13,6 +14,7 @@ public class ChooseVoice : MonoBehaviour
         Button play = root.Q<Button>("Play");
         Button back = root.Q<Button>("Back");
         TemplateContainer[] playerX = new TemplateContainer[GameState.amountPlayer];
+        int[] voices = new int[GameState.amountPlayer];
         for (int i = 0; i < playerX.Length; i++)
         {
             playerX[i] = root.Q<TemplateContainer>("Player" + (i + 1).ToString());
@@ -22,7 +24,7 @@ public class ChooseVoice : MonoBehaviour
         {
             playerX_Label[i] = root.Q<Label>("Player" + (i + 1).ToString() + "Text");
         }
-        GroupBox[] playerX_TextBox = new GroupBox[GameState.amountPlayer];
+        playerX_TextBox = new GroupBox[GameState.amountPlayer];
         for (int i = 0; i < playerX_TextBox.Length; i++)
         {
             playerX_TextBox[i] = playerX[i].Q<GroupBox>("TextBox");
@@ -43,18 +45,18 @@ public class ChooseVoice : MonoBehaviour
             int iCopy = i;
             playerX_Left[iCopy].clicked += () =>
             {
-                int voice = Int32.Parse(playerX_TextBox[iCopy].text);
-                if (voice > 0)
+                if (voices[iCopy] > 0)
                 {
-                    playerX_TextBox[iCopy].text = (voice - 1).ToString();
+                    voices[iCopy]--;
+                    SetSingerName(voices, iCopy);
                 }
             };
             playerX_Right[iCopy].clicked += () =>
             {
-                int voice = Int32.Parse(playerX_TextBox[iCopy].text);
-                if (voice < GameState.currentSong.amountVoices - 1)
+                if (voices[iCopy] < GameState.currentSong.amountVoices - 1)
                 {
-                    playerX_TextBox[iCopy].text = (voice + 1).ToString();
+                    voices[iCopy]++;
+                    SetSingerName(voices, iCopy);
                 }
             };
         }
@@ -62,7 +64,7 @@ public class ChooseVoice : MonoBehaviour
         {
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
-                GameState.currentVoice[i] = Int32.Parse(playerX_TextBox[i].text);
+                GameState.currentVoice[i] = voices[i];
             }
             for (int i = GameState.amountPlayer; i < GameState.currentVoice.Length; i++)
             {
@@ -78,13 +80,25 @@ public class ChooseVoice : MonoBehaviour
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
             playerX_Label[i].text = GameState.profiles[GameState.currentProfileIndex[i]].name;
-            playerX_TextBox[i].text = "0";
+            SetSingerName(voices, i);
         }
         // set visibility of player settings
         for (int i = 0; i < GameState.amountPlayer; i++)
         {
             playerX_Label[i].visible = true;
             playerX[i].visible = true;
+        }
+    }
+
+    private void SetSingerName(int[] voices, int index)
+    {
+        if (GameState.currentSong.singer.Length > voices[index])
+        {
+            playerX_TextBox[index].text = GameState.currentSong.singer[voices[index]];
+        }
+        else
+        {
+            playerX_TextBox[index].text = voices[index].ToString();
         }
     }
 }

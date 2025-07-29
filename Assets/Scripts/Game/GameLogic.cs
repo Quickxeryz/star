@@ -337,7 +337,7 @@ public class GameLogic : MonoBehaviour
                 }
             }
         }
-        // Collect used voices
+        // collect used voices
         foreach (int v in GameState.currentVoice)
         {
             if (v != -1 && voices.IndexOf(v) == -1)
@@ -345,7 +345,29 @@ public class GameLogic : MonoBehaviour
                 voices.Insert(0, v);
             }
         }
-        // Swap text
+        // show voices
+        if (voices.Count > 1)
+        {
+            TextObject voiceNumber; 
+            if (GameState.currentSong.singer != null && GameState.currentSong.singer.Length > voices[1])
+            {
+                voiceNumber = CreateSyllabel(GameState.currentSong.singer[voices[1]]);
+            } else
+            {
+                voiceNumber = CreateSyllabel(voices[1].ToString());
+            }
+            voiceNumber.obj.transform.localPosition = new Vector3(-450f, 275f, 0f);
+            if (GameState.currentSong.singer != null && GameState.currentSong.singer.Length > voices[0])
+            {
+                voiceNumber = CreateSyllabel(GameState.currentSong.singer[voices[0]]);
+            }
+            else
+            {
+                voiceNumber = CreateSyllabel(voices[0].ToString());
+            }
+            voiceNumber.obj.transform.localPosition = new Vector3(-450f, -700f, 0f);
+        }
+        // swap text
         if (GameState.currentGameMode == GameMode.Meow)
         {
             bool start_syllable = true;

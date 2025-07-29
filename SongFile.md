@@ -22,7 +22,8 @@ All song files should be encoded in utf-8 to work properly
 - #BACKGROUND: relativePath -> no functionality
 - #RELATIVE: [yes | no] -> no functionality
 - #RESOLUTION: integer -> no functionality
-- #AUTHOR: string
+- #AUTHOR: string -> no functionality
+- #SINGER: String,String,...
 
 ### Example header
 #TITLE: My favorite song\
@@ -61,6 +62,7 @@ All song files should be encoded in utf-8 to work properly
 - #RELATIVE: the beat of every song line starts with 0 
 - #RESOLUTION:
 - #AUTHOR: name from the writer of this file
+- #SINGER: name of the singer sorted by voices and seperated with a ','. Used for songs with multiple voices
 
 ## Song Lines
 Table like structure of the song all times are given in beats per minute

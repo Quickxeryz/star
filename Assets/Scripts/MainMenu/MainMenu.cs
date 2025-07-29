@@ -144,6 +144,7 @@ public class MainMenu : MonoBehaviour
         int currentBeat;
         int amountVoices;
         string temp;
+        string[] singer;
         foreach (string file in files)
         {
             // check for song file
@@ -164,6 +165,7 @@ public class MainMenu : MonoBehaviour
                     songVideoPath = "";
                     amountVoices = 1;
                     lastBeat = 0;
+                    singer = null;
                     // when file is song file extract data
                     foreach (string line in text)
                     {
@@ -191,6 +193,9 @@ public class MainMenu : MonoBehaviour
                         else if (line.StartsWith("#VIDEO:"))
                         {
                             songVideoPath = path + "/" + line[7..];
+                        } else if (line.StartsWith("#SINGER:"))
+                        {
+                            singer = line[8..].Split(',');
                         } else if (line.Length>0)
                         {
                             if (line[0] == ':')
@@ -205,7 +210,7 @@ public class MainMenu : MonoBehaviour
                             }
                         }
                     }
-                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap, amountVoices)
+                    currentSong = new SongData(file, songTitle, songArtist, songMusicPath, bpm, gap, amountVoices, singer)
                     {
                         pathToVideo = songVideoPath
                     };
