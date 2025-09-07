@@ -30,5 +30,5 @@ public class GameState : MonoBehaviour
     // random game mode
     public static bool showNodes = true;
     public static bool showText = true;
-    public static bool useAudio = true;
+    public static bool useAudio = true;    
 }

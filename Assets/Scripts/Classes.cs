@@ -1,10 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Video;
 
 namespace Classes
 {
+    public static class GeneralFunctions
+    {
+        public static void WriteErrorLog(string errorMsg)
+        {
+            StreamWriter file = new("errors.log", true);
+            file.WriteLine(errorMsg);
+            file.Close();
+        }
+    }
     public enum PartyMode
     {
         None = -1,
@@ -538,12 +548,14 @@ namespace Classes
         public string absolutePathToSongs;
         public float microphoneDelayInSeconds;
         public MicrophoneData[] microphoneInput;
+        public bool useNewNodeEngine;
 
-        public Settings(string path, float delayInSeconds, MicrophoneData[] microphoneInput)
+        public Settings(string path, float delayInSeconds, MicrophoneData[] microphoneInput, bool useNewNodeEngine)
         {
             absolutePathToSongs = path;
             microphoneDelayInSeconds = delayInSeconds;
             this.microphoneInput = microphoneInput;
+            this.useNewNodeEngine = useNewNodeEngine;
         }
     }
 }

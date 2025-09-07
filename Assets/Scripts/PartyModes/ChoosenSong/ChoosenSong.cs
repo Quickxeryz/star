@@ -1,4 +1,5 @@
 using Classes;
+using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -472,23 +473,36 @@ public class ChoosenSong : MonoBehaviour
         GameState.currentSong = GameState.partyModeSongs[index];
         song.text = GameState.currentSong.artist + ": " + GameState.currentSong.title;
         // using audio for sound
-        if (GameState.currentSong.pathToMusic != "" && GameState.currentSong.pathToMusic != GameState.currentSong.pathToVideo)
-        {
-            videoPlayer.Pause();
-            UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip("file:///" + GameState.currentSong.pathToMusic, AudioType.MPEG);
-            req.SendWebRequest();
-            while (!req.isDone)
+        try { 
+            if (GameState.currentSong.pathToMusic != "" && GameState.currentSong.pathToMusic != GameState.currentSong.pathToVideo)
             {
-                Thread.Sleep(100);
+                videoPlayer.Pause();
+                UnityWebRequest req = UnityWebRequestMultimedia.GetAudioClip("file:///" + GameState.currentSong.pathToMusic, AudioType.MPEG);
+                req.SendWebRequest();
+                while (!req.isDone)
+                {
+                    Thread.Sleep(100);
+                }
+                audio.clip = DownloadHandlerAudioClip.GetContent(req);
+                audio.Play();
             }
-            audio.clip = DownloadHandlerAudioClip.GetContent(req);
-            audio.Play();
+            else // using video for sound
+            {
+                audio.Pause();
+                videoPlayer.url = GameState.currentSong.pathToVideo;
+                videoPlayer.Play();
+            }
         }
-        else // using video for sound
+        catch
         {
-            audio.Pause();
-            videoPlayer.url = GameState.currentSong.pathToVideo;
-            videoPlayer.Play();
+            if (GameState.currentSong.pathToMusic != "" && GameState.currentSong.pathToMusic != GameState.currentSong.pathToVideo)
+            {
+                GeneralFunctions.WriteErrorLog("Error getting audio from " + GameState.currentSong.pathToMusic + "; Maybe the path to the mp3 or video is not found or the txt file isn't written in utf-8!");
+            }
+            else
+            {
+                GeneralFunctions.WriteErrorLog("Error getting audio from " + GameState.currentSong.pathToVideo + "; Maybe the path to the mp3 or video is not found or the txt file isn't written in utf-8!");
+            }
         }
     }
 

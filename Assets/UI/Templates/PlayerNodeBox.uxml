@@ -14,5 +14,6 @@
     <ui:VisualElement name="Nodes" style="background-image: url(&quot;project://database/Assets/UI/Textures/Nodes.png?fileID=2800000&amp;guid=8d563e7c1760ed244b32f7f3520621e2&amp;type=3#Nodes&quot;); width: 100%; height: 75%; position: absolute; top: 100px; left: 0; right: auto; -unity-background-scale-mode: stretch-to-fill; display: flex; opacity: 1;">
         <ui:VisualElement name="Node" picking-mode="Ignore" style="background-image: url(&quot;project://database/Assets/UI/Textures/NodeArrow.png?fileID=2800000&amp;guid=77090ad7e6b5ccd45b1d194e27b6e07e&amp;type=3#NodeArrow&quot;); width: 2%; height: 10%; position: absolute; top: -5%; align-items: stretch; justify-content: flex-start; transform-origin: center; left: -2%;" />
         <ui:VisualElement name="NodeBox" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; height: 100%; width: 100%;" />
+        <ui:VisualElement name="ItemBox" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; height: 100%; width: 100%;" />
     </ui:VisualElement>
 </ui:UXML>

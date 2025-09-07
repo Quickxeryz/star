@@ -92,7 +92,7 @@ public class ChooseVoice : MonoBehaviour
 
     private void SetSingerName(int[] voices, int index)
     {
-        if (GameState.currentSong.singer.Length > voices[index])
+        if (GameState.currentSong.singer != null && GameState.currentSong.singer.Length > voices[index])
         {
             playerX_TextBox[index].text = GameState.currentSong.singer[voices[index]];
         }

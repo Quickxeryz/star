@@ -12,16 +12,18 @@ public class Options : MonoBehaviour
     {
         // UI
         root = GetComponent<UIDocument>().rootVisualElement;
-        Button options_Back = root.Q<Button>("Back");
-        bool[] optionsLeftClickedCreated = new bool[GameState.maxPlayer];
-        bool[] optionsRightClickedCreated = new bool[GameState.maxPlayer];
-        TextField options_Path = root.Q<TextField>("Path");
-        TextField options_Delay = root.Q<TextField>("Delay");
+        Button back = root.Q<Button>("Back");
+        bool[] leftClickedCreated = new bool[GameState.maxPlayer];
+        bool[] rightClickedCreated = new bool[GameState.maxPlayer];
+        TextField path = root.Q<TextField>("Path");
+        TextField delay = root.Q<TextField>("Delay");
+        Toggle useNewNodeEngine = root.Q<Toggle>("NewNodeEngineToggle");
         MicrophoneData[] microphones = new MicrophoneData[GameState.maxPlayer];
         // load config
-        options_Path.value = GameState.settings.absolutePathToSongs;
-        options_Delay.value = GameState.settings.microphoneDelayInSeconds.ToString();
+        path.value = GameState.settings.absolutePathToSongs;
+        delay.value = GameState.settings.microphoneDelayInSeconds.ToString();
         microphones = new MicrophoneData[GameState.maxPlayer];
+        useNewNodeEngine.value = GameState.settings.useNewNodeEngine;
         // load microphones
         for (int i = 0; i < GameState.maxPlayer; i++)
         {
@@ -66,27 +68,27 @@ public class Options : MonoBehaviour
             {
                 root.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Label>("Text").text = "Microphone: " + microphones[iCopy].name.ToString() + ", Channel; " + microphones[iCopy].channel.ToString();
             }
-            if (!optionsLeftClickedCreated[iCopy])
+            if (!leftClickedCreated[iCopy])
             {
                 root.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Left").clicked += () => OptionsLeftClicked(microphones, iCopy);
-                optionsLeftClickedCreated[iCopy] = true;
+                leftClickedCreated[iCopy] = true;
             }
-            if (!optionsRightClickedCreated[iCopy])
+            if (!rightClickedCreated[iCopy])
             {
                 root.Q<TemplateContainer>("Microphone" + (iCopy + 1).ToString()).Q<Button>("Right").clicked += () => OptionsRightClicked(microphones, iCopy);
-                optionsRightClickedCreated[iCopy] = true;
+                rightClickedCreated[iCopy] = true;
             }
         }
         // set up buttons
-        options_Back.clicked += () =>
+        back.clicked += () =>
         {
             // reload songs if new path
-            if (options_Path.value != GameState.settings.absolutePathToSongs)
+            if (path.value != GameState.settings.absolutePathToSongs)
             {
                 GameState.songsLoaded = false;
             }
             // save config
-            Settings settings = new(options_Path.value, float.Parse(options_Delay.value.Replace(".", ",")), microphones);
+            Settings settings = new(path.value, float.Parse(delay.value.Replace(".", ",")), microphones, useNewNodeEngine.value);
             string json = JsonUtility.ToJson(settings);
             File.WriteAllText("config.json", json);
             // update setting
