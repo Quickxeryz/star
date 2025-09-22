@@ -1,12 +1,14 @@
 using Classes;
+using QRCoder;
+using QRCoder.Unity;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.ConstrainedExecution;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using QRCoder;
-using QRCoder.Unity;
 
 public class MainMenu : MonoBehaviour
 {
@@ -258,13 +260,37 @@ public class MainMenu : MonoBehaviour
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
-        // Set handlers
+        // Set handlers        
         process.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(OutputHandler);
         process.ErrorDataReceived += new System.Diagnostics.DataReceivedEventHandler(OutputHandler);
         // Start server and handlers
-        process.Start();
+        try 
+        {
+            process.Start();
+        }
+        catch (System.Exception) 
+        {
+            GeneralFunctions.WriteErrorLog("Server can't start: Node.js needs to be installed for the server to work!");
+            return;
+        }
         process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
+        string errorMsg = process.StandardError.ReadToEnd();
+        if (errorMsg != "")
+        {
+            Debug.Log(errorMsg);
+            if (errorMsg.Contains("'ws'"))
+            {
+                GeneralFunctions.WriteErrorLog("Server can't start: \"ws\" module needs to be installed (npm i ws)!");
+            } else if (errorMsg.Contains("cert"))
+            {
+                GeneralFunctions.WriteErrorLog("Server can't start: Are the key and cert files generated and not outdated?");
+            } else
+            {
+                GeneralFunctions.WriteErrorLog("-----SERVER ERROR START-----");
+                GeneralFunctions.WriteErrorLog(errorMsg);
+                GeneralFunctions.WriteErrorLog("-----SERVER ERROR END-----");
+            }
+        }
         process.WaitForExit();
     }
 
