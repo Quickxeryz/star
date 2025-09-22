@@ -1,7 +1,10 @@
 This file contains information for the installation and usage of the server
 # installation
-1. install nodejs
-2. to run the server you need a certificates for https. This can be generated with the following steps:
+1. install node.js
+2. install the ws moodule for node.js
+    1. open the powershell
+    2. install ws with the command: npm i ws
+3. to run the server you need a certificates for https. This can be generated with the following steps:
     1. install openssl
     2. generate a certificate (this can done with the command: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "key.pem" -out "cert.pem" -subj "/")
     3. put the "key.pem" and "cert.pem" in the "Server" folder
