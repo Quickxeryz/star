@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -114,7 +113,7 @@ public class GameLogic : MonoBehaviour
     int[] songDataCurrentIndex;
     int[] songDataNewLineIndex;
     // beat data
-    int currentBeat = -1;
+    int currentBeat;
     int[] startBeatLine;
     int[] endBeatLine;
     int[] beatSumLine;
@@ -960,6 +959,7 @@ public class GameLogic : MonoBehaviour
                         }
                     }
                 }
+                currentBeat = (int)(((-GameState.settings.microphoneDelayInSeconds - GameState.currentSong.gap) / 60.0) * 4.0 * GameState.currentSong.bpm);
             } else
             {
                 return;
@@ -986,7 +986,66 @@ public class GameLogic : MonoBehaviour
                 {
                     currentBeat++;
                 }
-                // updating nodes, songtext and calculating score
+                // updating songtext
+                if (GameState.showText) 
+                {
+                    DyeTextLine(currentBeat, voices[0], textLine1Bottom, syllablesLine1Bottom, -600);
+                    if (voices.Count == 1 && GameState.amountPlayer > 1)
+                    {
+                        // reser textline
+                        foreach (TextObject currObject in textLine1Top)
+                        {
+                            Destroy(currObject.obj, 0.0f);
+                        }
+                        textLine1Top.Clear();
+                        // clone textline
+                        TextObject currentTextObject;
+                        foreach (TextObject t in textLine1Bottom)
+                        {
+                            currentTextObject = new(Instantiate(t.obj, t.obj.transform.parent), t.textMesh, t.isSecondHalf);
+                            textLine1Top.Add(currentTextObject);
+                        }
+                        SetUpTextLineXY(textLine1Top, 175f);
+                    } else if (voices.Count > 1)
+                    {
+                        DyeTextLine(currentBeat, voices[1], textLine1Top, syllablesLine1Top, 175f);
+                    }
+                }
+                // update when to start shower
+                if (!GameState.settings.useNewNodeEngine)
+                {
+                    if (currentBeat < startBeatLine[voices[0]])
+                    {
+                        if (textLine1Bottom.Count > 0)
+                        {
+                            UpdateWhenToStartRect(currentBeat, voices[0], textLine1Bottom, whenToStartBottom, whenToStartBottomRectTransform, -375f);
+                        }
+                    }
+                    else
+                    {
+                        whenToStartBottomRectTransform.sizeDelta = new Vector2(0f, 100f);                      
+                    }
+                    if (GameState.amountPlayer > 1)
+                    {
+                        int i = 0;
+                        if (voices.Count > 1)
+                        {
+                            i = 1;
+                        }
+                        if (currentBeat < startBeatLine[voices[i]])
+                        {
+                            if (textLine1Top.Count > 0)
+                            {
+                                UpdateWhenToStartRect(currentBeat, voices[i], textLine1Top, whenToStartTop, whenToStartTopRectTransform, 375f);
+                            }
+                        }
+                        else
+                        {
+                            whenToStartTopRectTransform.sizeDelta = new Vector2(0f, 100f);
+                        }
+                    }
+                }
+                // updating nodes and calculating score
                 VisualElement nodeBox;
                 float startPercent;
                 float percent;
@@ -1158,14 +1217,6 @@ public class GameLogic : MonoBehaviour
                         }
                         if (songData[voices[i]][songDataCurrentIndex[voices[i]]].kind != Kind.LineBreak && songData[voices[i]][songDataCurrentIndex[voices[i]]].kind != Kind.LineBreakExcact)
                         {
-                            if (i == 0)
-                            {
-                                DyeTextLine(currentBeat, voices[i], textLine1Bottom, syllablesLine1Bottom, -600);
-                            }
-                            if (i > 0 || (voices.Count == 1 && GameState.amountPlayer > 1))
-                            {
-                                DyeTextLine(currentBeat, voices[i], textLine1Top, syllablesLine1Top, 175f);
-                            }
                             // Manage node hits
                             if (songData[voices[i]][songDataCurrentIndex[voices[i]]].appearing <= currentBeat && currentBeat < (songData[voices[i]][songDataCurrentIndex[voices[i]]].appearing + songData[voices[i]][songDataCurrentIndex[voices[i]]].length))
                             {
@@ -1225,42 +1276,6 @@ public class GameLogic : MonoBehaviour
                                             }
                                         }
                                         lastTimeStamps[j] = currentBeat;                                            
-                                    }
-                                }
-                            }
-                            if (!GameState.settings.useNewNodeEngine)
-                            {
-                                // set up time to start node shower
-                                if (currentBeat < startBeatLine[voices[i]])
-                                {
-                                    if (i == 0)
-                                    {
-                                        if (textLine1Bottom.Count > 0)
-                                        {
-                                            UpdateWhenToStartRect(currentBeat, voices[i], textLine1Bottom, whenToStartBottom, whenToStartBottomRectTransform, -375f);
-                                        }
-                                    }
-                                    if (i > 0 || (voices.Count == 1 && GameState.amountPlayer > 1))
-                                    {
-                                        if (textLine1Top.Count > 0)
-                                        {
-                                            UpdateWhenToStartRect(currentBeat, voices[i], textLine1Top, whenToStartTop, whenToStartTopRectTransform, 375f);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if (i == 0)
-                                    {
-                                        whenToStartBottomRectTransform.sizeDelta = new Vector2(0f, 100f);
-                                        if (GameState.amountPlayer > 1 && GameState.currentSong.amountVoices == 1)
-                                        {
-                                            whenToStartTopRectTransform.sizeDelta = new Vector2(0f, 100f);
-                                        }
-                                    }
-                                    if (i > 0 || (voices.Count == 1 && GameState.amountPlayer > 1))
-                                    {
-                                        whenToStartTopRectTransform.sizeDelta = new Vector2(0f, 100f);
                                     }
                                 }
                             }
@@ -1529,9 +1544,38 @@ public class GameLogic : MonoBehaviour
         }
     }
 
+    private void SetUpTextLineXY(List<TextObject> textLine, float textLineY)
+    {
+        // calculate needed width
+        float renderedWidth = 0;
+        foreach (TextObject to in textLine)
+        {
+            if (!to.isSecondHalf)
+            {
+                renderedWidth += to.textMesh.preferredWidth;
+            }
+        }
+        // set position of text elements
+        textLine[0].obj.transform.localPosition = new Vector3(500f - renderedWidth / 2, textLineY, 0f);
+        TextObject beforeObject = textLine[0];
+        beforeObject.textMesh.ForceMeshUpdate();
+        foreach (TextObject to in textLine.Skip(1))
+        {
+            if (to.isSecondHalf)
+            {
+                to.obj.transform.localPosition = new Vector3(beforeObject.obj.transform.localPosition.x, beforeObject.obj.transform.localPosition.y, beforeObject.obj.transform.localPosition.z);
+            }
+            else
+            {
+                to.obj.transform.localPosition = new Vector3(beforeObject.obj.transform.localPosition.x + beforeObject.textMesh.preferredWidth, beforeObject.obj.transform.localPosition.y, beforeObject.obj.transform.localPosition.z);
+            }
+            to.textMesh.ForceMeshUpdate();
+            beforeObject = to;
+        }
+    }
+
     private void DyeTextLine(int currentTimeStamp, int voiceNumber, List<TextObject> textLine, List<SyllableData> syllablesLine, float textLineY)
     {
-        if (GameState.showText) {
         // reset song text
         string text = "";
         string textToSing = "";
@@ -1633,33 +1677,7 @@ public class GameLogic : MonoBehaviour
         {
             CreateSyllabelToList(textLine, textToSing);
         }
-        // calculate needed width
-        float renderedWidth = 0;
-        foreach (TextObject to in textLine)
-        {
-            if (!to.isSecondHalf)
-            {
-                renderedWidth += to.textMesh.preferredWidth;
-            }
-        }
-        // set position of text elements
-        textLine[0].obj.transform.localPosition = new Vector3(500f - renderedWidth / 2, textLineY, 0f);
-        TextObject beforeObject = textLine[0];
-        beforeObject.textMesh.ForceMeshUpdate();
-            foreach (TextObject to in textLine.Skip(1))
-            {
-                if (to.isSecondHalf)
-                {
-                    to.obj.transform.localPosition = new Vector3(beforeObject.obj.transform.localPosition.x, beforeObject.obj.transform.localPosition.y, beforeObject.obj.transform.localPosition.z);
-                }
-                else
-                {
-                    to.obj.transform.localPosition = new Vector3(beforeObject.obj.transform.localPosition.x + beforeObject.textMesh.preferredWidth, beforeObject.obj.transform.localPosition.y, beforeObject.obj.transform.localPosition.z);
-                }
-                to.textMesh.ForceMeshUpdate();
-                beforeObject = to;
-            }
-        }
+        SetUpTextLineXY(textLine, textLineY);
     }
 
     private void NodeHit(int timeStamp, int voiceNumber, int playerNumber, Length nodeBoxTop, bool isItemMode)
