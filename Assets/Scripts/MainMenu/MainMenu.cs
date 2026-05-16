@@ -4,11 +4,10 @@ using QRCoder.Unity;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.ConstrainedExecution;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public class MainMenu : MonoBehaviour
 {
@@ -166,7 +165,7 @@ public class MainMenu : MonoBehaviour
                 {
                     songVideoPath = "";
                     amountVoices = 1;
-                    lastBeat = 0;
+                    lastBeat = int.MinValue;
                     singer = null;
                     // when file is song file extract data
                     foreach (string line in text)

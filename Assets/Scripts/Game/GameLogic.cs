@@ -84,7 +84,7 @@ public class GameLogic : MonoBehaviour
     }
 
     // size of node shower in bpm
-    public const int NODESHOWER_SIZE = 100;
+    public const int NODESHOWER_SIZE = 67;
     // list of functions to be executed x frames later
     public List<(int, Action)> executeLater = new();
     // mic input
@@ -209,7 +209,7 @@ public class GameLogic : MonoBehaviour
         SyllableData syllable;
         string temp;
         bool needSpace = false;
-        int lastBeat = 0;
+        int lastBeat = int.MinValue;
         int currentVoice = 0;
         foreach (string line in songFileData)
         {
@@ -800,12 +800,19 @@ public class GameLogic : MonoBehaviour
             NextSinger();
             microphoneInput.Init();
         }
-        if (GameState.currentGameMode == GameMode.Item && GameState.settings.useNewNodeEngine)
+        if (GameState.settings.useNewNodeEngine)
         {
             for (int i = 0; i < GameState.amountPlayer; i++)
             {
-                itemBoxes[i] = roots[i].Q<VisualElement>("ItemBox");
-                itemLastTimeStamps[i] = -1;
+                nodeArrows[i].style.left = Length.Percent(100 - NODESHOWER_SIZE - 2);
+            }
+            if (GameState.currentGameMode == GameMode.Item)
+            {
+                for (int i = 0; i < GameState.amountPlayer; i++)
+                {
+                    itemBoxes[i] = roots[i].Q<VisualElement>("ItemBox");
+                    itemLastTimeStamps[i] = -1;
+                }
             }
         }
     }
@@ -1108,7 +1115,7 @@ public class GameLogic : MonoBehaviour
                             index = 0;
                             while (index < trimedSongData[voices[i]].Count)
                             {
-                                if (currentBeat > trimedSongData[voices[i]][index].appearing + trimedSongData[voices[i]][index].length)
+                                if (100 - NODESHOWER_SIZE + (float)((trimedSongData[voices[i]][index].appearing + trimedSongData[voices[i]][index].length - currentBeat) * 100) / (float)NODESHOWER_SIZE <= 0)
                                 {
                                     trimedSongData[voices[i]].RemoveAt(index);
                                     for (int j = 0; j < GameState.amountPlayer; j++)
@@ -1135,14 +1142,17 @@ public class GameLogic : MonoBehaviour
                                                 {
                                                     if (trimedSongData[voices[i]][index].appearing < currentBeat)
                                                     {
-                                                        startPercent = 0f;
+                                                        // startpercent = 0;
+                                                        // percent = 0;
+                                                        startPercent = 100 - NODESHOWER_SIZE + (float)((trimedSongData[voices[i]][index].appearing - currentBeat) * 100) / (float)NODESHOWER_SIZE;
+                                                        percent = 100 - NODESHOWER_SIZE + (float)((trimedSongData[voices[i]][index].appearing + trimedSongData[voices[i]][index].length - currentBeat) * 100) / (float)NODESHOWER_SIZE;
                                                     }
                                                     else
                                                     {
-                                                        startPercent = (float)((trimedSongData[voices[i]][index].appearing - currentBeat) * 100) / (float)NODESHOWER_SIZE;
+                                                        startPercent = 100 - NODESHOWER_SIZE + (float)((trimedSongData[voices[i]][index].appearing - currentBeat) * 100) / (float)NODESHOWER_SIZE;
+                                                        percent = 100 - NODESHOWER_SIZE + (float)((trimedSongData[voices[i]][index].appearing + trimedSongData[voices[i]][index].length - currentBeat) * 100) / (float)NODESHOWER_SIZE;
                                                     }
                                                     nodeBoxes[j][index].style.left = Length.Percent(startPercent);
-                                                    percent = (float)((trimedSongData[voices[i]][index].appearing + trimedSongData[voices[i]][index].length - currentBeat) * 100) / (float)NODESHOWER_SIZE;
                                                     if (percent > 100)
                                                     {
                                                         percent = 100;
@@ -1189,13 +1199,14 @@ public class GameLogic : MonoBehaviour
                                                         if (itemBeats[j][index].Item1 < currentBeat)
                                                         {
                                                             startPercent = 0f;
+                                                            percent = 0f;
                                                         }
                                                         else
                                                         {
-                                                            startPercent = (float)((itemBeats[j][index].Item1 - currentBeat) * 100) / (float)NODESHOWER_SIZE;
+                                                            startPercent = 100 - NODESHOWER_SIZE + (float)((itemBeats[j][index].Item1 - currentBeat) * 100) / (float)NODESHOWER_SIZE;
+                                                            percent = 100 - NODESHOWER_SIZE + (float)((itemBeats[j][index].Item1 + ITEM_NODELENGTH - currentBeat) * 100) / (float)NODESHOWER_SIZE;
                                                         }
                                                         itemBoxes[j][index].style.left = Length.Percent(startPercent);
-                                                        percent = (float)((itemBeats[j][index].Item1 + ITEM_NODELENGTH - currentBeat) * 100) / (float)NODESHOWER_SIZE;
                                                         if (percent > 100)
                                                         {
                                                             percent = 100;
